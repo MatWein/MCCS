@@ -1,0 +1,110 @@
+plugins {
+    id 'net.neoforged.moddev.legacyforge'
+}
+
+// the jar name tells which Minecraft version and loader it is for: mcqw-<version>+mc<mc version>-forge.jar
+version = "${mod_version}+mc${minecraft_version}-forge"
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+// Minecraft 1.20.1 runs on Java 17
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+legacyForge {
+    version = "${minecraft_version}-${forge_version}"
+
+    runs {
+        configureEach {
+            logLevel = org.slf4j.event.Level.INFO
+        }
+        client {
+            client()
+            gameDirectory = file('run')
+            // ./gradlew runClient -PjoinServer=localhost connects straight to a server
+            if (project.hasProperty('joinServer')) {
+                programArguments.addAll '--quickPlayMultiplayer', project.property('joinServer')
+            }
+        }
+        server {
+            server()
+            gameDirectory = file('run-server')
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+            // the core is part of the mod (same module layer), not a separate library
+            sourceSet project(':core').sourceSets.main
+        }
+    }
+}
+
+repositories {
+    // mods for testing integrations (e.g. Mekanism), deobfuscated for the dev runs
+    flatDir {
+        dir 'run-server/mods'
+    }
+}
+
+dependencies {
+    // the game logic; its classes are packed into this mod's jar (see jar task)
+    implementation project(':core')
+
+    // The mod must work on its own: -Pstandalone runs without any other mod
+    if (!project.hasProperty('standalone')) {
+        // load every mod jar of the test server in the dev environment as well
+        fileTree(dir: 'run-server/mods', include: '*.jar')
+                .filter { !it.name.startsWith(mod_id) }
+                .each {
+                    def m = (it.name - '.jar') =~ /^(.+?)-(\d.*)$/
+                    if (m.matches()) modRuntimeOnly "blank:${m.group(1)}:${m.group(2)}"
+                }
+    }
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
+            forge_version: forge_version, forge_version_range: forge_version_range,
+            loader_version_range: loader_version_range,
+            mod_id: mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors: mod_authors, mod_description: mod_description,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    from(project(':core').sourceSets.main.output)
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : mod_authors,
+                'Specification-Version'   : '1',
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.version,
+                'Implementation-Vendor'   : mod_authors,
+        ])
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+// vanilla Minecraft 1.20.1 code shared between the loader modules, compiled here against this loader's Minecraft
+def common = project(':mc_1.20.1_common')
+tasks.named('compileJava', JavaCompile).configure {
+    source(common.sourceSets.main.allSource)
+}
+tasks.named('processResources', ProcessResources).configure {
+    from(common.sourceSets.main.resources)
+}
