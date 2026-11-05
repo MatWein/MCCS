@@ -25,7 +25,7 @@ abstract class KeyMappingMixin {
 
     @Inject(method = "click", at = @At("HEAD"))
     private static void mcqw$clickStaffKeys(InputConstants.Key pressed, CallbackInfo callback) {
-        for (KeyMapping staffKey : List.of(KeyBindings.SHIELD, KeyBindings.CLOAK)) {
+        for (KeyMapping staffKey : List.of(KeyBindings.SHIELD, KeyBindings.CLOAK, KeyBindings.TELEPORT)) {
             KeyMappingMixin mapping = (KeyMappingMixin) (Object) staffKey;
             if (mapping.key.equals(pressed) && MAP.get(pressed) != staffKey) mapping.clickCount++;
         }

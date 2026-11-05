@@ -13,5 +13,7 @@ public final class KeyBindings {
 
     public static final KeyMapping CLOAK = new KeyMapping("key.mcqw.cloak", InputConstants.KEY_C, CATEGORY);
 
+    public static final KeyMapping TELEPORT = new KeyMapping("key.mcqw.teleport", InputConstants.KEY_R, CATEGORY);
+
     private KeyBindings() {}
 }

@@ -32,6 +32,7 @@ public final class McqwNeoForgeClient {
             event.registerCategory(KeyBindings.CATEGORY);
             event.register(KeyBindings.SHIELD);
             event.register(KeyBindings.CLOAK);
+            event.register(KeyBindings.TELEPORT);
         });
         modBus.addListener(RegisterGuiLayersEvent.class, event -> event.registerAbove(VanillaGuiLayers.HOTBAR, Mcqw.id("staff_hud"),
                 (graphics, deltaTracker) -> StaffHud.render(ClientCompat.hudCanvas(graphics), graphics.guiWidth(), graphics.guiHeight())));

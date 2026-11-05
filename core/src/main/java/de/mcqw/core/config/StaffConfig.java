@@ -12,6 +12,8 @@ public final class StaffConfig {
     private final DoubleSetting shieldWaterFactor;
     private final DoubleSetting shieldLavaFactor;
     private final IntSetting shieldHitCost;
+    private final DoubleSetting lightningCharge;
+    private final DoubleSetting lightningAttractRange;
     private final IntSetting cloakDrain;
     private final DoubleSetting cloakWaterFactor;
     private final DoubleSetting cloakLavaFactor;
@@ -36,6 +38,10 @@ public final class StaffConfig {
                 .defineInRange("shieldLavaFactor", 3.0, 1.0, 100.0);
         shieldHitCost = builder.comment("Extra energy per point of absorbed damage (FE)")
                 .defineInRange("shieldHitCost", 2_000, 0, MAX_FE);
+        lightningCharge = builder.comment("Charge from being struck by lightning while holding the staff (share of the capacity)")
+                .defineInRange("lightningCharge", 0.2, 0.0, 1.0);
+        lightningAttractRange = builder.comment("Natural lightning within this range strikes a player with an active shield under open sky (blocks, 0 = never)")
+                .defineInRange("lightningAttractRange", 32.0, 0.0, 128.0);
         cloakDrain = builder.comment("Cloak drain while active (FE/tick)")
                 .defineInRange("cloakDrain", 40, 0, MAX_FE);
         cloakWaterFactor = builder.comment("Cloak drain multiplier when under water")
@@ -68,6 +74,14 @@ public final class StaffConfig {
     /** The shield's drain in FE/tick where the player is. */
     public int shieldDrain(boolean underWater, boolean inLava, boolean underFire) {
         return drain(shieldDrain.get(), inLava ? shieldLavaFactor.get() : underWater ? shieldWaterFactor.get() : 1.0, underFire);
+    }
+
+    public double lightningCharge() {
+        return lightningCharge.get();
+    }
+
+    public double lightningAttractRange() {
+        return lightningAttractRange.get();
     }
 
     public int shieldHitCost() {

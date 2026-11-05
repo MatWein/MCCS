@@ -31,8 +31,10 @@ public final class StaffClient {
             BUBBLES.clear();
             return;
         }
+        StaffEffects.onClientTickEnd(minecraft);
         pressed(minecraft, KeyBindings.SHIELD, StaffAction.SHIELD);
         pressed(minecraft, KeyBindings.CLOAK, StaffAction.CLOAK);
+        pressed(minecraft, KeyBindings.TELEPORT, StaffAction.TELEPORT);
         Set<Player> seen = new HashSet<>();
         for (Player player : minecraft.level.players()) {
             seen.add(player);

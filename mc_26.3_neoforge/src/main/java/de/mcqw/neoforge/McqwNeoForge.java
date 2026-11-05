@@ -8,6 +8,7 @@ import de.mcqw.mc.network.StaffActionPacket;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffBeam;
 import de.mcqw.mc.staff.StaffData;
+import de.mcqw.mc.staff.StaffLightning;
 import de.mcqw.mc.staff.StaffSystems;
 import de.mcqw.neoforge.config.NeoForgeConfigs;
 import de.mcqw.neoforge.item.NeoForgeCrystalStaffItem;
@@ -16,6 +17,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -28,6 +30,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -74,6 +77,9 @@ public final class McqwNeoForge {
                 PacketDistributor.sendToPlayersTrackingEntityAndSelf(shooter, new BeamStatePacket(shooter.getId(), firing, targets));
         NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> StaffSystems.tick(event.getServer()));
         NeoForge.EVENT_BUS.addListener(AttackEntityEvent.class, event -> StaffSystems.onAttack(event.getEntity()));
+        NeoForge.EVENT_BUS.addListener(EntityJoinLevelEvent.class, event -> {
+            if (event.getEntity() instanceof LightningBolt bolt) StaffLightning.attract(bolt);
+        });
         NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEvent.class, event -> {
             if (StaffSystems.absorb(event.getEntity(), event.getSource(), event.getAmount())) event.setCanceled(true);
         });

@@ -8,6 +8,7 @@ public final class ServerConfig {
     public static StaffConfig STAFF;
     public static BeamConfig BEAM;
     public static BallConfig BALL;
+    public static TeleportConfig TELEPORT;
 
     private ServerConfig() {}
 
@@ -15,5 +16,6 @@ public final class ServerConfig {
         STAFF = new StaffConfig(builder);
         BEAM = new BeamConfig(builder);
         BALL = new BallConfig(builder);
+        TELEPORT = new TeleportConfig(builder);
     }
 }

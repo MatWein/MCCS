@@ -10,6 +10,11 @@ public final class BallConfig {
     private final IntSetting range;
     private final IntSetting energy;
     private final IntSetting cooldownTicks;
+    private final IntSetting chargeTicks;
+    private final DoubleSetting chargedDamageFactor;
+    private final DoubleSetting chargedRadiusFactor;
+    private final DoubleSetting chargedSizeFactor;
+    private final DoubleSetting chargedEnergyFactor;
 
     BallConfig(ConfigBuilder builder) {
         builder.comment("Energy ball of the crystal staff").push("energyBall");
@@ -29,6 +34,16 @@ public final class BallConfig {
                 .defineInRange("energy", 30_000, 0, Integer.MAX_VALUE);
         cooldownTicks = builder.comment("Time between two shots (ticks)")
                 .defineInRange("cooldownTicks", 40, 0, 1200);
+        chargeTicks = builder.comment("Holding the use key this long charges a ball fully (ticks)")
+                .defineInRange("chargeTicks", 40, 1, 1200);
+        chargedDamageFactor = builder.comment("Damage multiplier of a fully charged ball")
+                .defineInRange("chargedDamageFactor", 3.0, 1.0, 100.0);
+        chargedRadiusFactor = builder.comment("Explosion radius multiplier of a fully charged ball")
+                .defineInRange("chargedRadiusFactor", 1.5, 1.0, 10.0);
+        chargedSizeFactor = builder.comment("Size multiplier of a fully charged ball")
+                .defineInRange("chargedSizeFactor", 2.0, 1.0, 10.0);
+        chargedEnergyFactor = builder.comment("Energy multiplier of a fully charged ball")
+                .defineInRange("chargedEnergyFactor", 3.0, 1.0, 100.0);
         builder.pop();
     }
 
@@ -62,5 +77,25 @@ public final class BallConfig {
 
     public int cooldownTicks() {
         return cooldownTicks.get();
+    }
+
+    public int chargeTicks() {
+        return chargeTicks.get();
+    }
+
+    public double chargedDamageFactor() {
+        return chargedDamageFactor.get();
+    }
+
+    public double chargedRadiusFactor() {
+        return chargedRadiusFactor.get();
+    }
+
+    public double chargedSizeFactor() {
+        return chargedSizeFactor.get();
+    }
+
+    public double chargedEnergyFactor() {
+        return chargedEnergyFactor.get();
     }
 }

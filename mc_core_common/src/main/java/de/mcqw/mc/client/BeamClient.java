@@ -8,7 +8,6 @@ import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
@@ -34,12 +33,6 @@ public final class BeamClient {
     private static final int SPARKS = 2;
     private static final double SPARK_SPREAD = 0.3;
     private static final double SPARK_SPEED = 0.15;
-
-    // The crystal relative to the feet, from the third person pose in tools/make_staff_assets.py
-    private static final double CRYSTAL_RIGHT = 0.43;
-    private static final double CRYSTAL_FORWARD = 0.2;
-    private static final double CRYSTAL_UP = 1.67;
-    private static final double CROUCH_DROP = 0.3;
 
     // The crystal relative to the camera in first person, from the display transform in tools/make_staff_assets.py.
     // Held items have their own field of view: the sideways offsets are scaled from it to the world's.
@@ -124,7 +117,7 @@ public final class BeamClient {
         BEAMS.forEach((shooter, beam) -> {
             if (!(minecraft.level.getEntity(shooter) instanceof Player player)) return;
             long seed = (player.tickCount / ZIGZAG_TICKS) * 31L + shooter;
-            Vec3 start = crystal(minecraft, camera, player, cameraPosition, partialTick);
+            Vec3 start = crystal(minecraft, camera, player, player.getMainArm(), cameraPosition, partialTick);
             Vec3 first = beam.targets.length > 0 && minecraft.level.getEntity(beam.targets[0]) != null
                     ? BeamAim.center(minecraft.level.getEntity(beam.targets[0]))
                     : BeamAim.end(player, ServerConfig.BEAM.range(), partialTick);
@@ -147,25 +140,21 @@ public final class BeamClient {
         return new float[]{(float) (point.x - camera.x), (float) (point.y - camera.y), (float) (point.z - camera.z)};
     }
 
-    private static Vec3 crystal(Minecraft minecraft, Camera camera, Player player, Vec3 cameraPosition, float partialTick) {
-        boolean leftHanded = player.getMainArm() == HumanoidArm.LEFT;
-        if (player == minecraft.player && minecraft.getCameraEntity() == player && minecraft.options.getCameraType().isFirstPerson()) {
-            float[][] basis = ClientCompat.cameraBasis(camera);
-            double fovScale = Math.tan(Math.toRadians(minecraft.options.fov().get()) / 2) / Math.tan(Math.toRadians(HAND_FOV_DEGREES) / 2);
-            double right = (leftHanded ? -FIRST_PERSON_RIGHT : FIRST_PERSON_RIGHT) * fovScale;
-            double up = FIRST_PERSON_UP * fovScale;
-            return cameraPosition
-                    .add(basis[0][0] * FIRST_PERSON_FORWARD, basis[0][1] * FIRST_PERSON_FORWARD, basis[0][2] * FIRST_PERSON_FORWARD)
-                    .add(basis[1][0] * up, basis[1][1] * up, basis[1][2] * up)
-                    .add(-basis[2][0] * right, -basis[2][1] * right, -basis[2][2] * right);
-        }
-        float yaw = Mth.rotLerp(partialTick, player.yBodyRotO, player.yBodyRot) * Mth.DEG_TO_RAD;
-        double side = leftHanded ? -CRYSTAL_RIGHT : CRYSTAL_RIGHT;
-        double forwardX = -Mth.sin(yaw);
-        double forwardZ = Mth.cos(yaw);
-        double rightX = -Mth.cos(yaw);
-        double rightZ = -Mth.sin(yaw);
-        double up = CRYSTAL_UP - (player.isCrouching() ? CROUCH_DROP : 0);
-        return player.getPosition(partialTick).add(forwardX * CRYSTAL_FORWARD + rightX * side, up, forwardZ * CRYSTAL_FORWARD + rightZ * side);
+    /** Whether this is the view from inside the player's eyes, where held items are drawn separately. */
+    static boolean isFirstPerson(Minecraft minecraft, Player player) {
+        return player == minecraft.player && minecraft.getCameraEntity() == player && minecraft.options.getCameraType().isFirstPerson();
+    }
+
+    /** Where the crystal of a staff in the given arm appears in this frame. */
+    static Vec3 crystal(Minecraft minecraft, Camera camera, Player player, HumanoidArm arm, Vec3 cameraPosition, float partialTick) {
+        if (!isFirstPerson(minecraft, player)) return BeamAim.crystal(player, arm, partialTick);
+        float[][] basis = ClientCompat.cameraBasis(camera);
+        double fovScale = Math.tan(Math.toRadians(minecraft.options.fov().get()) / 2) / Math.tan(Math.toRadians(HAND_FOV_DEGREES) / 2);
+        double right = (arm == HumanoidArm.LEFT ? -FIRST_PERSON_RIGHT : FIRST_PERSON_RIGHT) * fovScale;
+        double up = FIRST_PERSON_UP * fovScale;
+        return cameraPosition
+                .add(basis[0][0] * FIRST_PERSON_FORWARD, basis[0][1] * FIRST_PERSON_FORWARD, basis[0][2] * FIRST_PERSON_FORWARD)
+                .add(basis[1][0] * up, basis[1][1] * up, basis[1][2] * up)
+                .add(-basis[2][0] * right, -basis[2][1] * right, -basis[2][2] * right);
     }
 }

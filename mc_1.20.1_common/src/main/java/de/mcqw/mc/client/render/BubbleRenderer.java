@@ -61,6 +61,7 @@ public final class BubbleRenderer {
         }
         BeamRenderer.draw(camera, poseStack.last(), buffers, cameraPosition, partialTick);
         EnergyBallRenderer.drawPending(worldPose, rotationOnStack, buffers);
+        CrystalRenderer.draw(camera, poseStack.last(), buffers, cameraPosition, partialTick);
         buffers.endBatch();
     }
 

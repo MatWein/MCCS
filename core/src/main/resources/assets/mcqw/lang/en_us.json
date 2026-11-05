@@ -12,5 +12,6 @@
   "hud.mcqw.cloak": "Cloak: %s",
   "hud.mcqw.cloak.on": "ACTIVE",
   "hud.mcqw.cloak.off": "off",
-  "entity.mcqw.energy_ball": "Energy Ball"
+  "entity.mcqw.energy_ball": "Energy Ball",
+  "key.mcqw.teleport": "Staff teleport"
 }

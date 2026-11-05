@@ -1,5 +1,6 @@
 package de.mcqw.mc.staff;
 
+import de.mcqw.core.config.ServerConfig;
 import de.mcqw.core.staff.StaffEnergy;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -7,6 +8,8 @@ import net.minecraft.world.item.ItemStack;
 /** What a staff saves on its item stack (Minecraft 1.20.1: the stack's tag). */
 public final class StaffData {
     private static final String ENERGY = "Energy";
+    /** Vanilla's property that selects the crystal's model. */
+    private static final String CRYSTAL_LOOK = "CustomModelData";
     private static final String SHIELD_ON = "ShieldOn";
     private static final String CLOAK_ON = "CloakOn";
     private static final String SHIELD_HITS = "ShieldHits";
@@ -20,7 +23,12 @@ public final class StaffData {
     }
 
     public static void setSavedEnergy(ItemStack stack, int energy) {
-        stack.getOrCreateTag().putInt(ENERGY, energy);
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.putInt(ENERGY, energy);
+        // Integer.MAX_VALUE: "as full as the capacity", from before the settings are known (creative tab)
+        int look = energy == Integer.MAX_VALUE ? 0 : StaffEnergy.crystalLook(energy, ServerConfig.STAFF.capacity());
+        if (look == 0) tag.remove(CRYSTAL_LOOK);
+        else tag.putInt(CRYSTAL_LOOK, look);
     }
 
     public static boolean shieldOn(ItemStack stack) {

@@ -12,5 +12,6 @@
   "hud.mcqw.cloak": "Tarnung: %s",
   "hud.mcqw.cloak.on": "AKTIV",
   "hud.mcqw.cloak.off": "aus",
-  "entity.mcqw.energy_ball": "Energieball"
+  "entity.mcqw.energy_ball": "Energieball",
+  "key.mcqw.teleport": "Stab-Teleport"
 }

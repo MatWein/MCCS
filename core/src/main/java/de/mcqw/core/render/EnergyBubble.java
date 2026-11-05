@@ -111,6 +111,11 @@ public final class EnergyBubble {
 
     /** Emits one texture layer of the bubble (quads, bluish additive color). */
     public static void emitLayer(Grid grid, Layer layer, VertexSink sink, float intensity) {
+        emitLayer(grid, layer, sink, intensity, TINT_RED, TINT_GREEN, 1f);
+    }
+
+    /** The same in another color. */
+    public static void emitLayer(Grid grid, Layer layer, VertexSink sink, float intensity, float red, float green, float blue) {
         int columns = SEGMENTS_AROUND + 1;
         float weight = intensity * layer.weight();
         for (int row = 0; row < SEGMENTS_VERTICAL; row++) {
@@ -122,7 +127,7 @@ public final class EnergyBubble {
                     float brightness = weight * grid.fresnel[corners[corner]];
                     float u = gridUv[corner][0] * layer.uvScale() / SEGMENTS_AROUND * HORIZONTAL_UV_REPEAT;
                     float v = gridUv[corner][1] * layer.uvScale() / SEGMENTS_VERTICAL;
-                    sink.vertex(point[0], point[1], point[2], TINT_RED * brightness, TINT_GREEN * brightness, brightness, 1f,
+                    sink.vertex(point[0], point[1], point[2], red * brightness, green * brightness, blue * brightness, 1f,
                             u, v, point[0], point[1] - grid.centerY, point[2]);
                 }
             }

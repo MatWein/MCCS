@@ -8,8 +8,10 @@ import de.mcqw.mc.Mcqw;
 import de.mcqw.mc.entity.EnergyBallEntity;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
+import de.mcqw.mc.staff.StaffLightning;
 import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -17,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -59,6 +63,10 @@ public final class McqwMod {
             if (StaffSystems.absorb(event.getEntity(), event.getSource(), event.getAmount())) event.setCanceled(true);
         });
         MinecraftForge.EVENT_BUS.addListener((AttackEntityEvent event) -> StaffSystems.onAttack(event.getEntity()));
+        MinecraftForge.EVENT_BUS.addListener((EntityJoinLevelEvent event) -> {
+            if (event.getEntity() instanceof LightningBolt bolt) StaffLightning.attract(bolt);
+        });
+        MinecraftForge.EVENT_BUS.addListener((EntityStruckByLightningEvent event) -> StaffLightning.struck(event.getEntity()));
         MinecraftForge.EVENT_BUS.addListener((LivingFallEvent event) -> {
             if (StaffSystems.absorbFall(event.getEntity(), event.getDistance(), event.getDamageMultiplier())) event.setCanceled(true);
         });

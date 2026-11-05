@@ -17,52 +17,72 @@ import net.minecraft.world.phys.Vec3;
 
 /** The staff's energy ball: firing it, and its explosion, which hurts living things but leaves blocks and items alone. */
 public final class StaffBall {
-    /** Where the ball appears, relative to the eyes: near the crystal, in front of the player. */
-    private static final double START_FORWARD = 0.8;
-    private static final double START_DOWN = 0.2;
+    private static final double MIN_AIM_DISTANCE_SQR = 1;
     private static final int SPARKS = 60;
     private static final double SPARK_SPREAD = 1.5;
     private static final double SPARK_SPEED = 0.3;
     /** Knockback lifts targets a little, or friction on the ground would eat most of it. */
     private static final double KNOCKBACK_LIFT = 0.3;
+    private static final int CHARGE_SOUND_INTERVAL = 8;
+    private static final float CHARGE_PITCH_START = 0.6f;
+    private static final float CHARGE_PITCH_RANGE = 1.2f;
 
     private StaffBall() {}
 
-    /** Right click with the staff in the main hand. */
-    public static void fire(ServerPlayer player) {
+    /** The use key is being held: the ball charges up, which can be heard. */
+    public static void charging(LivingEntity entity, int usedTicks) {
+        if (!(entity instanceof ServerPlayer player) || StaffSystems.mainStaff(player).isEmpty()) return;
+        int full = ServerConfig.BALL.chargeTicks();
+        if (usedTicks == full) {
+            StaffSounds.ballFullyCharged(player);
+        } else if (usedTicks < full && usedTicks % CHARGE_SOUND_INTERVAL == 0) {
+            StaffSounds.ballCharging(player, CHARGE_PITCH_START + CHARGE_PITCH_RANGE * usedTicks / full);
+        }
+    }
+
+    /** The use key was released after holding it for the given ticks: a short click is a plain shot. */
+    public static void fire(ServerPlayer player, int usedTicks) {
         ItemStack staff = StaffSystems.mainStaff(player);
         if (staff.isEmpty()) return;
         BallConfig config = ServerConfig.BALL;
+        double share = BallMath.chargeShare(usedTicks, config.chargeTicks());
         if (ServerConfig.STAFF.consumeEnergy()) {
-            if (StaffSystems.stored(staff) < config.energy()) {
+            share = BallMath.affordableShare(share, StaffSystems.stored(staff), config.energy(), config.chargedEnergyFactor());
+            if (share < 0) {
                 StaffSounds.denied(player);
                 return;
             }
-            StaffSystems.consume(staff, config.energy());
+            StaffSystems.consume(staff, Math.round(BallMath.charged(config.energy(), config.chargedEnergyFactor(), share)));
         }
         StaffSystems.endCloak(player);
-        Vec3 look = player.getViewVector(1f);
-        Vec3 start = player.getEyePosition(1f).add(look.scale(START_FORWARD)).add(0, -START_DOWN - EnergyBallEntity.SIZE / 2, 0);
+        // from the crystal, where it was charged, to what the player aims at
+        Vec3 eye = player.getEyePosition(1f);
+        Vec3 crystal = BeamAim.crystal(player, player.getMainArm(), 1f);
+        Vec3 start = BeamAim.canSee(player, eye, crystal) ? crystal : eye;
+        Vec3 aim = BeamAim.end(player, config.range(), 1f);
+        Vec3 direction = aim.distanceToSqr(start) > MIN_AIM_DISTANCE_SQR ? aim.subtract(start).normalize() : player.getViewVector(1f);
         EnergyBallEntity ball = new EnergyBallEntity(player.level());
         ball.setOwner(player);
-        ball.setPos(start);
-        ball.setDeltaMovement(look.scale(config.speed()));
+        ball.setCharge((float) share);
+        ball.setPos(start.subtract(0, EnergyBallEntity.SIZE / 2, 0));
+        ball.setDeltaMovement(direction.scale(config.speed()));
         player.level().addFreshEntity(ball);
         StaffSounds.ballLaunched(player);
         StaffCompat.cooldown(player, staff, config.cooldownTicks());
     }
 
     /** Everything the blast reaches takes damage, except the shooter and what is behind blocks. */
-    public static void explode(ServerLevel level, Entity ball, Entity owner, Vec3 center) {
+    public static void explode(ServerLevel level, Entity ball, Entity owner, Vec3 center, double charge) {
         BallConfig config = ServerConfig.BALL;
-        double radius = config.radius();
+        double radius = BallMath.charged(config.radius(), config.chargedRadiusFactor(), charge);
+        double damage = BallMath.charged(config.damage(), config.chargedDamageFactor(), charge);
         DamageSource source = ball.damageSources().explosion(ball, owner);
         AABB area = new AABB(center, center).inflate(radius);
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, area, e -> e != owner && e.isAlive() && !e.isSpectator())) {
             Vec3 targetCenter = BeamAim.center(target);
             double share = BallMath.blastShare(targetCenter.distanceTo(center), radius, config.edgeDamage());
             if (share <= 0 || !BeamAim.canSee(ball, center, targetCenter)) continue;
-            if (StaffCompat.hurt(target, source, (float) (config.damage() * share))) {
+            if (StaffCompat.hurt(target, source, (float) (damage * share))) {
                 Vec3 away = targetCenter.subtract(center).normalize().scale(config.knockback() * share);
                 StaffCompat.launch(target, target.getDeltaMovement().add(away.x, away.y + KNOCKBACK_LIFT * share, away.z));
             }

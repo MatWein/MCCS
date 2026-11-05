@@ -41,7 +41,7 @@ public abstract class EnergyBallBase extends Projectile {
             HitResult hit = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
             if (hit.getType() != HitResult.Type.MISS) {
                 Entity owner = getOwner();
-                StaffBall.explode(server, this, owner, hit.getLocation());
+                StaffBall.explode(server, this, owner, hit.getLocation(), charge());
                 discard();
                 return;
             }
@@ -51,6 +51,11 @@ public abstract class EnergyBallBase extends Projectile {
         }
         setPos(position().add(motion));
     }
+
+    /** How much the ball was charged up, from 0 to 1. */
+    public abstract float charge();
+
+    public abstract void setCharge(float charge);
 
     /** Its shooter and other balls are no targets. */
     @Override

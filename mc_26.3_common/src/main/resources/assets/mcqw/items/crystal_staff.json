@@ -1,6 +1,16 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "mcqw:item/crystal_staff"
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "mcqw:item/crystal_staff"
+    },
+    "entries": [
+      { "threshold": 1, "model": { "type": "minecraft:model", "model": "mcqw:item/crystal_staff_medium" } },
+      { "threshold": 2, "model": { "type": "minecraft:model", "model": "mcqw:item/crystal_staff_dim" } },
+      { "threshold": 3, "model": { "type": "minecraft:model", "model": "mcqw:item/crystal_staff_low" } }
+    ]
   }
 }

@@ -4,6 +4,7 @@
   "package": "de.mcqw.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "EntityMixin",
     "LivingEntityMixin",
     "MobMixin"
   ],

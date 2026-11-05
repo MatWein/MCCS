@@ -4,6 +4,7 @@ import com.mojang.renderpearl.api.commands.RenderPass;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.mcqw.mc.client.render.BeamRenderer;
 import de.mcqw.mc.client.render.BubbleRenderer;
+import de.mcqw.mc.client.render.CrystalRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
@@ -35,5 +36,6 @@ abstract class LevelRendererMixin {
     private void mcqw$submitShields(PoseStack poseStack, LevelRenderState state, SubmitNodeCollector output, CallbackInfo ci) {
         BubbleRenderer.submit(poseStack, output, state.cameraRenderState.pos);
         BeamRenderer.submit(poseStack, output, state.cameraRenderState.pos);
+        CrystalRenderer.submit(poseStack, output, state.cameraRenderState.pos);
     }
 }

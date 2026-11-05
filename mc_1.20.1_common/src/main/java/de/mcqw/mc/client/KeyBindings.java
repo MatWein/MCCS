@@ -11,5 +11,7 @@ public final class KeyBindings {
 
     public static final KeyMapping CLOAK = new KeyMapping("key.mcqw.cloak", GLFW.GLFW_KEY_C, CATEGORY);
 
+    public static final KeyMapping TELEPORT = new KeyMapping("key.mcqw.teleport", GLFW.GLFW_KEY_R, CATEGORY);
+
     private KeyBindings() {}
 }

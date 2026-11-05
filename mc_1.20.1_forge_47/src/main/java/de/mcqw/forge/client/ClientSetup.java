@@ -40,6 +40,7 @@ public final class ClientSetup {
     public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
         event.register(KeyBindings.SHIELD);
         event.register(KeyBindings.CLOAK);
+        event.register(KeyBindings.TELEPORT);
     }
 
     @SubscribeEvent

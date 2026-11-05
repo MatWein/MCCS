@@ -27,6 +27,19 @@ final class StaffSounds {
         level.playSound(null, position.x, position.y, position.z, StaffCompat.explodeSound(), SoundSource.PLAYERS, 2.0f, 1.3f);
     }
 
+    static void ballCharging(ServerPlayer player, float pitch) {
+        play(player, SoundEvents.AMETHYST_BLOCK_CHIME, 1.0f, pitch);
+    }
+
+    static void ballFullyCharged(ServerPlayer player) {
+        play(player, SoundEvents.BEACON_POWER_SELECT, 0.6f, 1.6f);
+    }
+
+    /** At the given place, for the start and the end of a teleport. */
+    static void teleported(Level level, Vec3 position) {
+        level.playSound(null, position.x, position.y, position.z, SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.2f);
+    }
+
     static void shieldHit(ServerPlayer player) {
         play(player, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.8f, 1.6f);
     }

@@ -1,8 +1,10 @@
 package de.mcqw.mc.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.mcqw.core.config.ServerConfig;
 import de.mcqw.core.render.EnergyBubble;
 import de.mcqw.core.render.EnergyOrb;
+import de.mcqw.core.staff.BallMath;
 import de.mcqw.mc.Mcqw;
 import de.mcqw.mc.entity.EnergyBallBase;
 import de.mcqw.mc.entity.EnergyBallEntity;
@@ -26,7 +28,7 @@ public final class EnergyBallRenderer extends EntityRenderer<EnergyBallEntity> {
     private static final int FULL_BLOCK_LIGHT = 15;
     private static final List<Pending> PENDING = new ArrayList<>();
 
-    private record Pending(Matrix4f pose, Matrix3f normal, float time) {}
+    private record Pending(Matrix4f pose, Matrix3f normal, float time, float charge) {}
 
     public EnergyBallRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -48,8 +50,10 @@ public final class EnergyBallRenderer extends EntityRenderer<EnergyBallEntity> {
     public void render(EnergyBallEntity ball, float yaw, float partialTick, PoseStack poseStack, MultiBufferSource buffers, int light) {
         poseStack.pushPose();
         poseStack.translate(0, EnergyBallBase.SIZE / 2, 0);
+        float size = (float) BallMath.charged(1.0, ServerConfig.BALL.chargedSizeFactor(), ball.charge());
+        poseStack.scale(size, size, size);
         PoseStack.Pose pose = poseStack.last();
-        PENDING.add(new Pending(new Matrix4f(pose.pose()), new Matrix3f(pose.normal()), ball.tickCount + partialTick));
+        PENDING.add(new Pending(new Matrix4f(pose.pose()), new Matrix3f(pose.normal()), ball.tickCount + partialTick, ball.charge()));
         poseStack.popPose();
         super.render(ball, yaw, partialTick, poseStack, buffers, light);
     }
@@ -62,17 +66,23 @@ public final class EnergyBallRenderer extends EntityRenderer<EnergyBallEntity> {
         for (Pending ball : PENDING) {
             poseStack.last().pose().set(undoCamera).mul(ball.pose());
             poseStack.last().normal().set(undoCameraNormal).mul(ball.normal());
-            draw(EnergyOrb.SHELL, EnergyOrb.SHELL_INTENSITY, poseStack.last(), buffers, ball.time());
-            draw(EnergyOrb.CORE, EnergyOrb.CORE_INTENSITY, poseStack.last(), buffers, ball.time());
+            drawOrb(poseStack.last(), buffers, ball.time(), ball.charge());
         }
         PENDING.clear();
     }
 
-    private static void draw(EnergyBubble.Shape shape, float intensity, PoseStack.Pose pose, MultiBufferSource buffers, float time) {
+    /** The ball at the pose; also used while it is being charged at the staff. */
+    static void drawOrb(PoseStack.Pose pose, MultiBufferSource buffers, float time, float charge) {
+        float[] color = EnergyOrb.color(charge);
+        draw(EnergyOrb.SHELL, EnergyOrb.SHELL_INTENSITY, pose, buffers, time, color);
+        draw(EnergyOrb.CORE, EnergyOrb.CORE_INTENSITY, pose, buffers, time, color);
+    }
+
+    private static void draw(EnergyBubble.Shape shape, float intensity, PoseStack.Pose pose, MultiBufferSource buffers, float time, float[] color) {
         EnergyBubble.Grid grid = EnergyBubble.compute(shape, RenderSinks.view(pose), EnergyOrb.WOBBLE, time);
         for (EnergyBubble.Layer layer : EnergyBubble.LAYERS) {
             RenderType type = ModRenderTypes.energyBubble(TEXTURE, time * layer.uDrift(), time * layer.vDrift());
-            EnergyBubble.emitLayer(grid, layer, RenderSinks.sink(pose, buffers.getBuffer(type), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY), intensity);
+            EnergyBubble.emitLayer(grid, layer, RenderSinks.sink(pose, buffers.getBuffer(type), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY), intensity, color[0], color[1], color[2]);
         }
     }
 }

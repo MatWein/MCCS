@@ -26,6 +26,7 @@ forge*changelog.txt
 run-data
 run-gametest
 run-server
+run-dev-server
 
 # python
 __pycache__

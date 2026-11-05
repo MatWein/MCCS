@@ -1,6 +1,8 @@
 package de.mcqw.mc.staff;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
@@ -12,6 +14,11 @@ import java.util.Optional;
 
 /** Where the lightning goes; on the server for the hits, on the clients for the picture. */
 public final class BeamAim {
+    private static final double CRYSTAL_RIGHT = 0.43;
+    private static final double CRYSTAL_FORWARD = 0.2;
+    private static final double CRYSTAL_UP = 1.67;
+    private static final double CROUCH_DROP = 0.3;
+
     private BeamAim() {}
 
     /** The end of the player's aim: the first block, or the end of the range. */
@@ -37,6 +44,18 @@ public final class BeamAim {
             }
         }
         return nearest;
+    }
+
+    /** Where the crystal of a staff in the given arm is, seen from outside; from the third person pose in tools/make_staff_assets.py. */
+    public static Vec3 crystal(Player player, HumanoidArm arm, float partialTick) {
+        float yaw = Mth.rotLerp(partialTick, player.yBodyRotO, player.yBodyRot) * Mth.DEG_TO_RAD;
+        double side = arm == HumanoidArm.LEFT ? -CRYSTAL_RIGHT : CRYSTAL_RIGHT;
+        double forwardX = -Mth.sin(yaw);
+        double forwardZ = Mth.cos(yaw);
+        double rightX = -Mth.cos(yaw);
+        double rightZ = -Mth.sin(yaw);
+        double up = CRYSTAL_UP - (player.isCrouching() ? CROUCH_DROP : 0);
+        return player.getPosition(partialTick).add(forwardX * CRYSTAL_FORWARD + rightX * side, up, forwardZ * CRYSTAL_FORWARD + rightZ * side);
     }
 
     public static Vec3 center(Entity entity) {

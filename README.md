@@ -6,8 +6,17 @@ store energy from Mekanism and other mods. It runs on its own; other mods are op
 The staff is carried upright like a shepherd's staff, held near its middle and reaching from the ground to the top
 of the head.
 
-Get it from the creative inventory, tab **Combat**: a new staff (20 % charge) and a fully charged one. The search only
-shows the new one.
+Craft it from 2 emeralds in the middle column with a diamond on top and redstone dust left and right of the diamond:
+
+```
+R D R
+  E
+  E
+```
+
+In the creative inventory, tab **Combat**, there are a new staff (20 % charge) and a fully charged one; the search only shows
+the new one. The crystal in your hand glows according to the charge, crackles with small arcs from 60 % and turns red below 10 %; the
+item has an energy bar.
 
 ## Shield, cloak, lightning and energy ball
 
@@ -36,7 +45,14 @@ cloak.
 **Energy ball (right click, staff in the main hand).** A slow ball of energy flies up to 128 blocks in a straight line and
 explodes on the first block or entity. The explosion deals up to 40 damage within 4 blocks and throws things away from it, but never
 breaks blocks or destroys items, and it does not hurt you. A shot costs 30,000 FE and ends the cloak; the staff then needs 2 seconds
-until the next one.
+until the next one. Holding the key charges it for up to 2 seconds: the ball grows at the crystal, and a fully charged one turns yellow,
+is twice as large and deals 3 times the damage over 1.5 times the radius, for 3 times the energy. You walk slowly while charging.
+
+**Teleport (`R`, staff in a hand).** You jump to where you look, up to 30 blocks away, stopping before the first block. It costs
+20,000 FE and takes 3 seconds until the next one; without room to stand there it fails.
+
+**Lightning strikes** charge a staff you hold by 20 % of its capacity. During thunderstorms, natural lightning within 32 blocks strikes
+a player with an active shield under open sky, who can use that to charge without any other mods.
 
 A small panel at the bottom left shows the charge and both systems while you hold the staff, and also the consumption and
 remaining time while they use energy. The time ignores the extra drain under fire.
@@ -68,7 +84,9 @@ Settings live in `world/serverconfig/mcqw-server.toml` on Forge, in `config/mcqw
 The lightning has its own section `[beam]`, with `damagePerSecond`, `hitsPerSecond`, `range`, `aimTolerance`, `drain` (500 FE/t,
 about 8 minutes of firing on a full staff), `chainTargets`, `chainRange`, `chainFalloff`, `chargeSeconds`, `chargeStart`, `chargeMax`,
 `wetDamageFactor`, `wetChainRangeFactor`, `slowTicks`, `slowLevel` and `fireSeconds`. The energy ball is in `[energyBall]`: `damage`,
-`radius`, `edgeDamage`, `knockback`, `speed`, `range`, `energy` and `cooldownTicks`.
+`radius`, `edgeDamage`, `knockback`, `speed`, `range`, `energy`, `cooldownTicks`, `chargeTicks` and `chargedDamageFactor` / `chargedRadiusFactor` /
+`chargedSizeFactor` / `chargedEnergyFactor`. The teleport is in `[teleport]`: `range`, `energy` and `cooldownTicks`. `[staff]` also has `lightningCharge` and
+`lightningAttractRange`.
 
 ## Building
 
@@ -100,7 +118,7 @@ Gradle 9 runs on Java 25 (Gradle finds or downloads it, as well as Java 17 for t
 ```
 
 The Forge module also loads every mod jar in `mc_1.20.1_forge_47/run-server/mods/` into its development runs, for
-testing integrations such as Mekanism.
+testing integrations such as Mekanism. Its development server runs in `run-dev-server/`.
 
 ## Model
 

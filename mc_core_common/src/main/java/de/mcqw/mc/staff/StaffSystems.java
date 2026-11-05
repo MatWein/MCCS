@@ -98,6 +98,10 @@ public final class StaffSystems {
             StaffBeam.stop(player);
             return;
         }
+        if (system == StaffAction.TELEPORT) {
+            StaffTeleport.perform(player);
+            return;
+        }
         ItemStack active = active(player, system);
         if (!active.isEmpty()) {
             setOn(player, active, system, false);

@@ -19,6 +19,7 @@ ASSETS = ROOT / "core/src/main/resources/assets/mcqw"
 TEXTURE = ASSETS / "textures/item/crystal_staff.png"
 ICON = ASSETS / "icon.png"
 BEAM = ASSETS / "textures/entity/beam.png"
+CRYSTAL_GLOW = ASSETS / "textures/entity/crystal_glow.png"
 
 # Staff axis and vertical extent. Minecraft allows element coordinates from -16 to 32.
 AXIS = 8.0
@@ -174,6 +175,9 @@ def write_model():
         "textures": {"staff": "mcqw:item/crystal_staff", "particle": "mcqw:item/crystal_staff"},
         "elements": elements(),
         "display": display(),
+        # Minecraft 1.20.1 selects the crystal's look here; 26.3 does it in items/crystal_staff.json and ignores this
+        "overrides": [{"predicate": {"custom_model_data": threshold}, "model": f"mcqw:item/crystal_staff_{name}"}
+                      for name, threshold in LOOK_THRESHOLDS.items()],
     }
     MODEL.parent.mkdir(parents=True, exist_ok=True)
     MODEL.write_text(json.dumps(model, indent=1) + "\n")
@@ -184,6 +188,31 @@ def fill(pixels, region, color_at):
     for y in range(y0, y1):
         for x in range(x0, x1):
             pixels[x, y] = (*color_at(x - x0, y - y0), 255)
+
+
+# The crystal's looks by charge (StaffEnergy.crystalLook): model suffix and what happens to its color.
+CRYSTAL_LOOKS = {
+    "medium": lambda r, g, b: (int(r * 0.7), int(g * 0.7), int(b * 0.75)),
+    "dim": lambda r, g, b: (int(r * 0.4), int(g * 0.42), int(b * 0.5)),
+    "low": lambda r, g, b: (min(255, int(b * 0.95)), int(g * 0.28), int(r * 0.35)),
+}
+LOOK_THRESHOLDS = {"medium": 1, "dim": 2, "low": 3}
+
+
+def write_looks(image):
+    """A texture and a model per look; the model only swaps the texture of the base model."""
+    x0, y0, x1, y1 = CRYSTAL
+    for name, recolor in CRYSTAL_LOOKS.items():
+        look = image.copy()
+        pixels = look.load()
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                r, g, b, a = pixels[x, y]
+                pixels[x, y] = (*recolor(r, g, b), a)
+        look.save(TEXTURE.parent / f"crystal_staff_{name}.png")
+        texture = f"mcqw:item/crystal_staff_{name}"
+        model = {"parent": "mcqw:item/crystal_staff", "textures": {"staff": texture, "particle": texture}}
+        (MODEL.parent / f"crystal_staff_{name}.json").write_text(json.dumps(model, indent=1) + "\n")
 
 
 def write_texture():
@@ -229,6 +258,7 @@ def write_texture():
     fill(pixels, CRYSTAL, crystal)
     TEXTURE.parent.mkdir(parents=True, exist_ok=True)
     image.save(TEXTURE)
+    write_looks(image)
 
 
 def write_beam():
@@ -243,6 +273,20 @@ def write_beam():
             pixels[x, y] = (value, value, value, 255)
     BEAM.parent.mkdir(parents=True, exist_ok=True)
     image.save(BEAM)
+
+
+def write_crystal_glow():
+    """The crystal's halo: bright in the middle, fading to nothing (black, it is drawn additively) at the edge."""
+    size = 32
+    image = Image.new("RGBA", (size, size))
+    pixels = image.load()
+    for y in range(size):
+        for x in range(size):
+            distance = math.hypot(x + 0.5 - size / 2, y + 0.5 - size / 2) / (size / 2)
+            value = int(255 * max(0.0, 1 - distance) ** 2)
+            pixels[x, y] = (value, value, value, 255)
+    CRYSTAL_GLOW.parent.mkdir(parents=True, exist_ok=True)
+    image.save(CRYSTAL_GLOW)
 
 
 def write_icon():
@@ -264,3 +308,4 @@ if __name__ == "__main__":
     write_texture()
     write_icon()
     write_beam()
+    write_crystal_glow()

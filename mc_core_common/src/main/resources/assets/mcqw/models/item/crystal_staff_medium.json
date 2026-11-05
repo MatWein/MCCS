@@ -1,0 +1,7 @@
+{
+ "parent": "mcqw:item/crystal_staff",
+ "textures": {
+  "staff": "mcqw:item/crystal_staff_medium",
+  "particle": "mcqw:item/crystal_staff_medium"
+ }
+}

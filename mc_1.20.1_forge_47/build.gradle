@@ -30,7 +30,8 @@ legacyForge {
         }
         server {
             server()
-            gameDirectory = file('run-server')
+            // not run-server: the jars in run-server/mods are loaded through the dependencies below, under the dev names
+            gameDirectory = file('run-dev-server')
             programArgument '--nogui'
         }
     }
