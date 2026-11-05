@@ -31,6 +31,15 @@ final class ModRenderTypes {
             .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
             .build();
 
+    /** The same seen from inside, where culling would remove it. */
+    private static final RenderPipeline BUBBLE_INSIDE = RenderPipeline.builder(RenderPipelines.ENERGY_SWIRL_SNIPPET)
+            .withLocation(Mcqw.id("pipeline/energy_bubble_inside"))
+            .withFragmentShader(ADDITIVE_FRAGMENT_SHADER)
+            .withColorTargetState(new ColorTargetState(BlendFunction.ADDITIVE))
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
+            .withCull(false)
+            .build();
+
     /** Glowing parts (the cloaked player's outline): full bright and additive like vanilla's "eyes" up to 1.21. */
     private static final RenderPipeline GLOW = RenderPipeline.builder(RenderPipelines.ENTITY_NO_LIGHTMAP_SNIPPET, RenderPipelines.EYES_SNIPPET)
             .withLocation(Mcqw.id("pipeline/glow"))
@@ -50,7 +59,15 @@ final class ModRenderTypes {
     }
 
     static RenderType energyBubble(Identifier texture, float uOffset, float vOffset) {
-        return RenderType.create("mcqw_bubble", RenderSetup.builder(BUBBLE)
+        return energyBubble(BUBBLE, texture, uOffset, vOffset);
+    }
+
+    static RenderType energyBubbleInside(Identifier texture, float uOffset, float vOffset) {
+        return energyBubble(BUBBLE_INSIDE, texture, uOffset, vOffset);
+    }
+
+    private static RenderType energyBubble(RenderPipeline pipeline, Identifier texture, float uOffset, float vOffset) {
+        return RenderType.create("mcqw_bubble", RenderSetup.builder(pipeline)
                 .withTexture("Sampler0", texture)
                 .setTextureTransform(new TextureTransform.OffsetTextureTransform(uOffset, vOffset))
                 .useLightmap()

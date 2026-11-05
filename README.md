@@ -15,7 +15,7 @@ boat, jumper, ...) pauses them and hides the panel, afterwards they resume. Both
 *Options → Controls → MCQW*. The sounds are those of MCPJ's jumper.
 
 **Shield (`V`).** A bubble around the player absorbs all damage except `/kill` and the void, without damage sounds.
-Hits make it flash and sound. Your own bubble is not visible from inside in first person.
+Hits make it flash and sound. In first person your own bubble only shows when it is hit.
 
 **Cloak (`C`).** After half a second you are invisible to others including armor and items, apart from a very faint energy
 bubble; you yourself see a faint glowing outline of your body in third person. Mobs lose track of you and cannot target
@@ -38,12 +38,12 @@ Settings live in `world/serverconfig/mcqw-server.toml` on Forge, in `config/mcqw
 | Setting (`[staff]`) | Default | |
 |---|---|---|
 | `consumeEnergy` | `true` | `false`: shield and cloak run for free, even when the staff is empty |
-| `capacity` | 1,000,000 FE | |
+| `capacity` | 5,000,000 FE | |
 | `startCharge` | 0.2 | charge of a new staff |
 | `maxReceive` | 10,000 FE/t | fastest charging from other mods |
-| `shieldDrain` | 50 FE/t | about 17 minutes on a full staff |
+| `shieldDrain` | 50 FE/t | about 83 minutes on a full staff |
 | `shieldWaterFactor` / `shieldLavaFactor` | 2 / 3 | shield drain under water / touching lava |
-| `shieldHitCost` | 20 FE | per point of absorbed damage |
+| `shieldHitCost` | 2,000 FE | per point of absorbed damage |
 | `cloakDrain` | 40 FE/t | |
 | `cloakWaterFactor` / `cloakLavaFactor` | 1.5 / 2 | cloak drain under water / touching lava |
 | `underFireFactor` / `underFireSeconds` | 2 / 2 s | shield and cloak drain after being hit |

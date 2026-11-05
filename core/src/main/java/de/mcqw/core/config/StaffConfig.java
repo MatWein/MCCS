@@ -23,7 +23,7 @@ public final class StaffConfig {
         consumeEnergy = builder.comment("Whether shield and cloak use energy; if false they run for free, even when the staff is empty")
                 .define("consumeEnergy", true);
         capacity = builder.comment("Energy storage (FE)")
-                .defineInRange("capacity", 1_000_000, 1, MAX_FE);
+                .defineInRange("capacity", 5_000_000, 1, MAX_FE);
         startCharge = builder.comment("Charge of a new staff (share of the capacity)")
                 .defineInRange("startCharge", 0.2, 0.0, 1.0);
         maxReceive = builder.comment("Fastest charging from other mods (FE/tick)")
@@ -35,7 +35,7 @@ public final class StaffConfig {
         shieldLavaFactor = builder.comment("Shield drain multiplier when touching lava")
                 .defineInRange("shieldLavaFactor", 3.0, 1.0, 100.0);
         shieldHitCost = builder.comment("Extra energy per point of absorbed damage (FE)")
-                .defineInRange("shieldHitCost", 20, 0, MAX_FE);
+                .defineInRange("shieldHitCost", 2_000, 0, MAX_FE);
         cloakDrain = builder.comment("Cloak drain while active (FE/tick)")
                 .defineInRange("cloakDrain", 40, 0, MAX_FE);
         cloakWaterFactor = builder.comment("Cloak drain multiplier when under water")

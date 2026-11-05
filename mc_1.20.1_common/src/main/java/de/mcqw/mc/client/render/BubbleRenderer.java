@@ -50,22 +50,32 @@ public final class BubbleRenderer {
             Player player = bubble.getKey();
             BubbleAnimation animation = bubble.getValue();
             float shield = animation.shield(partialTick);
-            float intensity = EnergyBubble.intensity(shield, animation.cloak(partialTick), animation.flash(partialTick), player == Minecraft.getInstance().player);
+            boolean inside = isInside(player);
+            float intensity = inside ? EnergyBubble.insideIntensity(shield, animation.flash(partialTick))
+                    : EnergyBubble.intensity(shield, animation.cloak(partialTick), animation.flash(partialTick), player == Minecraft.getInstance().player);
             if (!EnergyBubble.isVisible(intensity)) continue;
             Vec3 position = player.getPosition(partialTick).subtract(cameraPosition);
             poseStack.pushPose();
             poseStack.translate(position.x, position.y, position.z);
-            draw(poseStack.last(), buffers, intensity, EnergyBubble.wobble(shield), player.tickCount + partialTick);
+            draw(poseStack.last(), buffers, intensity, EnergyBubble.wobble(shield), player.tickCount + partialTick, inside);
             poseStack.popPose();
         }
         buffers.endBatch();
     }
 
+    /** The camera sits inside the bubble of the player it belongs to in first person. */
+    private static boolean isInside(Player player) {
+        Minecraft minecraft = Minecraft.getInstance();
+        return player == minecraft.player && minecraft.getCameraEntity() == player && minecraft.options.getCameraType().isFirstPerson();
+    }
+
     /** Several additive layers drifting at different speeds. */
-    private static void draw(PoseStack.Pose pose, MultiBufferSource buffers, float intensity, float wobble, float time) {
+    private static void draw(PoseStack.Pose pose, MultiBufferSource buffers, float intensity, float wobble, float time, boolean inside) {
         EnergyBubble.Grid grid = EnergyBubble.compute(RenderSinks.view(pose), wobble, time);
         for (EnergyBubble.Layer layer : EnergyBubble.LAYERS) {
-            RenderType type = ModRenderTypes.energyBubble(TEXTURE, time * layer.uDrift(), time * layer.vDrift());
+            float u = time * layer.uDrift();
+            float v = time * layer.vDrift();
+            RenderType type = inside ? ModRenderTypes.energyBubbleInside(TEXTURE, u, v) : ModRenderTypes.energyBubble(TEXTURE, u, v);
             EnergyBubble.emitLayer(grid, layer, RenderSinks.sink(pose, buffers.getBuffer(type), LightTexture.FULL_BRIGHT,
                     OverlayTexture.NO_OVERLAY), intensity);
         }

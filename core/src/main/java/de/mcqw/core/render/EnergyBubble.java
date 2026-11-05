@@ -32,6 +32,8 @@ public final class EnergyBubble {
     private static final float SHIELD_FLASH_INTENSITY = 0.6f;
     private static final float CLOAK_INTENSITY_OWN = 0.2f;
     private static final float CLOAK_INTENSITY_OTHERS = 0.09f;
+    /** Stronger than the flash outside: from inside one looks straight at the surface, where the fresnel term is weakest. */
+    private static final float INSIDE_FLASH_INTENSITY = 3f;
     private static final float SHIELD_WOBBLE = 0.02f;
     private static final float MIN_BUBBLE_INTENSITY = 0.005f;
 
@@ -118,6 +120,11 @@ public final class EnergyBubble {
         float shieldIntensity = shield * (SHIELD_BASE_INTENSITY + SHIELD_FLASH_INTENSITY * shieldFlash);
         float cloakIntensity = cloak * (1 - shield) * (own ? CLOAK_INTENSITY_OWN : CLOAK_INTENSITY_OTHERS);
         return shieldIntensity + cloakIntensity;
+    }
+
+    /** Brightness of the own shield seen from inside in first person: it only shows when it is hit. */
+    public static float insideIntensity(float shield, float shieldFlash) {
+        return shield * INSIDE_FLASH_INTENSITY * shieldFlash;
     }
 
     /** Brightness of the faint outline players see of themselves while cloaked. */

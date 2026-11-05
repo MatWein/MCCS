@@ -19,6 +19,15 @@ final class ModRenderTypes extends RenderType {
      * so the bubble does not hide translucent blocks rendered later (ice, water, glass).
      */
     static RenderType energyBubble(ResourceLocation texture, float uOffset, float vOffset) {
+        return energyBubble(texture, uOffset, vOffset, CULL);
+    }
+
+    /** The same seen from inside, where culling would remove it. */
+    static RenderType energyBubbleInside(ResourceLocation texture, float uOffset, float vOffset) {
+        return energyBubble(texture, uOffset, vOffset, NO_CULL);
+    }
+
+    private static RenderType energyBubble(ResourceLocation texture, float uOffset, float vOffset, CullStateShard cull) {
         return create("mcqw_bubble", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, BUFFER_SIZE, false, true,
                 RenderType.CompositeState.builder()
                         .setShaderState(RENDERTYPE_ENERGY_SWIRL_SHADER)
@@ -28,6 +37,7 @@ final class ModRenderTypes extends RenderType {
                         .setWriteMaskState(COLOR_WRITE)
                         .setLightmapState(LIGHTMAP)
                         .setOverlayState(OVERLAY)
+                        .setCullState(cull)
                         .createCompositeState(false));
     }
 }
