@@ -64,7 +64,7 @@ public final class StaffEffects {
         float[] right = {-basis[2][0], -basis[2][1], -basis[2][2]};
         for (Player player : minecraft.level.players()) {
             ItemStack staff = StaffSystems.heldStaff(player);
-            if (staff.isEmpty() || StaffClient.isHidden(player) && player != minecraft.player) continue;
+            if (staff.isEmpty() || StaffClient.isHidden(player)) continue;
             float scale = BeamClient.isFirstPerson(minecraft, player) ? FIRST_PERSON_SCALE : 1f;
             Vec3 crystal = BeamClient.crystal(minecraft, camera, player, arm(player, staff), cameraPosition, partialTick);
             float[] center = {(float) (crystal.x - cameraPosition.x), (float) (crystal.y - cameraPosition.y), (float) (crystal.z - cameraPosition.z)};

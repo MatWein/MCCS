@@ -9,11 +9,10 @@
     "MobMixin"
   ],
   "client": [
-    "AvatarRendererMixin",
     "EntityRenderDispatcherMixin",
+    "GameRendererMixin",
     "HumanoidModelMixin",
     "LevelRendererMixin",
-    "LivingEntityRendererMixin",
     "MinecraftMixin"
   ],
   "injectors": {

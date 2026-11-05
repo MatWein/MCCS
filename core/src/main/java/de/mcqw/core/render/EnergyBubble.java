@@ -146,9 +146,6 @@ public final class EnergyBubble {
         return shield * INSIDE_FLASH_INTENSITY * shieldFlash;
     }
 
-    /** Brightness of the faint outline players see of themselves while cloaked. */
-    public static final float GHOST_BRIGHTNESS = 0.22f;
-
     public static float wobble(float shield) {
         return SHIELD_WOBBLE * shield;
     }

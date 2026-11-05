@@ -62,15 +62,15 @@ public final class StaffClient {
         return BUBBLES;
     }
 
-    /** Whether this entity is the local player, cloaked: they see a ghost of themselves. */
-    public static boolean isOwnGhost(int entityId) {
-        Player player = Minecraft.getInstance().player;
-        return player != null && player.getId() == entityId && isHidden(player);
-    }
-
     /** Whether the cloak hides this player's body and everything they carry. */
     public static boolean isHidden(Player player) {
         BubbleAnimation animation = BUBBLES.get(player);
         return animation != null && animation.isHidden();
+    }
+
+    /** Whether the cloak hides the local player's own first person hand and what it holds. */
+    public static boolean hidesOwnHand() {
+        Player player = Minecraft.getInstance().player;
+        return player != null && isHidden(player);
     }
 }

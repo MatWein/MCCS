@@ -22,11 +22,6 @@ public final class BubbleRenderer {
 
     private BubbleRenderer() {}
 
-    /** The glow render type for the mixin drawing the cloaked player's outline. */
-    public static RenderType glow(Identifier texture) {
-        return ModRenderTypes.glow(texture);
-    }
-
     public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Vec3 cameraPosition) {
         Map<Player, BubbleAnimation> bubbles = StaffClient.bubbles();
         if (bubbles.isEmpty()) return;

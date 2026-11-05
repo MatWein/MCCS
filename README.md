@@ -28,8 +28,8 @@ when the staff is put away: shield and cloak pause and resume afterwards, the pa
 Hits make it flash and sound. In first person your own bubble only shows when it is hit.
 
 **Cloak (`C`).** After half a second you are invisible to others including armor and items, apart from a very faint energy
-bubble; you yourself see a faint glowing outline of your body in third person. Mobs lose track of you and cannot target
-you. You remain solid, and sounds you make can still be heard. Attacking with the staff in your main hand ends the cloak.
+bubble. You do not see yourself either, not even your hand and the staff in first person, and the crystal does not glow. Mobs lose
+track of you and cannot target you. You remain solid, and sounds you make can still be heard. Attacking with the staff in your main hand ends the cloak.
 
 **Lightning (hold the attack key, staff in the main hand).** A flickering lightning runs from the crystal to what you aim
 at, up to 24 blocks away, and keeps running as long as you hold the key; it ends at the first block or in the air without

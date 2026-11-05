@@ -15,7 +15,7 @@ import net.minecraft.resources.Identifier;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** MCQW's own render types (glow, lightning and shield bubble). */
+/** MCQW's own render types (lightning, crystal light and shield bubble). */
 final class ModRenderTypes {
     // All of them are additive: with "improved transparency" they use vanilla's OIT pipelines for additive surfaces.
     /** Fades additive colors out in fog instead of adding the fog color (assets/mcqw/shaders/core/additive.fsh). */
@@ -41,14 +41,7 @@ final class ModRenderTypes {
             .withCull(false)
             .build();
 
-    /** Glowing parts (the cloaked player's outline): full bright and additive like vanilla's "eyes" up to 1.21. */
-    private static final RenderPipeline GLOW = RenderPipeline.builder(RenderPipelines.ENTITY_NO_LIGHTMAP_SNIPPET, RenderPipelines.EYES_SNIPPET)
-            .withLocation(Mcqw.id("pipeline/glow"))
-            .withFragmentShader(ADDITIVE_FRAGMENT_SHADER)
-            .withColorTargetState(new ColorTargetState(BlendFunction.ADDITIVE))
-            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
-            .build();
-    /** The staff's lightning: like the glow, visible from both sides. */
+    /** The staff's lightning and the crystal's light: full bright and additive like vanilla's "eyes" up to 1.21, visible from both sides. */
     private static final RenderPipeline BEAM = RenderPipeline.builder(RenderPipelines.ENTITY_NO_LIGHTMAP_SNIPPET, RenderPipelines.EYES_SNIPPET)
             .withLocation(Mcqw.id("pipeline/beam"))
             .withFragmentShader(ADDITIVE_FRAGMENT_SHADER)
@@ -57,17 +50,8 @@ final class ModRenderTypes {
             .withCull(false)
             .build();
     private static final Map<Identifier, RenderType> BEAM_TYPES = new ConcurrentHashMap<>();
-    private static final Map<Identifier, RenderType> GLOW_TYPES = new ConcurrentHashMap<>();
 
     private ModRenderTypes() {}
-
-    static RenderType glow(Identifier texture) {
-        return GLOW_TYPES.computeIfAbsent(texture, t -> RenderType.create("mcqw_glow", RenderSetup.builder(GLOW)
-                .setOitPipelines(RenderPipelines.OIT_ENERGY_SWIRL)
-                .withTexture("Sampler0", t)
-                .sortOnUpload()
-                .createRenderSetup()));
-    }
 
     static RenderType beam(Identifier texture) {
         return BEAM_TYPES.computeIfAbsent(texture, t -> RenderType.create("mcqw_beam", RenderSetup.builder(BEAM)

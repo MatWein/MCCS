@@ -48,7 +48,7 @@ public final class BubbleAnimation {
         return Math.max(0, flash - partialTick) / FLASH_TICKS;
     }
 
-    /** Cloaked enough to be invisible to others (the player sees a ghost of themselves). */
+    /** Cloaked enough to be invisible: only the bubble is left. */
     public boolean isHidden() {
         return cloak > CLOAKED_THRESHOLD;
     }

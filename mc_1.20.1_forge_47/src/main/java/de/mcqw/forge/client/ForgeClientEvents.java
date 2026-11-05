@@ -5,8 +5,9 @@ import de.mcqw.mc.client.BeamClient;
 import de.mcqw.mc.client.StaffClient;
 import de.mcqw.mc.client.render.BubbleRenderer;
 import net.minecraftforge.api.distmarker.Dist;
-import de.mcqw.mc.client.render.CloakedPlayerRenderer;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.TickEvent;
@@ -32,12 +33,15 @@ public final class ForgeClientEvents {
         }
     }
 
+    /** A cloaked player is completely invisible, to others and in third person to themselves; only the bubble is left. */
     @SubscribeEvent
     public static void onRenderLiving(RenderLivingEvent.Pre<?, ?> event) {
-        if (CloakedPlayerRenderer.intercept(event.getRenderer(), event.getEntity(), event.getEntity().getYRot(), event.getPartialTick(), event.getPoseStack(),
-                event.getMultiBufferSource(), event.getPackedLight())) {
-            event.setCanceled(true);
-        }
+        if (event.getEntity() instanceof Player player && StaffClient.isHidden(player)) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void onRenderHand(RenderHandEvent event) {
+        if (StaffClient.hidesOwnHand()) event.setCanceled(true);
     }
 
     @SubscribeEvent
