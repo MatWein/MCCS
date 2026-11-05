@@ -1,3 +1,11 @@
 {
-  "item.mcqw.crystal_staff": "Crystal Staff"
+  "item.mcqw.crystal_staff": "Crystal Staff",
+  "key.categories.mcqw": "MCQW",
+  "key.category.mcqw.staff": "MCQW",
+  "key.mcqw.shield": "Toggle staff shield",
+  "hud.mcqw.title": "CRYSTAL STAFF",
+  "hud.mcqw.energy": "Energy: %s %%",
+  "hud.mcqw.shield": "Shield: %s",
+  "hud.mcqw.shield.on": "ACTIVE",
+  "hud.mcqw.shield.off": "off"
 }

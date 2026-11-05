@@ -4,7 +4,8 @@
   "package": "de.mcqw.mc.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "HumanoidModelMixin"
+    "HumanoidModelMixin",
+    "LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

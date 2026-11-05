@@ -16,6 +16,7 @@ def common = project(':mc_26.3_common')
 
 neoForge {
     version = neo_version
+    accessTransformers = files('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
         configureEach {
@@ -78,5 +79,8 @@ tasks.named('compileJava', JavaCompile).configure {
     source(common.sourceSets.main.allSource)
 }
 tasks.named('processResources', ProcessResources).configure {
-    from(common.sourceSets.main.resources)
+    from(common.sourceSets.main.resources) {
+        // Fabric's class tweaker; NeoForge uses the access transformer
+        exclude 'mcqw.classtweaker'
+    }
 }

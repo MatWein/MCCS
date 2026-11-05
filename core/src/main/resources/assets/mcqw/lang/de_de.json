@@ -1,3 +1,11 @@
 {
-  "item.mcqw.crystal_staff": "Kristallstab"
+  "item.mcqw.crystal_staff": "Kristallstab",
+  "key.categories.mcqw": "MCQW",
+  "key.category.mcqw.staff": "MCQW",
+  "key.mcqw.shield": "Stab-Schutzschild umschalten",
+  "hud.mcqw.title": "KRISTALLSTAB",
+  "hud.mcqw.energy": "Energie: %s %%",
+  "hud.mcqw.shield": "Schild: %s",
+  "hud.mcqw.shield.on": "AKTIV",
+  "hud.mcqw.shield.off": "aus"
 }

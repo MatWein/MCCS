@@ -1,0 +1,27 @@
+package de.mcqw.core.hud;
+
+/** Number and duration formatting for the HUD. */
+final class HudFormat {
+    private static final int THOUSAND = 1_000;
+    private static final int MILLION = 1_000_000;
+    private static final long TICKS_PER_SECOND = 20;
+    private static final long SECONDS_PER_MINUTE = 60;
+    private static final long SECONDS_PER_HOUR = 3_600;
+
+    private HudFormat() {}
+
+    static String compact(int value) {
+        if (value >= MILLION) return String.format("%.1fM", value / (float) MILLION);
+        if (value >= THOUSAND) return String.format("%.1fk", value / (float) THOUSAND);
+        return Integer.toString(value);
+    }
+
+    static String duration(long ticks) {
+        long seconds = ticks / TICKS_PER_SECOND;
+        if (seconds >= SECONDS_PER_HOUR) {
+            return seconds / SECONDS_PER_HOUR + " h " + (seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE + " min";
+        }
+        if (seconds >= SECONDS_PER_MINUTE) return seconds / SECONDS_PER_MINUTE + " min";
+        return seconds + " s";
+    }
+}

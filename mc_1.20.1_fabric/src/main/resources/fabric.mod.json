@@ -8,8 +8,10 @@
   "license": "All-Rights-Reserved",
   "icon": "assets/mcqw/icon.png",
   "environment": "*",
+  "accessWidener": "mcqw.accesswidener",
   "entrypoints": {
-    "main": ["de.mcqw.fabric.McqwFabric"]
+    "main": ["de.mcqw.fabric.McqwFabric"],
+    "client": ["de.mcqw.fabric.client.McqwFabricClient"]
   },
   "mixins": ["mcqw.mixins.json"],
   "depends": {

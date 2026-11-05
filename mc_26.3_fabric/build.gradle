@@ -18,12 +18,15 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    // optional energy API of the Fabric tech mods; only used when it is installed
+    compileOnly "teamreborn:energy:${team_reborn_energy_version}"
 
     // the game logic; its classes are packed into this mod's jar (see jar task)
     implementation project(':core')
 }
 
 loom {
+    accessWidenerPath = common.file('src/main/resources/mcqw.classtweaker')
     runs {
         client {
             runDir 'run'
