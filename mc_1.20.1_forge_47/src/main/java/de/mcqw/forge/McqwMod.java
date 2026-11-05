@@ -5,9 +5,11 @@ import de.mcqw.forge.config.ForgeConfigs;
 import de.mcqw.forge.item.ForgeCrystalStaffItem;
 import de.mcqw.forge.network.ModNetwork;
 import de.mcqw.mc.Mcqw;
+import de.mcqw.mc.entity.EnergyBallEntity;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffSystems;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -36,9 +38,16 @@ public final class McqwMod {
     private static final RegistryObject<Item> CRYSTAL_STAFF = ITEMS.register(McqwIds.CRYSTAL_STAFF,
             () -> new ForgeCrystalStaffItem(McqwObjects.crystalStaffProperties()));
 
+    private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Mcqw.MOD_ID);
+
+    static {
+        ENTITY_TYPES.register(McqwIds.ENERGY_BALL, () -> EnergyBallEntity.TYPE = McqwObjects.energyBallType());
+    }
+
     public McqwMod(FMLJavaModLoadingContext context) {
         IEventBus modBus = context.getModEventBus();
         ITEMS.register(modBus);
+        ENTITY_TYPES.register(modBus);
         context.registerConfig(ModConfig.Type.SERVER, ForgeConfigs.SERVER);
         modBus.addListener(McqwMod::onBuildContents);
         modBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(ModNetwork::register));

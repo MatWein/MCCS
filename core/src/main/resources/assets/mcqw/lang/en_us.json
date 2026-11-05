@@ -11,5 +11,6 @@
   "key.mcqw.cloak": "Toggle staff cloak",
   "hud.mcqw.cloak": "Cloak: %s",
   "hud.mcqw.cloak.on": "ACTIVE",
-  "hud.mcqw.cloak.off": "off"
+  "hud.mcqw.cloak.off": "off",
+  "entity.mcqw.energy_ball": "Energy Ball"
 }

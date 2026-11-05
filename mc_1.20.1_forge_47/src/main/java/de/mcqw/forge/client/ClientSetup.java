@@ -7,9 +7,12 @@ import de.mcqw.mc.client.ClientCompat;
 import de.mcqw.mc.client.KeyBindings;
 import de.mcqw.mc.client.StaffClient;
 import de.mcqw.mc.client.hud.StaffHud;
+import de.mcqw.mc.client.render.EnergyBallRenderer;
+import de.mcqw.mc.entity.EnergyBallEntity;
 import de.mcqw.mc.network.BeamStatePacket;
 import de.mcqw.mc.network.StaffActionPacket;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
@@ -26,6 +29,11 @@ public final class ClientSetup {
     public static void onClientSetup(FMLClientSetupEvent event) {
         BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.targets());
         StaffClient.actionSender = action -> ModNetwork.sendToServer(new StaffActionPacket(action));
+    }
+
+    @SubscribeEvent
+    public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(EnergyBallEntity.TYPE, EnergyBallRenderer::new);
     }
 
     @SubscribeEvent

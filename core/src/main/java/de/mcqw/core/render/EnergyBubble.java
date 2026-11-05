@@ -7,10 +7,6 @@ import java.util.List;
  * drawn in two drifting, additive layers of a caustics texture.
  */
 public final class EnergyBubble {
-    private static final float RADIUS_X = 1.15f;
-    private static final float RADIUS_Y = 1.5f;
-    private static final float RADIUS_Z = 1.15f;
-    private static final float CENTER_Y = 0.95f;
     private static final int SEGMENTS_AROUND = 40;
     private static final int SEGMENTS_VERTICAL = 20;
     private static final float FRESNEL_BASE = 0.2f;
@@ -37,6 +33,17 @@ public final class EnergyBubble {
     private static final float SHIELD_WOBBLE = 0.02f;
     private static final float MIN_BUBBLE_INTENSITY = 0.005f;
 
+    /** The bubble's form: its radii and how far its center is above the origin. */
+    public record Shape(float radiusX, float radiusY, float radiusZ, float centerY) {
+        /** A sphere around the origin. */
+        public static Shape sphere(float radius) {
+            return new Shape(radius, radius, radius, 0f);
+        }
+    }
+
+    /** Around a player, whose origin is at the feet. */
+    public static final Shape AROUND_PLAYER = new Shape(1.15f, 1.5f, 1.15f, 0.95f);
+
     /** A texture layer: its drift per tick (texture offset, applied by the platform), size and weight. */
     public record Layer(float uDrift, float vDrift, float uvScale, float weight) {}
 
@@ -49,15 +56,22 @@ public final class EnergyBubble {
         private final float[][] points;
         private final float[] fresnel;
 
-        private Grid(float[][] points, float[] fresnel) {
+        private final float centerY;
+
+        private Grid(float[][] points, float[] fresnel, float centerY) {
             this.points = points;
             this.fresnel = fresnel;
+            this.centerY = centerY;
         }
     }
 
     private EnergyBubble() {}
 
     public static Grid compute(ViewTransform view, float wobble, float time) {
+        return compute(AROUND_PLAYER, view, wobble, time);
+    }
+
+    public static Grid compute(Shape shape, ViewTransform view, float wobble, float time) {
         int columns = SEGMENTS_AROUND + 1;
         int rows = SEGMENTS_VERTICAL + 1;
         float[][] points = new float[rows * columns][];
@@ -66,10 +80,10 @@ public final class EnergyBubble {
         float[] normal = new float[3];
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
-                float[] point = surfacePoint(row, column, wobble, time);
+                float[] point = surfacePoint(shape, row, column, wobble, time);
                 int index = row * columns + column;
                 points[index] = point;
-                view.normal(point[0] / (RADIUS_X * RADIUS_X), (point[1] - CENTER_Y) / (RADIUS_Y * RADIUS_Y), point[2] / (RADIUS_Z * RADIUS_Z), normal);
+                view.normal(point[0] / (shape.radiusX() * shape.radiusX()), (point[1] - shape.centerY()) / (shape.radiusY() * shape.radiusY()), point[2] / (shape.radiusZ() * shape.radiusZ()), normal);
                 float normalLength = (float) Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]);
                 view.position(point[0], point[1], point[2], viewPosition);
                 float distance = (float) Math.sqrt(viewPosition[0] * viewPosition[0] + viewPosition[1] * viewPosition[1]
@@ -80,19 +94,19 @@ public final class EnergyBubble {
                 fresnel[index] = FRESNEL_BASE + FRESNEL_RIM * rim * rim;
             }
         }
-        return new Grid(points, fresnel);
+        return new Grid(points, fresnel, shape.centerY());
     }
 
-    private static float[] surfacePoint(int row, int column, float wobble, float time) {
+    private static float[] surfacePoint(Shape shape, int row, int column, float wobble, float time) {
         float theta = PI * row / SEGMENTS_VERTICAL;
         float phi = TWO_PI * (column % SEGMENTS_AROUND) / SEGMENTS_AROUND;
         float scale = 1f + wobble * ((float) Math.sin(time * WOBBLE_SPEED_A + theta * WAVE_A_VERTICAL + phi * WAVE_A_AROUND)
                 + WOBBLE_WEIGHT_B * (float) Math.sin(time * WOBBLE_SPEED_B + theta * WAVE_B_VERTICAL + phi * WAVE_B_AROUND));
         float sinTheta = (float) Math.sin(theta);
         return new float[]{
-                RADIUS_X * sinTheta * (float) Math.cos(phi) * scale,
-                CENTER_Y + RADIUS_Y * (float) Math.cos(theta) * scale,
-                RADIUS_Z * sinTheta * (float) Math.sin(phi) * scale};
+                shape.radiusX() * sinTheta * (float) Math.cos(phi) * scale,
+                shape.centerY() + shape.radiusY() * (float) Math.cos(theta) * scale,
+                shape.radiusZ() * sinTheta * (float) Math.sin(phi) * scale};
     }
 
     /** Emits one texture layer of the bubble (quads, bluish additive color). */
@@ -109,7 +123,7 @@ public final class EnergyBubble {
                     float u = gridUv[corner][0] * layer.uvScale() / SEGMENTS_AROUND * HORIZONTAL_UV_REPEAT;
                     float v = gridUv[corner][1] * layer.uvScale() / SEGMENTS_VERTICAL;
                     sink.vertex(point[0], point[1], point[2], TINT_RED * brightness, TINT_GREEN * brightness, brightness, 1f,
-                            u, v, point[0], point[1] - CENTER_Y, point[2]);
+                            u, v, point[0], point[1] - grid.centerY, point[2]);
                 }
             }
         }

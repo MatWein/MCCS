@@ -4,6 +4,7 @@ package de.mcqw.core;
 public final class McqwIds {
     public static final String MOD_ID = "mcqw";
     public static final String CRYSTAL_STAFF = "crystal_staff";
+    public static final String ENERGY_BALL = "energy_ball";
 
     private McqwIds() {}
 }

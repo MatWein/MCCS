@@ -6,6 +6,7 @@ import de.mcqw.fabric.config.FabricConfigs;
 import de.mcqw.fabric.item.FabricCrystalStaffItem;
 import de.mcqw.fabric.network.FabricNetwork;
 import de.mcqw.mc.Mcqw;
+import de.mcqw.mc.entity.EnergyBallEntity;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffSystems;
@@ -37,6 +38,8 @@ public final class McqwFabric implements ModInitializer {
             StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
             entries.accept(charged);
         });
+        EnergyBallEntity.TYPE = McqwObjects.energyBallType();
+        Registry.register(BuiltInRegistries.ENTITY_TYPE, Mcqw.id(McqwIds.ENERGY_BALL), EnergyBallEntity.TYPE);
         FabricNetwork.registerServer();
         ServerTickEvents.END_SERVER_TICK.register(StaffSystems::tick);
         AttackEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {

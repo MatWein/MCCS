@@ -7,11 +7,13 @@ package de.mcqw.core.config;
 public final class ServerConfig {
     public static StaffConfig STAFF;
     public static BeamConfig BEAM;
+    public static BallConfig BALL;
 
     private ServerConfig() {}
 
     public static void define(ConfigBuilder builder) {
         STAFF = new StaffConfig(builder);
         BEAM = new BeamConfig(builder);
+        BALL = new BallConfig(builder);
     }
 }

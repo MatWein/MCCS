@@ -11,5 +11,6 @@
   "key.mcqw.cloak": "Stab-Tarnung umschalten",
   "hud.mcqw.cloak": "Tarnung: %s",
   "hud.mcqw.cloak.on": "AKTIV",
-  "hud.mcqw.cloak.off": "aus"
+  "hud.mcqw.cloak.off": "aus",
+  "entity.mcqw.energy_ball": "Energieball"
 }

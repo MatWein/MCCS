@@ -22,7 +22,7 @@ public final class BeamConfig {
     BeamConfig(ConfigBuilder builder) {
         builder.comment("Lightning attack of the crystal staff").push("beam");
         damagePerSecond = builder.comment("Damage per second on the main target, before charging")
-                .defineInRange("damagePerSecond", 8.0, 0.0, 1000.0);
+                .defineInRange("damagePerSecond", 16.0, 0.0, 1000.0);
         hitsPerSecond = builder.comment("Hits per second the damage is split into")
                 .defineInRange("hitsPerSecond", 4, 1, 20);
         range = builder.comment("Reach in blocks")

@@ -2,6 +2,7 @@ package de.mcqw.neoforge;
 
 import de.mcqw.core.McqwIds;
 import de.mcqw.mc.Mcqw;
+import de.mcqw.mc.entity.EnergyBallEntity;
 import de.mcqw.mc.network.BeamStatePacket;
 import de.mcqw.mc.network.StaffActionPacket;
 import de.mcqw.mc.registry.McqwObjects;
@@ -14,6 +15,7 @@ import de.mcqw.neoforge.item.StaffEnergyHandler;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +46,10 @@ public final class McqwNeoForge {
     private static final DeferredHolder<Item, Item> CRYSTAL_STAFF = ITEMS.register(McqwIds.CRYSTAL_STAFF,
             () -> new NeoForgeCrystalStaffItem(McqwObjects.crystalStaffProperties()));
 
+    private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Mcqw.MOD_ID);
+
     static {
+        ENTITY_TYPES.register(McqwIds.ENERGY_BALL, () -> EnergyBallEntity.TYPE = McqwObjects.energyBallType());
         COMPONENTS.register("energy", () -> McqwObjects.ENERGY);
         COMPONENTS.register("shield_on", () -> McqwObjects.SHIELD_ON);
         COMPONENTS.register("cloak_on", () -> McqwObjects.CLOAK_ON);
@@ -54,6 +59,7 @@ public final class McqwNeoForge {
     public McqwNeoForge(IEventBus modBus, ModContainer container) {
         ITEMS.register(modBus);
         COMPONENTS.register(modBus);
+        ENTITY_TYPES.register(modBus);
         container.registerConfig(ModConfig.Type.SYNCED, NeoForgeConfigs.SERVER, "mcqw-server.toml");
         modBus.addListener(McqwNeoForge::onBuildContents);
         modBus.addListener(RegisterCapabilitiesEvent.class, event -> event.registerItem(Capabilities.Energy.ITEM,

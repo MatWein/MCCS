@@ -147,7 +147,6 @@ public final class StaffBeam {
             float damage = BeamMath.hitDamage(config.damagePerSecond(), interval, charge, i, config.chainFalloff(), wet ? config.wetDamageFactor() : 1.0);
             // several hits per second: neither stopped by the damage cooldown nor pushing the target away
             Vec3 motion = target.getDeltaMovement();
-            StaffCompat.setInvulnerableTime(target, 0);
             StaffCompat.hurt(target, source, damage);
             StaffCompat.restoreMotion(target, motion);
             if (target instanceof LivingEntity living) {

@@ -7,6 +7,9 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
+import de.mcqw.mc.entity.EnergyBallEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 
@@ -21,7 +24,18 @@ public final class McqwObjects {
     public static final DataComponentType<Integer> SHIELD_HITS = DataComponentType.<Integer>builder()
             .persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).build();
 
+    private static final int TRACKING_RANGE = 12;
+
     private McqwObjects() {}
+
+    public static EntityType<EnergyBallEntity> energyBallType() {
+        return EntityType.Builder.<EnergyBallEntity>of(EnergyBallEntity::new, MobCategory.MISC)
+                .sized(EnergyBallEntity.SIZE, EnergyBallEntity.SIZE)
+                .fireImmune()
+                .clientTrackingRange(TRACKING_RANGE)
+                .updateInterval(1)
+                .build(ResourceKey.create(Registries.ENTITY_TYPE, Mcqw.id(McqwIds.ENERGY_BALL)));
+    }
 
     public static Item.Properties crystalStaffProperties() {
         return new Item.Properties()

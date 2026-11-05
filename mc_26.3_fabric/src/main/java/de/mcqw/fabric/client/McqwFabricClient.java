@@ -8,6 +8,9 @@ import de.mcqw.mc.client.ClientCompat;
 import de.mcqw.mc.client.KeyBindings;
 import de.mcqw.mc.client.StaffClient;
 import de.mcqw.mc.client.hud.StaffHud;
+import de.mcqw.mc.client.render.EnergyBallRenderer;
+import de.mcqw.mc.entity.EnergyBallEntity;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import de.mcqw.mc.network.BeamStatePacket;
 import de.mcqw.mc.network.StaffActionPacket;
 import net.fabricmc.api.ClientModInitializer;
@@ -22,6 +25,7 @@ public final class McqwFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         StaffClient.actionSender = action -> ClientPlayNetworking.send(new StaffActionPacket(action));
+        EntityRendererRegistry.register(EnergyBallEntity.TYPE, EnergyBallRenderer::new);
         KeyMappingHelper.registerKeyMapping(KeyBindings.SHIELD);
         KeyMappingHelper.registerKeyMapping(KeyBindings.CLOAK);
         ClientTickEvents.END_CLIENT_TICK.register(client -> StaffClient.onClientTickEnd());

@@ -8,7 +8,7 @@ of the head.
 
 Get it from the creative inventory, tab **Combat**: a new staff (20 % charge) and a fully charged one.
 
-## Shield, cloak and lightning
+## Shield, cloak, lightning and energy ball
 
 Shield and cloak work while the staff is in a hand; none of this works while you ride anything (horse, boat, jumper, ...) or
 when the staff is put away: shield and cloak pause and resume afterwards, the panel hides. The keys can be rebound under
@@ -26,11 +26,16 @@ at, up to 24 blocks away, and keeps running as long as you hold the key; it ends
 doing damage. With the staff in the main hand the attack key belongs to the lightning: no mining and no melee. Firing ends the
 cloak.
 
-- It deals 8 damage per second, split into 4 hits. Staying on the same target charges it from 50 % to 150 % within 3 seconds.
+- It deals 16 damage per second, split into 4 hits. Staying on the same target charges it from 50 % to 150 % within 3 seconds.
 - It jumps on to up to 3 further hostile mobs, up to 6 blocks per jump, with half the damage each time. Pets, villagers and
   players are only hit when aimed at directly.
 - Targets in water or rain take 1.5 times the damage and the lightning jumps 1.5 times as far from them.
 - Hits slow mobs down strongly while the lightning is on them and set targets on fire unless they are wet. Blocks never burn.
+
+**Energy ball (right click, staff in the main hand).** A slow ball of energy flies up to 128 blocks in a straight line and
+explodes on the first block or entity. The explosion deals up to 40 damage within 4 blocks and throws things away from it, but never
+breaks blocks or destroys items, and it does not hurt you. A shot costs 30,000 FE and ends the cloak; the staff then needs 2 seconds
+until the next one.
 
 A small panel at the bottom left shows the charge and both systems while you hold the staff, and also the consumption and
 remaining time while they use energy. The time ignores the extra drain under fire.
@@ -61,7 +66,8 @@ Settings live in `world/serverconfig/mcqw-server.toml` on Forge, in `config/mcqw
 
 The lightning has its own section `[beam]`, with `damagePerSecond`, `hitsPerSecond`, `range`, `aimTolerance`, `drain` (500 FE/t,
 about 8 minutes of firing on a full staff), `chainTargets`, `chainRange`, `chainFalloff`, `chargeSeconds`, `chargeStart`, `chargeMax`,
-`wetDamageFactor`, `wetChainRangeFactor`, `slowTicks`, `slowLevel` and `fireSeconds`.
+`wetDamageFactor`, `wetChainRangeFactor`, `slowTicks`, `slowLevel` and `fireSeconds`. The energy ball is in `[energyBall]`: `damage`,
+`radius`, `edgeDamage`, `knockback`, `speed`, `range`, `energy` and `cooldownTicks`.
 
 ## Building
 
