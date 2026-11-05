@@ -6,6 +6,7 @@ import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -24,6 +25,23 @@ public final class StaffClient {
 
     private StaffClient() {}
 
+    /** Before Minecraft handles its keys: with the staff in hand L is the light, not the advancements screen. */
+    public static void onClientTickStart() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null || StaffSystems.heldStaff(minecraft.player).isEmpty()) return;
+        KeyMapping advancements = minecraft.options.keyAdvancements;
+        if (advancements.same(KeyBindings.LIGHTS)) {
+            boolean pending = advancements.consumeClick();
+            while (pending) pending = advancements.consumeClick();
+        }
+    }
+
+    /** Whether using this hand must not replay the item's equip animation: the staff just stays in the picture. */
+    public static boolean keepsHandSteady(InteractionHand hand) {
+        Player player = Minecraft.getInstance().player;
+        return player != null && hand == InteractionHand.MAIN_HAND && !StaffSystems.mainStaff(player).isEmpty();
+    }
+
     public static void onClientTickEnd() {
         Minecraft minecraft = Minecraft.getInstance();
         BeamClient.onClientTickEnd();
@@ -35,6 +53,8 @@ public final class StaffClient {
         pressed(minecraft, KeyBindings.SHIELD, StaffAction.SHIELD);
         pressed(minecraft, KeyBindings.CLOAK, StaffAction.CLOAK);
         pressed(minecraft, KeyBindings.TELEPORT, StaffAction.TELEPORT);
+        pressed(minecraft, KeyBindings.LIGHTS, StaffAction.LIGHTS);
+        pressed(minecraft, KeyBindings.BLOCK_DAMAGE, StaffAction.BLOCK_DAMAGE);
         Set<Player> seen = new HashSet<>();
         for (Player player : minecraft.level.players()) {
             seen.add(player);

@@ -15,5 +15,8 @@ public final class KeyBindings {
 
     public static final KeyMapping TELEPORT = new KeyMapping("key.mcqw.teleport", InputConstants.KEY_R, CATEGORY);
 
+    public static final KeyMapping LIGHTS = new KeyMapping("key.mcqw.lights", InputConstants.KEY_L, CATEGORY);
+    public static final KeyMapping BLOCK_DAMAGE = new KeyMapping("key.mcqw.block_damage", InputConstants.KEY_K, CATEGORY);
+
     private KeyBindings() {}
 }

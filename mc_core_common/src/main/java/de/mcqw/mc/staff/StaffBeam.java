@@ -37,6 +37,7 @@ public final class StaffBeam {
     /** Clients that start seeing the player in the middle of the attack, or miss its end, catch up with this. */
     private static final int RESEND_INTERVAL = 10;
     private static final int CRACKLE_INTERVAL = 8;
+    private static final int IGNITE_INTERVAL = 10;
     private static final float CRACKLE_PITCH = 1.6f;
     private static final float CRACKLE_PITCH_RANGE = 0.5f;
 
@@ -93,6 +94,7 @@ public final class StaffBeam {
         List<Entity> targets = targets(main, config);
         int interval = BeamMath.hitInterval(config.hitsPerSecond());
         if (state.age % interval == 0) hit(player, targets, state.ticksOnMain, interval, config);
+        if (main == null && StaffData.blockDamage(staff) && state.age % IGNITE_INTERVAL == 0) BeamAim.ignite(player, config.range());
         if (state.age % CRACKLE_INTERVAL == 0) {
             StaffSounds.beamCrackle(player, CRACKLE_PITCH + player.getRandom().nextFloat() * CRACKLE_PITCH_RANGE);
         }

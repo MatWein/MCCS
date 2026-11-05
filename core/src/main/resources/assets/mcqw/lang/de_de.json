@@ -13,5 +13,13 @@
   "hud.mcqw.cloak.on": "AKTIV",
   "hud.mcqw.cloak.off": "aus",
   "entity.mcqw.energy_ball": "Energieball",
-  "key.mcqw.teleport": "Stab-Teleport"
+  "key.mcqw.teleport": "Stab-Teleport",
+  "key.mcqw.lights": "Stab-Licht umschalten",
+  "key.mcqw.block_damage": "Stab-Blockschaden umschalten",
+  "hud.mcqw.lights": "Licht: %s",
+  "hud.mcqw.lights.on": "AN",
+  "hud.mcqw.lights.off": "aus",
+  "hud.mcqw.block_damage": "Blockschaden: %s",
+  "hud.mcqw.block_damage.on": "AN",
+  "hud.mcqw.block_damage.off": "aus"
 }

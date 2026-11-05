@@ -9,6 +9,7 @@ import de.mcqw.mc.entity.EnergyBallEntity;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffLightning;
+import de.mcqw.mc.staff.StaffLights;
 import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
@@ -26,6 +27,7 @@ import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -67,6 +69,7 @@ public final class McqwMod {
             if (event.getEntity() instanceof LightningBolt bolt) StaffLightning.attract(bolt);
         });
         MinecraftForge.EVENT_BUS.addListener((EntityStruckByLightningEvent event) -> StaffLightning.struck(event.getEntity()));
+        MinecraftForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> StaffLights.removeAll());
         MinecraftForge.EVENT_BUS.addListener((LivingFallEvent event) -> {
             if (StaffSystems.absorbFall(event.getEntity(), event.getDistance(), event.getDamageMultiplier())) event.setCanceled(true);
         });

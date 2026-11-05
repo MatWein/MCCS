@@ -7,7 +7,9 @@ import de.mcqw.mc.client.StaffArmPose;
 import de.mcqw.mc.item.CrystalStaffItem;
 import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffSystems;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
@@ -25,6 +27,12 @@ import java.util.function.Consumer;
 
 /** Forge's additions to the staff: Forge Energy and the arm pose (on the other platforms the pose is a mixin). */
 public final class ForgeCrystalStaffItem extends CrystalStaffItem {
+    private static final int USE_ANIMATION_TICKS = 8;
+    // Where vanilla puts a held item in first person (ItemInHandRenderer)
+    private static final float ITEM_X = 0.56f;
+    private static final float ITEM_Y = -0.52f;
+    private static final float ITEM_Z = -0.72f;
+
     public ForgeCrystalStaffItem(Properties properties) {
         super(properties);
     }
@@ -97,6 +105,19 @@ public final class ForgeCrystalStaffItem extends CrystalStaffItem {
                         if (arm == HumanoidArm.RIGHT) StaffArmPose.applyRight(model.rightArm);
                         else StaffArmPose.applyLeft(model.leftArm);
                     });
+
+            /** While charging, and shortly after, the equip animation of a right click is left out: the staff stays in the picture. */
+            private int lastUsedTick = -USE_ANIMATION_TICKS;
+
+            @Override
+            public boolean applyForgeHandTransform(PoseStack poseStack, LocalPlayer player, HumanoidArm arm, ItemStack itemInHand,
+                                                   float partialTick, float equipProcess, float swingProcess) {
+                if (player.isUsingItem()) lastUsedTick = player.tickCount;
+                int sinceUse = player.tickCount - lastUsedTick;
+                if (sinceUse < 0 || sinceUse >= USE_ANIMATION_TICKS || equipProcess <= 0) return false;
+                poseStack.translate((arm == HumanoidArm.RIGHT ? 1 : -1) * ITEM_X, ITEM_Y, ITEM_Z);
+                return true;
+            }
 
             @Override
             public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {

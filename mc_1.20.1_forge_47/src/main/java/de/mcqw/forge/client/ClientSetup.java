@@ -41,6 +41,8 @@ public final class ClientSetup {
         event.register(KeyBindings.SHIELD);
         event.register(KeyBindings.CLOAK);
         event.register(KeyBindings.TELEPORT);
+        event.register(KeyBindings.LIGHTS);
+        event.register(KeyBindings.BLOCK_DAMAGE);
     }
 
     @SubscribeEvent

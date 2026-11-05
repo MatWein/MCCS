@@ -10,10 +10,12 @@ import de.mcqw.mc.entity.EnergyBallEntity;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffLightning;
+import de.mcqw.mc.staff.StaffLights;
 import de.mcqw.mc.staff.StaffSystems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -46,6 +48,7 @@ public final class McqwFabric implements ModInitializer {
         Registry.register(BuiltInRegistries.ENTITY_TYPE, Mcqw.id(McqwIds.ENERGY_BALL), EnergyBallEntity.TYPE);
         FabricNetwork.registerServer();
         ServerTickEvents.END_SERVER_TICK.register(StaffSystems::tick);
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> StaffLights.removeAll());
         AttackEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
             StaffSystems.onAttack(player);
             return InteractionResult.PASS;

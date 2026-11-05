@@ -5,19 +5,23 @@ import de.mcqw.core.config.ServerConfig;
 import de.mcqw.core.staff.BallMath;
 import de.mcqw.mc.compat.StaffCompat;
 import de.mcqw.mc.entity.EnergyBallEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /** The staff's energy ball: firing it, and its explosion, which hurts living things but leaves blocks and items alone. */
 public final class StaffBall {
     private static final double MIN_AIM_DISTANCE_SQR = 1;
+    private static final double ROUGH_EDGE = 0.75;
     private static final int SPARKS = 60;
     private static final double SPARK_SPREAD = 1.5;
     private static final double SPARK_SPEED = 0.3;
@@ -64,6 +68,7 @@ public final class StaffBall {
         EnergyBallEntity ball = new EnergyBallEntity(player.level());
         ball.setOwner(player);
         ball.setCharge((float) share);
+        ball.setBlockDamage(StaffData.blockDamage(staff));
         ball.setPos(start.subtract(0, EnergyBallEntity.SIZE / 2, 0));
         ball.setDeltaMovement(direction.scale(config.speed()));
         player.level().addFreshEntity(ball);
@@ -71,8 +76,25 @@ public final class StaffBall {
         StaffCompat.cooldown(player, staff, config.cooldownTicks());
     }
 
+    /** With block damage on: what the blast can break within its radius, with a rough edge. Not what the shooter may not touch. */
+    private static void breakBlocks(ServerLevel level, Entity ball, Entity owner, Vec3 center, double radius) {
+        BallConfig config = ServerConfig.BALL;
+        BlockPos middle = BlockPos.containing(center);
+        int reach = (int) Math.ceil(radius);
+        var random = level.getRandom();
+        for (BlockPos pos : BlockPos.betweenClosed(middle.offset(-reach, -reach, -reach), middle.offset(reach, reach, reach))) {
+            double edge = radius * (ROUGH_EDGE + (1 - ROUGH_EDGE) * random.nextDouble());
+            if (Vec3.atCenterOf(pos).distanceTo(center) > edge) continue;
+            BlockState state = level.getBlockState(pos);
+            if (state.isAir() || !state.getFluidState().isEmpty()) continue;
+            if (state.getDestroySpeed(level, pos) < 0 || state.getBlock().getExplosionResistance() > config.maxBlockResistance()) continue;
+            if (owner instanceof Player player && !level.mayInteract(player, pos)) continue;
+            level.destroyBlock(pos, random.nextDouble() < config.blockDropChance(), ball);
+        }
+    }
+
     /** Everything the blast reaches takes damage, except the shooter and what is behind blocks. */
-    public static void explode(ServerLevel level, Entity ball, Entity owner, Vec3 center, double charge) {
+    public static void explode(ServerLevel level, Entity ball, Entity owner, Vec3 center, double charge, boolean blockDamage) {
         BallConfig config = ServerConfig.BALL;
         double radius = BallMath.charged(config.radius(), config.chargedRadiusFactor(), charge);
         double damage = BallMath.charged(config.damage(), config.chargedDamageFactor(), charge);
@@ -87,6 +109,7 @@ public final class StaffBall {
                 StaffCompat.launch(target, target.getDeltaMovement().add(away.x, away.y + KNOCKBACK_LIFT * share, away.z));
             }
         }
+        if (blockDamage) breakBlocks(level, ball, owner, center, radius);
         level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y, center.z, 1, 0, 0, 0, 0);
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, center.x, center.y, center.z, SPARKS, SPARK_SPREAD, SPARK_SPREAD, SPARK_SPREAD, SPARK_SPEED);
         StaffSounds.ballExploded(level, center);

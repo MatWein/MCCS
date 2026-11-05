@@ -13,5 +13,13 @@
   "hud.mcqw.cloak.on": "ACTIVE",
   "hud.mcqw.cloak.off": "off",
   "entity.mcqw.energy_ball": "Energy Ball",
-  "key.mcqw.teleport": "Staff teleport"
+  "key.mcqw.teleport": "Staff teleport",
+  "key.mcqw.lights": "Toggle staff light",
+  "key.mcqw.block_damage": "Toggle staff block damage",
+  "hud.mcqw.lights": "Light: %s",
+  "hud.mcqw.lights.on": "ON",
+  "hud.mcqw.lights.off": "off",
+  "hud.mcqw.block_damage": "Block damage: %s",
+  "hud.mcqw.block_damage.on": "ON",
+  "hud.mcqw.block_damage.off": "off"
 }

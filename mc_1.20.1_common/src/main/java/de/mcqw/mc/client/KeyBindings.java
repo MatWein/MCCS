@@ -13,5 +13,8 @@ public final class KeyBindings {
 
     public static final KeyMapping TELEPORT = new KeyMapping("key.mcqw.teleport", GLFW.GLFW_KEY_R, CATEGORY);
 
+    public static final KeyMapping LIGHTS = new KeyMapping("key.mcqw.lights", GLFW.GLFW_KEY_L, CATEGORY);
+    public static final KeyMapping BLOCK_DAMAGE = new KeyMapping("key.mcqw.block_damage", GLFW.GLFW_KEY_K, CATEGORY);
+
     private KeyBindings() {}
 }

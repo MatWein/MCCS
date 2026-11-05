@@ -11,6 +11,8 @@ public final class BallConfig {
     private final IntSetting energy;
     private final IntSetting cooldownTicks;
     private final IntSetting chargeTicks;
+    private final DoubleSetting blockDropChance;
+    private final DoubleSetting maxBlockResistance;
     private final DoubleSetting chargedDamageFactor;
     private final DoubleSetting chargedRadiusFactor;
     private final DoubleSetting chargedSizeFactor;
@@ -34,6 +36,10 @@ public final class BallConfig {
                 .defineInRange("energy", 30_000, 0, Integer.MAX_VALUE);
         cooldownTicks = builder.comment("Time between two shots (ticks)")
                 .defineInRange("cooldownTicks", 40, 0, 1200);
+        blockDropChance = builder.comment("With block damage on: chance of a destroyed block to drop as an item")
+                .defineInRange("blockDropChance", 0.3, 0.0, 1.0);
+        maxBlockResistance = builder.comment("With block damage on: blocks with a higher blast resistance survive (obsidian: 1200)")
+                .defineInRange("maxBlockResistance", 100.0, 0.0, 10000.0);
         chargeTicks = builder.comment("Holding the use key this long charges a ball fully (ticks)")
                 .defineInRange("chargeTicks", 40, 1, 1200);
         chargedDamageFactor = builder.comment("Damage multiplier of a fully charged ball")
@@ -77,6 +83,14 @@ public final class BallConfig {
 
     public int cooldownTicks() {
         return cooldownTicks.get();
+    }
+
+    public double blockDropChance() {
+        return blockDropChance.get();
+    }
+
+    public double maxBlockResistance() {
+        return maxBlockResistance.get();
     }
 
     public int chargeTicks() {

@@ -40,6 +40,14 @@ final class StaffSounds {
         level.playSound(null, position.x, position.y, position.z, SoundEvents.CHORUS_FRUIT_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.2f);
     }
 
+    static void lightsToggled(ServerPlayer player, boolean on) {
+        play(player, SoundEvents.LEVER_CLICK, 0.6f, on ? 1.2f : 0.9f);
+    }
+
+    static void blockDamageToggled(ServerPlayer player, boolean on) {
+        play(player, SoundEvents.LEVER_CLICK, 0.6f, on ? 0.8f : 0.6f);
+    }
+
     static void shieldHit(ServerPlayer player) {
         play(player, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.8f, 1.6f);
     }

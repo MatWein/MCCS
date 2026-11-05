@@ -1,12 +1,16 @@
 package de.mcqw.mc.staff;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -26,6 +30,19 @@ public final class BeamAim {
         Vec3 eye = player.getEyePosition(partialTick);
         Vec3 far = eye.add(player.getViewVector(partialTick).scale(range));
         return player.level().clip(new ClipContext(eye, far, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player)).getLocation();
+    }
+
+    /** With block damage on: sets the block the player aims at on fire, if it can burn there. */
+    static void ignite(Player player, double range) {
+        Vec3 eye = player.getEyePosition(1f);
+        Vec3 far = eye.add(player.getViewVector(1f).scale(range));
+        BlockHitResult hit = player.level().clip(new ClipContext(eye, far, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
+        if (hit.getType() != HitResult.Type.BLOCK) return;
+        BlockPos pos = hit.getBlockPos().relative(hit.getDirection());
+        Level level = player.level();
+        if (level.isEmptyBlock(pos) && level.mayInteract(player, pos) && BaseFireBlock.canBePlacedAt(level, pos, player.getDirection())) {
+            level.setBlockAndUpdate(pos, BaseFireBlock.getState(level, pos));
+        }
     }
 
     /** The nearest entity the player aims at, in front of the first block, or null; paintings and item frames do not count. */

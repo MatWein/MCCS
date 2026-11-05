@@ -33,9 +33,12 @@ public final class McqwNeoForgeClient {
             event.register(KeyBindings.SHIELD);
             event.register(KeyBindings.CLOAK);
             event.register(KeyBindings.TELEPORT);
+            event.register(KeyBindings.LIGHTS);
+            event.register(KeyBindings.BLOCK_DAMAGE);
         });
         modBus.addListener(RegisterGuiLayersEvent.class, event -> event.registerAbove(VanillaGuiLayers.HOTBAR, Mcqw.id("staff_hud"),
                 (graphics, deltaTracker) -> StaffHud.render(ClientCompat.hudCanvas(graphics), graphics.guiWidth(), graphics.guiHeight())));
+        NeoForge.EVENT_BUS.addListener(ClientTickEvent.Pre.class, event -> StaffClient.onClientTickStart());
         NeoForge.EVENT_BUS.addListener(ClientTickEvent.Post.class, event -> StaffClient.onClientTickEnd());
     }
 }

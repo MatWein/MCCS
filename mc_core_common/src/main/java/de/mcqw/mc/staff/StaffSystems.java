@@ -58,6 +58,11 @@ public final class StaffSystems {
         return active(entity, StaffAction.CLOAK);
     }
 
+    /** The held staff with its light switched on, or an empty stack. */
+    public static ItemStack activeLights(LivingEntity entity) {
+        return active(entity, StaffAction.LIGHTS);
+    }
+
     private static ItemStack active(LivingEntity entity, StaffAction system) {
         if (entity.isPassenger()) return ItemStack.EMPTY;
         if (isOn(entity.getMainHandItem(), system)) return entity.getMainHandItem();
@@ -66,7 +71,12 @@ public final class StaffSystems {
 
     private static boolean isOn(ItemStack stack, StaffAction system) {
         if (!isStaff(stack)) return false;
-        return system == StaffAction.SHIELD ? StaffData.shieldOn(stack) : StaffData.cloakOn(stack);
+        return switch (system) {
+            case SHIELD -> StaffData.shieldOn(stack);
+            case CLOAK -> StaffData.cloakOn(stack);
+            case LIGHTS -> StaffData.lightsOn(stack);
+            default -> false;
+        };
     }
 
     /** Mobs neither see nor target a cloaked player. */
@@ -84,7 +94,9 @@ public final class StaffSystems {
         StaffConfig config = ServerConfig.STAFF;
         long drain = 0;
         if (!activeShield(player).isEmpty()) drain += config.shieldDrain(player.isUnderWater(), player.isInLava(), underFire);
-        if (!activeCloak(player).isEmpty()) drain += config.cloakDrain(player.isUnderWater(), player.isInLava(), underFire);
+        boolean cloaked = !activeCloak(player).isEmpty();
+        if (cloaked) drain += config.cloakDrain(player.isUnderWater(), player.isInLava(), underFire);
+        if (!cloaked && !activeLights(player).isEmpty()) drain += config.lightDrain();
         return (int) Math.min(Integer.MAX_VALUE, drain);
     }
 
@@ -102,6 +114,14 @@ public final class StaffSystems {
             StaffTeleport.perform(player);
             return;
         }
+        if (system == StaffAction.BLOCK_DAMAGE) {
+            ItemStack held = heldStaff(player);
+            if (held.isEmpty()) return;
+            boolean on = !StaffData.blockDamage(held);
+            StaffData.setBlockDamage(held, on);
+            StaffSounds.blockDamageToggled(player, on);
+            return;
+        }
         ItemStack active = active(player, system);
         if (!active.isEmpty()) {
             setOn(player, active, system, false);
@@ -117,13 +137,21 @@ public final class StaffSystems {
     }
 
     private static void setOn(ServerPlayer player, ItemStack staff, StaffAction system, boolean on) {
-        if (system == StaffAction.SHIELD) {
-            StaffData.setShieldOn(staff, on);
-            StaffSounds.shieldToggled(player, on);
-        } else {
-            StaffData.setCloakOn(staff, on);
-            StaffSounds.cloakToggled(player, on);
-            if (on) loseMobPursuers(player);
+        switch (system) {
+            case SHIELD -> {
+                StaffData.setShieldOn(staff, on);
+                StaffSounds.shieldToggled(player, on);
+            }
+            case CLOAK -> {
+                StaffData.setCloakOn(staff, on);
+                StaffSounds.cloakToggled(player, on);
+                if (on) loseMobPursuers(player);
+            }
+            case LIGHTS -> {
+                StaffData.setLightsOn(staff, on);
+                StaffSounds.lightsToggled(player, on);
+            }
+            default -> throw new IllegalArgumentException("Not a system: " + system);
         }
     }
 
@@ -152,13 +180,16 @@ public final class StaffSystems {
 
     public static void tick(MinecraftServer server) {
         StaffBeam.tick(server);
+        StaffLights.tick(server);
         boolean drainNow = server.getTickCount() % DRAIN_INTERVAL == 0;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             normalize(player.getMainHandItem());
             normalize(player.getOffhandItem());
             updateInvisibility(player);
             if (!ServerConfig.STAFF.consumeEnergy()) continue;
-            ItemStack staff = activeShield(player).isEmpty() ? activeCloak(player) : activeShield(player);
+            ItemStack staff = activeShield(player);
+            if (staff.isEmpty()) staff = activeCloak(player);
+            if (staff.isEmpty()) staff = activeLights(player);
             if (staff.isEmpty()) continue;
             if (drainNow) consume(staff, drain(player, isUnderFire(player)) * (long) DRAIN_INTERVAL);
             if (stored(staff) <= 0) powerFailure(player);
@@ -238,9 +269,10 @@ public final class StaffSystems {
         boolean anyOn = false;
         for (ItemStack stack : new ItemStack[]{player.getMainHandItem(), player.getOffhandItem()}) {
             if (!isStaff(stack)) continue;
-            anyOn |= StaffData.shieldOn(stack) || StaffData.cloakOn(stack);
+            anyOn |= StaffData.shieldOn(stack) || StaffData.cloakOn(stack) || StaffData.lightsOn(stack);
             StaffData.setShieldOn(stack, false);
             StaffData.setCloakOn(stack, false);
+            StaffData.setLightsOn(stack, false);
         }
         if (anyOn) StaffSounds.shieldCollapsed(player);
         StaffSounds.powerFailure(player);

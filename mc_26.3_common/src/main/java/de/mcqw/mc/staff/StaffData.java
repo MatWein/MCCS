@@ -46,6 +46,22 @@ public final class StaffData {
         stack.set(McqwObjects.CLOAK_ON, on);
     }
 
+    public static boolean lightsOn(ItemStack stack) {
+        return stack.getOrDefault(McqwObjects.LIGHTS_ON, false);
+    }
+
+    public static void setLightsOn(ItemStack stack, boolean on) {
+        stack.set(McqwObjects.LIGHTS_ON, on);
+    }
+
+    public static boolean blockDamage(ItemStack stack) {
+        return stack.getOrDefault(McqwObjects.BLOCK_DAMAGE, false);
+    }
+
+    public static void setBlockDamage(ItemStack stack, boolean on) {
+        stack.set(McqwObjects.BLOCK_DAMAGE, on);
+    }
+
     public static int shieldHits(ItemStack stack) {
         return stack.getOrDefault(McqwObjects.SHIELD_HITS, 0);
     }

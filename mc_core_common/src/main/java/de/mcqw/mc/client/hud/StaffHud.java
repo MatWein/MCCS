@@ -8,6 +8,7 @@ import de.mcqw.core.hud.HudText;
 import de.mcqw.core.hud.StaffHudModel;
 import de.mcqw.mc.client.BeamClient;
 import de.mcqw.mc.client.ClientCompat;
+import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -43,7 +44,7 @@ public final class StaffHud {
         boolean cloakOn = !StaffSystems.activeCloak(player).isEmpty();
         int drain = config.consumeEnergy() ? StaffSystems.drain(player, false) + (BeamClient.isFiring(player) ? ServerConfig.BEAM.drain() : 0) : 0;
         List<HudLine> lines = StaffHudModel.lines(new StaffHudModel.State(StaffSystems.stored(staff), config.capacity(), shieldOn, cloakOn,
-                drain, config.consumeEnergy()), player.tickCount);
+                !StaffSystems.activeLights(player).isEmpty(), StaffData.blockDamage(staff), drain, config.consumeEnergy()), player.tickCount);
 
         Font font = minecraft.font;
         List<Component> texts = new ArrayList<>();

@@ -12,6 +12,8 @@ public final class StaffData {
     private static final String CRYSTAL_LOOK = "CustomModelData";
     private static final String SHIELD_ON = "ShieldOn";
     private static final String CLOAK_ON = "CloakOn";
+    private static final String LIGHTS_ON = "LightsOn";
+    private static final String BLOCK_DAMAGE = "BlockDamage";
     private static final String SHIELD_HITS = "ShieldHits";
 
     private StaffData() {}
@@ -47,6 +49,24 @@ public final class StaffData {
 
     public static void setCloakOn(ItemStack stack, boolean on) {
         stack.getOrCreateTag().putBoolean(CLOAK_ON, on);
+    }
+
+    public static boolean lightsOn(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.getBoolean(LIGHTS_ON);
+    }
+
+    public static void setLightsOn(ItemStack stack, boolean on) {
+        stack.getOrCreateTag().putBoolean(LIGHTS_ON, on);
+    }
+
+    public static boolean blockDamage(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.getBoolean(BLOCK_DAMAGE);
+    }
+
+    public static void setBlockDamage(ItemStack stack, boolean on) {
+        stack.getOrCreateTag().putBoolean(BLOCK_DAMAGE, on);
     }
 
     public static int shieldHits(ItemStack stack) {

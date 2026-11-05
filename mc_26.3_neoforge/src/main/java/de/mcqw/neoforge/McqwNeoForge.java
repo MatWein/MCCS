@@ -9,6 +9,7 @@ import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffBeam;
 import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffLightning;
+import de.mcqw.mc.staff.StaffLights;
 import de.mcqw.mc.staff.StaffSystems;
 import de.mcqw.neoforge.config.NeoForgeConfigs;
 import de.mcqw.neoforge.item.NeoForgeCrystalStaffItem;
@@ -33,6 +34,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -57,6 +59,8 @@ public final class McqwNeoForge {
         COMPONENTS.register("energy", () -> McqwObjects.ENERGY);
         COMPONENTS.register("shield_on", () -> McqwObjects.SHIELD_ON);
         COMPONENTS.register("cloak_on", () -> McqwObjects.CLOAK_ON);
+        COMPONENTS.register("lights_on", () -> McqwObjects.LIGHTS_ON);
+        COMPONENTS.register("block_damage", () -> McqwObjects.BLOCK_DAMAGE);
         COMPONENTS.register("shield_hits", () -> McqwObjects.SHIELD_HITS);
     }
 
@@ -80,6 +84,7 @@ public final class McqwNeoForge {
         NeoForge.EVENT_BUS.addListener(EntityJoinLevelEvent.class, event -> {
             if (event.getEntity() instanceof LightningBolt bolt) StaffLightning.attract(bolt);
         });
+        NeoForge.EVENT_BUS.addListener(ServerStoppingEvent.class, event -> StaffLights.removeAll());
         NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEvent.class, event -> {
             if (StaffSystems.absorb(event.getEntity(), event.getSource(), event.getAmount())) event.setCanceled(true);
         });

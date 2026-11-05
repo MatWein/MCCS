@@ -10,11 +10,13 @@ import de.mcqw.mc.entity.EnergyBallEntity;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffLightning;
+import de.mcqw.mc.staff.StaffLights;
 import de.mcqw.mc.staff.StaffSystems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.loader.api.FabricLoader;
@@ -37,6 +39,8 @@ public final class McqwFabric implements ModInitializer {
         Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mcqw.id("energy"), McqwObjects.ENERGY);
         Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mcqw.id("shield_on"), McqwObjects.SHIELD_ON);
         Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mcqw.id("cloak_on"), McqwObjects.CLOAK_ON);
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mcqw.id("lights_on"), McqwObjects.LIGHTS_ON);
+        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mcqw.id("block_damage"), McqwObjects.BLOCK_DAMAGE);
         Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mcqw.id("shield_hits"), McqwObjects.SHIELD_HITS);
         Item staff = new FabricCrystalStaffItem(McqwObjects.crystalStaffProperties());
         Registry.register(BuiltInRegistries.ITEM, Mcqw.id(McqwIds.CRYSTAL_STAFF), staff);
@@ -50,6 +54,7 @@ public final class McqwFabric implements ModInitializer {
         Registry.register(BuiltInRegistries.ENTITY_TYPE, Mcqw.id(McqwIds.ENERGY_BALL), EnergyBallEntity.TYPE);
         FabricNetwork.register();
         ServerTickEvents.END_SERVER_TICK.register(StaffSystems::tick);
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> StaffLights.removeAll());
         AttackEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
             StaffSystems.onAttack(player);
             return InteractionResult.PASS;

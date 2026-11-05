@@ -23,6 +23,8 @@ public abstract class EnergyBallBase extends Projectile {
     private static final double RENDER_DISTANCE = 256;
     private static final double TRAIL_SPEED = 0.05;
 
+    private boolean blockDamage;
+
     protected EnergyBallBase(EntityType<? extends EnergyBallBase> type, Level level) {
         super(type, level);
         setNoGravity(true);
@@ -41,7 +43,7 @@ public abstract class EnergyBallBase extends Projectile {
             HitResult hit = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
             if (hit.getType() != HitResult.Type.MISS) {
                 Entity owner = getOwner();
-                StaffBall.explode(server, this, owner, hit.getLocation(), charge());
+                StaffBall.explode(server, this, owner, hit.getLocation(), charge(), blockDamage);
                 discard();
                 return;
             }
@@ -50,6 +52,11 @@ public abstract class EnergyBallBase extends Projectile {
                     (random.nextDouble() - 0.5) * TRAIL_SPEED, (random.nextDouble() - 0.5) * TRAIL_SPEED, (random.nextDouble() - 0.5) * TRAIL_SPEED);
         }
         setPos(position().add(motion));
+    }
+
+    /** Whether the explosion breaks blocks. */
+    public void setBlockDamage(boolean blockDamage) {
+        this.blockDamage = blockDamage;
     }
 
     /** How much the ball was charged up, from 0 to 1. */

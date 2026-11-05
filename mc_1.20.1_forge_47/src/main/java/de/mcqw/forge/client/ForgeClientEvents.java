@@ -21,7 +21,8 @@ public final class ForgeClientEvents {
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) StaffClient.onClientTickEnd();
+        if (event.phase == TickEvent.Phase.START) StaffClient.onClientTickStart();
+        else StaffClient.onClientTickEnd();
     }
 
     /** The attack key fires the lightning (on the other platforms this is a mixin). */

@@ -51,6 +51,12 @@ is twice as large and deals 3 times the damage over 1.5 times the radius, for 3 
 **Teleport (`R`, staff in a hand).** You jump to where you look, up to 30 blocks away, stopping before the first block. It costs
 20,000 FE and takes 3 seconds until the next one; without room to stand there it fails.
 
+**Light (`L`, staff in a hand).** Lights up your surroundings, using 2 FE/t, like the headlights of MCPJ's jumper: invisible light blocks follow
+you. It stays dark while you are cloaked. While you hold the staff, L does not open the advancements.
+
+**Block damage (`K`, staff in a hand, off by default).** With it on, energy ball explosions break blocks, up to a blast resistance of 100 (obsidian
+survives), and the lightning sets the block it aims at on fire, if it can burn there. The setting is saved on the staff; you see it in the panel.
+
 **Lightning strikes** charge a staff you hold by 20 % of its capacity. During thunderstorms, natural lightning within 32 blocks strikes
 a player with an active shield under open sky, who can use that to charge without any other mods.
 
@@ -85,8 +91,8 @@ The lightning has its own section `[beam]`, with `damagePerSecond`, `hitsPerSeco
 about 8 minutes of firing on a full staff), `chainTargets`, `chainRange`, `chainFalloff`, `chargeSeconds`, `chargeStart`, `chargeMax`,
 `wetDamageFactor`, `wetChainRangeFactor`, `slowTicks`, `slowLevel` and `fireSeconds`. The energy ball is in `[energyBall]`: `damage`,
 `radius`, `edgeDamage`, `knockback`, `speed`, `range`, `energy`, `cooldownTicks`, `chargeTicks` and `chargedDamageFactor` / `chargedRadiusFactor` /
-`chargedSizeFactor` / `chargedEnergyFactor`. The teleport is in `[teleport]`: `range`, `energy` and `cooldownTicks`. `[staff]` also has `lightningCharge` and
-`lightningAttractRange`.
+`chargedSizeFactor` / `chargedEnergyFactor`. The teleport is in `[teleport]`: `range`, `energy` and `cooldownTicks`. `[staff]` also has `lightDrain`, `lightLevel`, `lightningCharge` and
+`lightningAttractRange`, `[energyBall]` also `blockDropChance` and `maxBlockResistance`.
 
 ## Building
 

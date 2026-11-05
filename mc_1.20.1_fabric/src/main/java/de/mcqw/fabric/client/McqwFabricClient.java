@@ -38,6 +38,9 @@ public final class McqwFabricClient implements ClientModInitializer {
         KeyBindingHelper.registerKeyBinding(KeyBindings.SHIELD);
         KeyBindingHelper.registerKeyBinding(KeyBindings.CLOAK);
         KeyBindingHelper.registerKeyBinding(KeyBindings.TELEPORT);
+        KeyBindingHelper.registerKeyBinding(KeyBindings.LIGHTS);
+        KeyBindingHelper.registerKeyBinding(KeyBindings.BLOCK_DAMAGE);
+        ClientTickEvents.START_CLIENT_TICK.register(client -> StaffClient.onClientTickStart());
         ClientTickEvents.END_CLIENT_TICK.register(client -> StaffClient.onClientTickEnd());
         HudRenderCallback.EVENT.register((graphics, partialTick) ->
                 StaffHud.render(ClientCompat.hudCanvas(graphics), graphics.guiWidth(), graphics.guiHeight()));
