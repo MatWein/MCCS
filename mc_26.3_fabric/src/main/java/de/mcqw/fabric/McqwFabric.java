@@ -19,6 +19,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +41,7 @@ public final class McqwFabric implements ModInitializer {
             output.accept(staff);
             ItemStack charged = new ItemStack(staff);
             StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-            output.accept(charged);
+            output.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
         });
         EnergyBallEntity.TYPE = McqwObjects.energyBallType();
         Registry.register(BuiltInRegistries.ENTITY_TYPE, Mcqw.id(McqwIds.ENERGY_BALL), EnergyBallEntity.TYPE);

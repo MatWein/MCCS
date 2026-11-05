@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** MCQW's own render types (glow, lightning and shield bubble). */
 final class ModRenderTypes {
+    // All of them are additive: with "improved transparency" they use vanilla's OIT pipelines for additive surfaces.
     /** Fades additive colors out in fog instead of adding the fog color (assets/mcqw/shaders/core/additive.fsh). */
     private static final Identifier ADDITIVE_FRAGMENT_SHADER = Mcqw.id("core/additive");
 
@@ -62,6 +63,7 @@ final class ModRenderTypes {
 
     static RenderType glow(Identifier texture) {
         return GLOW_TYPES.computeIfAbsent(texture, t -> RenderType.create("mcqw_glow", RenderSetup.builder(GLOW)
+                .setOitPipelines(RenderPipelines.OIT_ENERGY_SWIRL)
                 .withTexture("Sampler0", t)
                 .sortOnUpload()
                 .createRenderSetup()));
@@ -69,6 +71,7 @@ final class ModRenderTypes {
 
     static RenderType beam(Identifier texture) {
         return BEAM_TYPES.computeIfAbsent(texture, t -> RenderType.create("mcqw_beam", RenderSetup.builder(BEAM)
+                .setOitPipelines(RenderPipelines.OIT_ENERGY_SWIRL)
                 .withTexture("Sampler0", t)
                 .sortOnUpload()
                 .createRenderSetup()));
@@ -84,6 +87,7 @@ final class ModRenderTypes {
 
     private static RenderType energyBubble(RenderPipeline pipeline, Identifier texture, float uOffset, float vOffset) {
         return RenderType.create("mcqw_bubble", RenderSetup.builder(pipeline)
+                .setOitPipelines(RenderPipelines.OIT_ENERGY_SWIRL)
                 .withTexture("Sampler0", texture)
                 .setTextureTransform(new TextureTransform.OffsetTextureTransform(uOffset, vOffset))
                 .useLightmap()

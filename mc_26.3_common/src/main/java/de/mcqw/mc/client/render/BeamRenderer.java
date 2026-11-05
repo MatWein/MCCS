@@ -22,7 +22,7 @@ public final class BeamRenderer {
         Minecraft minecraft = Minecraft.getInstance();
         float partialTick = minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false);
         BeamClient.forEachPath(minecraft.gameRenderer.mainCamera(), cameraPosition, partialTick, (path, scale) ->
-                collector.submitCustomGeometry(poseStack, ModRenderTypes.beam(TEXTURE), (pose, buffer) -> {
+                AfterWater.submit(poseStack, collector, ModRenderTypes.beam(TEXTURE), (pose, buffer) -> {
                     VertexSink sink = RenderSinks.sink(pose, buffer, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
                     LightningBolt.emitGlow(path, sink, scale);
                     LightningBolt.emitCore(path, sink, scale);

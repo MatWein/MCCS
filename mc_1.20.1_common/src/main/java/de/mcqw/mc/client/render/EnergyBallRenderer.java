@@ -14,11 +14,19 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** The energy ball, in the look of the shield bubble. */
 public final class EnergyBallRenderer extends EntityRenderer<EnergyBallEntity> {
     private static final ResourceLocation TEXTURE = Mcqw.id("textures/entity/shield.png");
     private static final int FULL_BLOCK_LIGHT = 15;
+    private static final List<Pending> PENDING = new ArrayList<>();
+
+    private record Pending(Matrix4f pose, Matrix3f normal, float time) {}
 
     public EnergyBallRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -35,15 +43,29 @@ public final class EnergyBallRenderer extends EntityRenderer<EnergyBallEntity> {
         return FULL_BLOCK_LIGHT;
     }
 
+    /** Only remembered here: it has to come after water and clouds, see {@link BubbleRenderer}. */
     @Override
     public void render(EnergyBallEntity ball, float yaw, float partialTick, PoseStack poseStack, MultiBufferSource buffers, int light) {
-        float time = ball.tickCount + partialTick;
         poseStack.pushPose();
         poseStack.translate(0, EnergyBallBase.SIZE / 2, 0);
-        draw(EnergyOrb.SHELL, EnergyOrb.SHELL_INTENSITY, poseStack.last(), buffers, time);
-        draw(EnergyOrb.CORE, EnergyOrb.CORE_INTENSITY, poseStack.last(), buffers, time);
+        PoseStack.Pose pose = poseStack.last();
+        PENDING.add(new Pending(new Matrix4f(pose.pose()), new Matrix3f(pose.normal()), ball.tickCount + partialTick));
         poseStack.popPose();
         super.render(ball, yaw, partialTick, poseStack, buffers, light);
+    }
+
+    /** Draws the remembered balls; for the camera rotation see {@link BubbleRenderer#render}. */
+    static void drawPending(PoseStack.Pose worldPose, boolean rotationOnStack, MultiBufferSource buffers) {
+        Matrix4f undoCamera = rotationOnStack ? new Matrix4f(worldPose.pose()).invert() : new Matrix4f();
+        Matrix3f undoCameraNormal = rotationOnStack ? new Matrix3f(worldPose.normal()).invert() : new Matrix3f();
+        PoseStack poseStack = new PoseStack();
+        for (Pending ball : PENDING) {
+            poseStack.last().pose().set(undoCamera).mul(ball.pose());
+            poseStack.last().normal().set(undoCameraNormal).mul(ball.normal());
+            draw(EnergyOrb.SHELL, EnergyOrb.SHELL_INTENSITY, poseStack.last(), buffers, ball.time());
+            draw(EnergyOrb.CORE, EnergyOrb.CORE_INTENSITY, poseStack.last(), buffers, ball.time());
+        }
+        PENDING.clear();
     }
 
     private static void draw(EnergyBubble.Shape shape, float intensity, PoseStack.Pose pose, MultiBufferSource buffers, float time) {

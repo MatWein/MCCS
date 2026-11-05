@@ -60,7 +60,7 @@ public final class BubbleRenderer {
             float u = time * layer.uDrift();
             float v = time * layer.vDrift();
             RenderType type = inside ? ModRenderTypes.energyBubbleInside(TEXTURE, u, v) : ModRenderTypes.energyBubble(TEXTURE, u, v);
-            collector.submitCustomGeometry(poseStack, type, (pose, buffer) -> EnergyBubble.emitLayer(grid, layer,
+            AfterWater.submit(poseStack, collector, type, (pose, buffer) -> EnergyBubble.emitLayer(grid, layer,
                     RenderSinks.sink(pose, buffer, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY), intensity));
         }
     }

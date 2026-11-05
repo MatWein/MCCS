@@ -51,7 +51,7 @@ public final class EnergyBallRenderer extends EntityRenderer<EnergyBallEntity, E
         EnergyBubble.Grid grid = EnergyBubble.compute(shape, RenderSinks.view(poseStack.last()), EnergyOrb.WOBBLE, time);
         for (EnergyBubble.Layer layer : EnergyBubble.LAYERS) {
             RenderType type = ModRenderTypes.energyBubble(TEXTURE, time * layer.uDrift(), time * layer.vDrift());
-            collector.submitCustomGeometry(poseStack, type, (pose, buffer) -> EnergyBubble.emitLayer(grid, layer,
+            AfterWater.submit(poseStack, collector, type, (pose, buffer) -> EnergyBubble.emitLayer(grid, layer,
                     RenderSinks.sink(pose, buffer, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY), intensity));
         }
     }

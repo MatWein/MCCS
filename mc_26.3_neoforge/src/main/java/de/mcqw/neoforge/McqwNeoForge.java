@@ -16,6 +16,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -83,7 +84,7 @@ public final class McqwNeoForge {
             event.accept(CRYSTAL_STAFF.get());
             ItemStack charged = new ItemStack(CRYSTAL_STAFF.get());
             StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-            event.accept(charged);
+            event.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
         }
     }
 }

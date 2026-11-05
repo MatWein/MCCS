@@ -20,7 +20,7 @@ import org.joml.Matrix4f;
 import java.util.Map;
 
 /**
- * Draws the shield and cloak bubbles and the lightning of all players after clouds and weather instead of together with the entities (also
+ * Draws the shield and cloak bubbles, the energy balls and the lightning of all players after clouds and weather instead of together with the entities (also
  * in first person, where the own player is not rendered).
  *
  * <p>The bubble is additive and writes no depth (so water and glass behind it stay visible). Drawn with the
@@ -60,6 +60,7 @@ public final class BubbleRenderer {
             poseStack.popPose();
         }
         BeamRenderer.draw(camera, poseStack.last(), buffers, cameraPosition, partialTick);
+        EnergyBallRenderer.drawPending(worldPose, rotationOnStack, buffers);
         buffers.endBatch();
     }
 

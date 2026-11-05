@@ -6,7 +6,8 @@ store energy from Mekanism and other mods. It runs on its own; other mods are op
 The staff is carried upright like a shepherd's staff, held near its middle and reaching from the ground to the top
 of the head.
 
-Get it from the creative inventory, tab **Combat**: a new staff (20 % charge) and a fully charged one.
+Get it from the creative inventory, tab **Combat**: a new staff (20 % charge) and a fully charged one. The search only
+shows the new one.
 
 ## Shield, cloak, lightning and energy ball
 

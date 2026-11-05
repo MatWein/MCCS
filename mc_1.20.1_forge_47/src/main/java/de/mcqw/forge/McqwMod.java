@@ -10,6 +10,7 @@ import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -74,7 +75,7 @@ public final class McqwMod {
             event.accept(CRYSTAL_STAFF);
             ItemStack charged = new ItemStack(CRYSTAL_STAFF.get());
             StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-            event.accept(charged);
+            event.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
         }
     }
 }
