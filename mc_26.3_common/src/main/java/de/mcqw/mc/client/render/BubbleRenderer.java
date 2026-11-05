@@ -2,7 +2,7 @@ package de.mcqw.mc.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.mcqw.core.render.EnergyBubble;
-import de.mcqw.core.staff.ShieldAnimation;
+import de.mcqw.core.staff.BubbleAnimation;
 import de.mcqw.mc.Mcqw;
 import de.mcqw.mc.client.StaffClient;
 import net.minecraft.client.Minecraft;
@@ -16,21 +16,26 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.Map;
 
-/** Submits the shield bubbles of all players together with the entities (also in first person, where the own player is not rendered). */
-public final class ShieldRenderer {
+/** Submits the shield and cloak bubbles of all players together with the entities (also in first person, where the own player is not rendered). */
+public final class BubbleRenderer {
     private static final Identifier TEXTURE = Mcqw.id("textures/entity/shield.png");
 
-    private ShieldRenderer() {}
+    private BubbleRenderer() {}
+
+    /** The glow render type for the mixin drawing the cloaked player's outline. */
+    public static RenderType glow(Identifier texture) {
+        return ModRenderTypes.glow(texture);
+    }
 
     public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Vec3 cameraPosition) {
-        Map<Player, ShieldAnimation> bubbles = StaffClient.bubbles();
+        Map<Player, BubbleAnimation> bubbles = StaffClient.bubbles();
         if (bubbles.isEmpty()) return;
         float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
-        for (Map.Entry<Player, ShieldAnimation> bubble : bubbles.entrySet()) {
+        for (Map.Entry<Player, BubbleAnimation> bubble : bubbles.entrySet()) {
             Player player = bubble.getKey();
-            ShieldAnimation animation = bubble.getValue();
+            BubbleAnimation animation = bubble.getValue();
             float shield = animation.shield(partialTick);
-            float intensity = EnergyBubble.intensity(shield, animation.flash(partialTick));
+            float intensity = EnergyBubble.intensity(shield, animation.cloak(partialTick), animation.flash(partialTick), player == Minecraft.getInstance().player);
             if (!EnergyBubble.isVisible(intensity)) continue;
             Vec3 position = player.getPosition(partialTick).subtract(cameraPosition);
             poseStack.pushPose();

@@ -12,7 +12,10 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.TextureTransform;
 import net.minecraft.resources.Identifier;
 
-/** MCQW's own render type (shield bubble). */
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/** MCQW's own render types (glow and shield bubble). */
 final class ModRenderTypes {
     /** Fades additive colors out in fog instead of adding the fog color (assets/mcqw/shaders/core/additive.fsh). */
     private static final Identifier ADDITIVE_FRAGMENT_SHADER = Mcqw.id("core/additive");
@@ -28,7 +31,23 @@ final class ModRenderTypes {
             .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
             .build();
 
+    /** Glowing parts (the cloaked player's outline): full bright and additive like vanilla's "eyes" up to 1.21. */
+    private static final RenderPipeline GLOW = RenderPipeline.builder(RenderPipelines.ENTITY_NO_LIGHTMAP_SNIPPET, RenderPipelines.EYES_SNIPPET)
+            .withLocation(Mcqw.id("pipeline/glow"))
+            .withFragmentShader(ADDITIVE_FRAGMENT_SHADER)
+            .withColorTargetState(new ColorTargetState(BlendFunction.ADDITIVE))
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
+            .build();
+    private static final Map<Identifier, RenderType> GLOW_TYPES = new ConcurrentHashMap<>();
+
     private ModRenderTypes() {}
+
+    static RenderType glow(Identifier texture) {
+        return GLOW_TYPES.computeIfAbsent(texture, t -> RenderType.create("mcqw_glow", RenderSetup.builder(GLOW)
+                .withTexture("Sampler0", t)
+                .sortOnUpload()
+                .createRenderSetup()));
+    }
 
     static RenderType energyBubble(Identifier texture, float uOffset, float vOffset) {
         return RenderType.create("mcqw_bubble", RenderSetup.builder(BUBBLE)

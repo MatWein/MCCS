@@ -9,5 +9,7 @@ public final class KeyBindings {
 
     public static final KeyMapping SHIELD = new KeyMapping("key.mcqw.shield", GLFW.GLFW_KEY_V, CATEGORY);
 
+    public static final KeyMapping CLOAK = new KeyMapping("key.mcqw.cloak", GLFW.GLFW_KEY_C, CATEGORY);
+
     private KeyBindings() {}
 }

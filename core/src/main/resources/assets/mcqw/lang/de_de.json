@@ -7,5 +7,9 @@
   "hud.mcqw.energy": "Energie: %s %%",
   "hud.mcqw.shield": "Schild: %s",
   "hud.mcqw.shield.on": "AKTIV",
-  "hud.mcqw.shield.off": "aus"
+  "hud.mcqw.shield.off": "aus",
+  "key.mcqw.cloak": "Stab-Tarnung umschalten",
+  "hud.mcqw.cloak": "Tarnung: %s",
+  "hud.mcqw.cloak.on": "AKTIV",
+  "hud.mcqw.cloak.off": "aus"
 }

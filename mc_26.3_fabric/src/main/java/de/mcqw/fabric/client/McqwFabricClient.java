@@ -7,7 +7,7 @@ import de.mcqw.mc.client.ClientCompat;
 import de.mcqw.mc.client.KeyBindings;
 import de.mcqw.mc.client.StaffClient;
 import de.mcqw.mc.client.hud.StaffHud;
-import de.mcqw.mc.network.ToggleShieldPacket;
+import de.mcqw.mc.network.StaffActionPacket;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -19,8 +19,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 public final class McqwFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        StaffClient.toggleSender = () -> ClientPlayNetworking.send(new ToggleShieldPacket());
+        StaffClient.actionSender = action -> ClientPlayNetworking.send(new StaffActionPacket(action));
         KeyMappingHelper.registerKeyMapping(KeyBindings.SHIELD);
+        KeyMappingHelper.registerKeyMapping(KeyBindings.CLOAK);
         ClientTickEvents.END_CLIENT_TICK.register(client -> StaffClient.onClientTickEnd());
         HudElementRegistry.addLast(Mcqw.id("staff_hud"), (graphics, deltaTracker) ->
                 StaffHud.render(ClientCompat.hudCanvas(graphics), graphics.guiWidth(), graphics.guiHeight()));

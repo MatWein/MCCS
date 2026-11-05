@@ -11,7 +11,7 @@ public final class StaffHudModel {
     private static final String KEY = "hud.mcqw.";
 
     /** {@code drain}: current use in FE/tick, 0 if the staff is not using energy. */
-    public record State(int stored, int capacity, boolean shieldOn, int drain, boolean consumesEnergy) {}
+    public record State(int stored, int capacity, boolean shieldOn, boolean cloakOn, int drain, boolean consumesEnergy) {}
 
     private StaffHudModel() {}
 
@@ -19,6 +19,8 @@ public final class StaffHudModel {
         List<HudLine> lines = new ArrayList<>();
         lines.add(HudLine.of(text("title"), HudColors.GOLD));
         lines.add(energyLine(state, tickCount));
+        HudText cloak = text(state.cloakOn() ? "cloak.on" : "cloak.off");
+        lines.add(HudLine.of(text("cloak", cloak), state.cloakOn() ? HudColors.GOLD : HudColors.GREY));
         HudText shield = text(state.shieldOn() ? "shield.on" : "shield.off");
         lines.add(HudLine.of(text("shield", shield), state.shieldOn() ? HudColors.TEAL : HudColors.GREY));
         if (state.drain() > 0) lines.add(drainLine(state));

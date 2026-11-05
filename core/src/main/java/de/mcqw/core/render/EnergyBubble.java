@@ -3,7 +3,7 @@ package de.mcqw.core.render;
 import java.util.List;
 
 /**
- * The shield bubble: a gently wobbling upright ellipsoid around the player (origin at the feet), brighter at its rim (fresnel),
+ * The shield and cloak bubble: a gently wobbling upright ellipsoid around the player (origin at the feet), brighter at its rim (fresnel),
  * drawn in two drifting, additive layers of a caustics texture.
  */
 public final class EnergyBubble {
@@ -30,6 +30,8 @@ public final class EnergyBubble {
     private static final float TWO_PI = 2 * PI;
     private static final float SHIELD_BASE_INTENSITY = 0.55f;
     private static final float SHIELD_FLASH_INTENSITY = 0.6f;
+    private static final float CLOAK_INTENSITY_OWN = 0.2f;
+    private static final float CLOAK_INTENSITY_OTHERS = 0.09f;
     private static final float SHIELD_WOBBLE = 0.02f;
     private static final float MIN_BUBBLE_INTENSITY = 0.005f;
 
@@ -111,10 +113,15 @@ public final class EnergyBubble {
         }
     }
 
-    /** Bubble brightness for the shield's fade and hit flash (0 = invisible). */
-    public static float intensity(float shield, float shieldFlash) {
-        return shield * (SHIELD_BASE_INTENSITY + SHIELD_FLASH_INTENSITY * shieldFlash);
+    /** Bubble brightness for shield and cloak fades (0 = invisible); {@code own}: the player's own bubble. */
+    public static float intensity(float shield, float cloak, float shieldFlash, boolean own) {
+        float shieldIntensity = shield * (SHIELD_BASE_INTENSITY + SHIELD_FLASH_INTENSITY * shieldFlash);
+        float cloakIntensity = cloak * (1 - shield) * (own ? CLOAK_INTENSITY_OWN : CLOAK_INTENSITY_OTHERS);
+        return shieldIntensity + cloakIntensity;
     }
+
+    /** Brightness of the faint outline players see of themselves while cloaked. */
+    public static final float GHOST_BRIGHTNESS = 0.22f;
 
     public static float wobble(float shield) {
         return SHIELD_WOBBLE * shield;

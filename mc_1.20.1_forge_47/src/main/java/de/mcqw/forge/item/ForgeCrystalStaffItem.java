@@ -6,7 +6,7 @@ import de.mcqw.core.staff.StaffEnergy;
 import de.mcqw.mc.client.StaffArmPose;
 import de.mcqw.mc.item.CrystalStaffItem;
 import de.mcqw.mc.staff.StaffData;
-import de.mcqw.mc.staff.StaffShield;
+import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -34,7 +34,7 @@ public final class ForgeCrystalStaffItem extends CrystalStaffItem {
         @Override
         public int receiveEnergy(int amount, boolean simulate) {
             StaffConfig config = ServerConfig.STAFF;
-            int stored = StaffShield.stored(stack);
+            int stored = StaffSystems.stored(stack);
             int accepted = StaffEnergy.accepted(stored, config.capacity(), config.maxReceive(), amount);
             if (!simulate && accepted > 0) StaffData.setSavedEnergy(stack, stored + accepted);
             return accepted;
@@ -47,7 +47,7 @@ public final class ForgeCrystalStaffItem extends CrystalStaffItem {
 
         @Override
         public int getEnergyStored() {
-            return StaffShield.stored(stack);
+            return StaffSystems.stored(stack);
         }
 
         @Override

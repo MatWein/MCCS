@@ -11,5 +11,7 @@ public final class KeyBindings {
 
     public static final KeyMapping SHIELD = new KeyMapping("key.mcqw.shield", InputConstants.KEY_V, CATEGORY);
 
+    public static final KeyMapping CLOAK = new KeyMapping("key.mcqw.cloak", InputConstants.KEY_C, CATEGORY);
+
     private KeyBindings() {}
 }

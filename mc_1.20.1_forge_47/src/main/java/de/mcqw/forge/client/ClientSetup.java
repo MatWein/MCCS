@@ -6,7 +6,7 @@ import de.mcqw.mc.client.ClientCompat;
 import de.mcqw.mc.client.KeyBindings;
 import de.mcqw.mc.client.StaffClient;
 import de.mcqw.mc.client.hud.StaffHud;
-import de.mcqw.mc.network.ToggleShieldPacket;
+import de.mcqw.mc.network.StaffActionPacket;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -22,12 +22,13 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        StaffClient.toggleSender = () -> ModNetwork.sendToServer(new ToggleShieldPacket());
+        StaffClient.actionSender = action -> ModNetwork.sendToServer(new StaffActionPacket(action));
     }
 
     @SubscribeEvent
     public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
         event.register(KeyBindings.SHIELD);
+        event.register(KeyBindings.CLOAK);
     }
 
     @SubscribeEvent

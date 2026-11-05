@@ -7,7 +7,7 @@ import de.mcqw.core.hud.HudLine;
 import de.mcqw.core.hud.HudText;
 import de.mcqw.core.hud.StaffHudModel;
 import de.mcqw.mc.client.ClientCompat;
-import de.mcqw.mc.staff.StaffShield;
+import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.player.LocalPlayer;
@@ -33,14 +33,15 @@ public final class StaffHud {
         Minecraft minecraft = Minecraft.getInstance();
         LocalPlayer player = minecraft.player;
         if (player == null || ClientCompat.hudHidden(minecraft)) return;
-        ItemStack active = StaffShield.activeStaff(player);
-        ItemStack staff = active.isEmpty() ? StaffShield.heldStaff(player) : active;
+        ItemStack shield = StaffSystems.activeShield(player);
+        ItemStack staff = shield.isEmpty() ? StaffSystems.heldStaff(player) : shield;
         if (staff.isEmpty()) return;
 
         StaffConfig config = ServerConfig.STAFF;
-        boolean shieldOn = !active.isEmpty();
-        int drain = shieldOn && config.consumeEnergy() ? config.shieldDrain() : 0;
-        List<HudLine> lines = StaffHudModel.lines(new StaffHudModel.State(StaffShield.stored(staff), config.capacity(), shieldOn,
+        boolean shieldOn = !shield.isEmpty();
+        boolean cloakOn = !StaffSystems.activeCloak(player).isEmpty();
+        int drain = config.consumeEnergy() ? StaffSystems.drain(player, false) : 0;
+        List<HudLine> lines = StaffHudModel.lines(new StaffHudModel.State(StaffSystems.stored(staff), config.capacity(), shieldOn, cloakOn,
                 drain, config.consumeEnergy()), player.tickCount);
 
         Font font = minecraft.font;

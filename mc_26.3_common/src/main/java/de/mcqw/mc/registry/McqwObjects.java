@@ -16,6 +16,8 @@ public final class McqwObjects {
             .persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).build();
     public static final DataComponentType<Boolean> SHIELD_ON = DataComponentType.<Boolean>builder()
             .persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build();
+    public static final DataComponentType<Boolean> CLOAK_ON = DataComponentType.<Boolean>builder()
+            .persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build();
     public static final DataComponentType<Integer> SHIELD_HITS = DataComponentType.<Integer>builder()
             .persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).build();
 

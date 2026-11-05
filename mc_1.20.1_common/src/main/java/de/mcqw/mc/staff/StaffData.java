@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 public final class StaffData {
     private static final String ENERGY = "Energy";
     private static final String SHIELD_ON = "ShieldOn";
+    private static final String CLOAK_ON = "CloakOn";
     private static final String SHIELD_HITS = "ShieldHits";
 
     private StaffData() {}
@@ -29,6 +30,15 @@ public final class StaffData {
 
     public static void setShieldOn(ItemStack stack, boolean on) {
         stack.getOrCreateTag().putBoolean(SHIELD_ON, on);
+    }
+
+    public static boolean cloakOn(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.getBoolean(CLOAK_ON);
+    }
+
+    public static void setCloakOn(ItemStack stack, boolean on) {
+        stack.getOrCreateTag().putBoolean(CLOAK_ON, on);
     }
 
     public static int shieldHits(ItemStack stack) {

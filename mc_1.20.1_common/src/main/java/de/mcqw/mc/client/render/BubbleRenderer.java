@@ -2,7 +2,7 @@ package de.mcqw.mc.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.mcqw.core.render.EnergyBubble;
-import de.mcqw.core.staff.ShieldAnimation;
+import de.mcqw.core.staff.BubbleAnimation;
 import de.mcqw.mc.Mcqw;
 import de.mcqw.mc.client.StaffClient;
 import net.minecraft.client.Camera;
@@ -20,16 +20,16 @@ import org.joml.Matrix4f;
 import java.util.Map;
 
 /**
- * Draws the shield bubbles of all players after clouds and weather instead of together with the entities (also
+ * Draws the shield and cloak bubbles of all players after clouds and weather instead of together with the entities (also
  * in first person, where the own player is not rendered).
  *
  * <p>The bubble is additive and writes no depth (so water and glass behind it stay visible). Drawn with the
  * entities, the clouds rendered later would be blended over it.
  */
-public final class ShieldRenderer {
+public final class BubbleRenderer {
     private static final ResourceLocation TEXTURE = Mcqw.id("textures/entity/shield.png");
 
-    private ShieldRenderer() {}
+    private BubbleRenderer() {}
 
     /**
      * @param worldPose  the camera rotation of the world rendering
@@ -37,7 +37,7 @@ public final class ShieldRenderer {
      *                        then taken out once; depends on where the loader hooks in)
      */
     public static void render(PoseStack.Pose worldPose, boolean rotationOnStack, Camera camera, float partialTick) {
-        Map<Player, ShieldAnimation> bubbles = StaffClient.bubbles();
+        Map<Player, BubbleAnimation> bubbles = StaffClient.bubbles();
         if (bubbles.isEmpty()) return;
         MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
         Vec3 cameraPosition = camera.getPosition();
@@ -46,11 +46,11 @@ public final class ShieldRenderer {
             poseStack.last().pose().set(new Matrix4f(worldPose.pose()));
             poseStack.last().normal().set(new Matrix3f(worldPose.normal()));
         }
-        for (Map.Entry<Player, ShieldAnimation> bubble : bubbles.entrySet()) {
+        for (Map.Entry<Player, BubbleAnimation> bubble : bubbles.entrySet()) {
             Player player = bubble.getKey();
-            ShieldAnimation animation = bubble.getValue();
+            BubbleAnimation animation = bubble.getValue();
             float shield = animation.shield(partialTick);
-            float intensity = EnergyBubble.intensity(shield, animation.flash(partialTick));
+            float intensity = EnergyBubble.intensity(shield, animation.cloak(partialTick), animation.flash(partialTick), player == Minecraft.getInstance().player);
             if (!EnergyBubble.isVisible(intensity)) continue;
             Vec3 position = player.getPosition(partialTick).subtract(cameraPosition);
             poseStack.pushPose();

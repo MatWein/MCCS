@@ -7,7 +7,7 @@ import de.mcqw.forge.network.ModNetwork;
 import de.mcqw.mc.Mcqw;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
-import de.mcqw.mc.staff.StaffShield;
+import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +15,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -39,10 +43,20 @@ public final class McqwMod {
         modBus.addListener(McqwMod::onBuildContents);
         modBus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(ModNetwork::register));
         MinecraftForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent event) -> {
-            if (event.phase == TickEvent.Phase.END) StaffShield.tick(event.getServer());
+            if (event.phase == TickEvent.Phase.END) StaffSystems.tick(event.getServer());
         });
         MinecraftForge.EVENT_BUS.addListener((LivingAttackEvent event) -> {
-            if (StaffShield.absorb(event.getEntity(), event.getSource(), event.getAmount())) event.setCanceled(true);
+            if (StaffSystems.absorb(event.getEntity(), event.getSource(), event.getAmount())) event.setCanceled(true);
+        });
+        MinecraftForge.EVENT_BUS.addListener((AttackEntityEvent event) -> StaffSystems.onAttack(event.getEntity()));
+        MinecraftForge.EVENT_BUS.addListener((LivingFallEvent event) -> {
+            if (StaffSystems.absorbFall(event.getEntity(), event.getDistance(), event.getDamageMultiplier())) event.setCanceled(true);
+        });
+        MinecraftForge.EVENT_BUS.addListener((LivingEvent.LivingVisibilityEvent event) -> {
+            if (StaffSystems.isCloaked(event.getEntity())) event.modifyVisibility(0.0);
+        });
+        MinecraftForge.EVENT_BUS.addListener((LivingChangeTargetEvent event) -> {
+            if (StaffSystems.isCloaked(event.getNewTarget())) event.setCanceled(true);
         });
     }
 

@@ -4,7 +4,7 @@ import de.mcqw.core.config.ServerConfig;
 import de.mcqw.core.config.StaffConfig;
 import de.mcqw.core.staff.StaffEnergy;
 import de.mcqw.mc.staff.StaffData;
-import de.mcqw.mc.staff.StaffShield;
+import de.mcqw.mc.staff.StaffSystems;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
@@ -31,7 +31,7 @@ public final class TeamRebornEnergy {
             if (!variant.isOf(staff)) return 0;
             ItemStack stack = variant.toStack();
             StaffConfig config = ServerConfig.STAFF;
-            int stored = StaffShield.stored(stack);
+            int stored = StaffSystems.stored(stack);
             int accepted = StaffEnergy.accepted(stored, config.capacity(), config.maxReceive(), maxAmount);
             if (accepted <= 0) return 0;
             StaffData.setSavedEnergy(stack, stored + accepted);
@@ -46,7 +46,7 @@ public final class TeamRebornEnergy {
         @Override
         public long getAmount() {
             ItemVariant variant = context.getItemVariant();
-            return variant.isOf(staff) ? StaffShield.stored(variant.toStack()) : 0;
+            return variant.isOf(staff) ? StaffSystems.stored(variant.toStack()) : 0;
         }
 
         @Override

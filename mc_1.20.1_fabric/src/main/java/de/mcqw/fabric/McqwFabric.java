@@ -8,14 +8,16 @@ import de.mcqw.fabric.network.FabricNetwork;
 import de.mcqw.mc.Mcqw;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
-import de.mcqw.mc.staff.StaffShield;
+import de.mcqw.mc.staff.StaffSystems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -36,8 +38,12 @@ public final class McqwFabric implements ModInitializer {
             entries.accept(charged);
         });
         FabricNetwork.registerServer();
-        ServerTickEvents.END_SERVER_TICK.register(StaffShield::tick);
-        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !StaffShield.absorb(entity, source, amount));
+        ServerTickEvents.END_SERVER_TICK.register(StaffSystems::tick);
+        AttackEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
+            StaffSystems.onAttack(player);
+            return InteractionResult.PASS;
+        });
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !StaffSystems.absorb(entity, source, amount));
         if (FabricLoader.getInstance().isModLoaded(TEAM_REBORN_ENERGY)) TeamRebornEnergy.register(CRYSTAL_STAFF);
     }
 }

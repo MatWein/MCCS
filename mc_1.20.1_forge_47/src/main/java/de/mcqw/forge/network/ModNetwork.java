@@ -1,7 +1,7 @@
 package de.mcqw.forge.network;
 
 import de.mcqw.mc.Mcqw;
-import de.mcqw.mc.network.ToggleShieldPacket;
+import de.mcqw.mc.network.StaffActionPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -15,9 +15,9 @@ public final class ModNetwork {
     private ModNetwork() {}
 
     public static void register() {
-        CHANNEL.messageBuilder(ToggleShieldPacket.class, 0, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(ToggleShieldPacket::encode)
-                .decoder(ToggleShieldPacket::decode)
+        CHANNEL.messageBuilder(StaffActionPacket.class, 0, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(StaffActionPacket::encode)
+                .decoder(StaffActionPacket::decode)
                 .consumerMainThread((packet, context) -> {
                     ServerPlayer sender = context.get().getSender();
                     if (sender != null) packet.handle(sender);

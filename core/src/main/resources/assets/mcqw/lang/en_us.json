@@ -7,5 +7,9 @@
   "hud.mcqw.energy": "Energy: %s %%",
   "hud.mcqw.shield": "Shield: %s",
   "hud.mcqw.shield.on": "ACTIVE",
-  "hud.mcqw.shield.off": "off"
+  "hud.mcqw.shield.off": "off",
+  "key.mcqw.cloak": "Toggle staff cloak",
+  "hud.mcqw.cloak": "Cloak: %s",
+  "hud.mcqw.cloak.on": "ACTIVE",
+  "hud.mcqw.cloak.off": "off"
 }

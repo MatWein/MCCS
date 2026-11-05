@@ -2,10 +2,10 @@ package de.mcqw.neoforge;
 
 import de.mcqw.core.McqwIds;
 import de.mcqw.mc.Mcqw;
-import de.mcqw.mc.network.ToggleShieldPacket;
+import de.mcqw.mc.network.StaffActionPacket;
 import de.mcqw.mc.registry.McqwObjects;
 import de.mcqw.mc.staff.StaffData;
-import de.mcqw.mc.staff.StaffShield;
+import de.mcqw.mc.staff.StaffSystems;
 import de.mcqw.neoforge.config.NeoForgeConfigs;
 import de.mcqw.neoforge.item.NeoForgeCrystalStaffItem;
 import de.mcqw.neoforge.item.StaffEnergyHandler;
@@ -24,6 +24,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -43,6 +44,7 @@ public final class McqwNeoForge {
     static {
         COMPONENTS.register("energy", () -> McqwObjects.ENERGY);
         COMPONENTS.register("shield_on", () -> McqwObjects.SHIELD_ON);
+        COMPONENTS.register("cloak_on", () -> McqwObjects.CLOAK_ON);
         COMPONENTS.register("shield_hits", () -> McqwObjects.SHIELD_HITS);
     }
 
@@ -54,10 +56,11 @@ public final class McqwNeoForge {
         modBus.addListener(RegisterCapabilitiesEvent.class, event -> event.registerItem(Capabilities.Energy.ITEM,
                 (stack, access) -> new StaffEnergyHandler(access), CRYSTAL_STAFF.get()));
         modBus.addListener(RegisterPayloadHandlersEvent.class, event -> event.registrar(NETWORK_PROTOCOL).playToServer(
-                ToggleShieldPacket.TYPE, ToggleShieldPacket.STREAM_CODEC, (packet, context) -> packet.handle((ServerPlayer) context.player())));
-        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> StaffShield.tick(event.getServer()));
+                StaffActionPacket.TYPE, StaffActionPacket.STREAM_CODEC, (packet, context) -> packet.handle((ServerPlayer) context.player())));
+        NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> StaffSystems.tick(event.getServer()));
+        NeoForge.EVENT_BUS.addListener(AttackEntityEvent.class, event -> StaffSystems.onAttack(event.getEntity()));
         NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEvent.class, event -> {
-            if (StaffShield.absorb(event.getEntity(), event.getSource(), event.getAmount())) event.setCanceled(true);
+            if (StaffSystems.absorb(event.getEntity(), event.getSource(), event.getAmount())) event.setCanceled(true);
         });
     }
 

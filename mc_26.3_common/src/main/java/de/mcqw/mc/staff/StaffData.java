@@ -25,6 +25,14 @@ public final class StaffData {
         stack.set(McqwObjects.SHIELD_ON, on);
     }
 
+    public static boolean cloakOn(ItemStack stack) {
+        return stack.getOrDefault(McqwObjects.CLOAK_ON, false);
+    }
+
+    public static void setCloakOn(ItemStack stack, boolean on) {
+        stack.set(McqwObjects.CLOAK_ON, on);
+    }
+
     public static int shieldHits(ItemStack stack) {
         return stack.getOrDefault(McqwObjects.SHIELD_HITS, 0);
     }

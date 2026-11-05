@@ -8,35 +8,45 @@ of the head.
 
 Get it from the creative inventory, tab **Combat**: a new staff (20 % charge) and a fully charged one.
 
-## Shield
+## Shield and cloak
 
-Press `V` (rebindable under *Options → Controls → MCQW*) while holding the staff in either hand to toggle a shield
-bubble around the player. It absorbs all damage except `/kill` and the void; hits make it flash. It only works while
-the staff is in a hand and you are not riding anything: putting the staff away or mounting (horse, boat, jumper, ...)
-pauses the shield and hides the panel, afterwards it resumes. Other players see the bubble;
-your own one is not visible from inside in first person, the HUD shows its state.
+Both only work while the staff is in a hand and you are not riding anything: putting the staff away or mounting (horse,
+boat, jumper, ...) pauses them and hides the panel, afterwards they resume. Both keys can be rebound under
+*Options → Controls → MCQW*. The sounds are those of MCPJ's jumper.
 
-While you hold the staff, a small panel at the bottom left shows its charge and the shield state, and while the shield
-uses energy also the consumption and remaining time.
+**Shield (`V`).** A bubble around the player absorbs all damage except `/kill` and the void, without damage sounds.
+Hits make it flash and sound. Your own bubble is not visible from inside in first person.
+
+**Cloak (`C`).** After half a second you are invisible to others including armor and items, apart from a very faint energy
+bubble; you yourself see a faint glowing outline of your body in third person. Mobs lose track of you and cannot target
+you. You remain solid, and sounds you make can still be heard. Attacking with the staff in your main hand ends the cloak.
+
+A small panel at the bottom left shows the charge and both systems while you hold the staff, and also the consumption and
+remaining time while they use energy. The time ignores the extra drain under fire.
 
 ## Energy
 
 The staff stores energy and accepts it from other mods; it cannot be drained. On Forge and NeoForge it takes Forge Energy /
 NeoForge energy (Mekanism's joules are converted by Mekanism), on Fabric Team Reborn Energy if that API is installed.
 
-If the energy for a hit is missing, the shield collapses and the hit goes through. An empty staff cannot start the shield.
+If the energy for a hit is missing, the shield collapses and the hit goes through. An empty staff switches everything off
+and cannot start anything.
 
 Settings live in `world/serverconfig/mcqw-server.toml` on Forge, in `config/mcqw-server.toml` on NeoForge and Fabric
 (a server sends them to joining players):
 
 | Setting (`[staff]`) | Default | |
 |---|---|---|
-| `consumeEnergy` | `true` | `false`: the shield runs for free, even when the staff is empty |
-| `capacity` | 10,000,000 FE | |
+| `consumeEnergy` | `true` | `false`: shield and cloak run for free, even when the staff is empty |
+| `capacity` | 1,000,000 FE | |
 | `startCharge` | 0.2 | charge of a new staff |
-| `maxReceive` | 100,000 FE/t | fastest charging from other mods |
-| `shieldDrain` | 500 FE/t | about 17 minutes on a full staff |
-| `shieldHitCost` | 200 FE | per point of absorbed damage |
+| `maxReceive` | 10,000 FE/t | fastest charging from other mods |
+| `shieldDrain` | 50 FE/t | about 17 minutes on a full staff |
+| `shieldWaterFactor` / `shieldLavaFactor` | 2 / 3 | shield drain under water / touching lava |
+| `shieldHitCost` | 20 FE | per point of absorbed damage |
+| `cloakDrain` | 40 FE/t | |
+| `cloakWaterFactor` / `cloakLavaFactor` | 1.5 / 2 | cloak drain under water / touching lava |
+| `underFireFactor` / `underFireSeconds` | 2 / 2 s | shield and cloak drain after being hit |
 
 ## Building
 

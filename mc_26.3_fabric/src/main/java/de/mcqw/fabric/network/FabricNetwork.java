@@ -2,7 +2,7 @@ package de.mcqw.fabric.network;
 
 import de.mcqw.fabric.config.FabricConfigs;
 import de.mcqw.mc.Mcqw;
-import de.mcqw.mc.network.ToggleShieldPacket;
+import de.mcqw.mc.network.StaffActionPacket;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -32,10 +32,10 @@ public final class FabricNetwork {
     }
 
     public static void register() {
-        PayloadTypeRegistry.serverboundPlay().register(ToggleShieldPacket.TYPE, ToggleShieldPacket.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(StaffActionPacket.TYPE, StaffActionPacket.STREAM_CODEC);
         PayloadTypeRegistry.clientboundPlay().register(ServerConfigPacket.TYPE, ServerConfigPacket.STREAM_CODEC);
         // handlers run on the server thread
-        ServerPlayNetworking.registerGlobalReceiver(ToggleShieldPacket.TYPE, (packet, context) -> packet.handle(context.player()));
+        ServerPlayNetworking.registerGlobalReceiver(StaffActionPacket.TYPE, (packet, context) -> packet.handle(context.player()));
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
                 sender.sendPacket(new ServerConfigPacket(FabricConfigs.SERVER.values())));
     }
