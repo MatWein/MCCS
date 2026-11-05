@@ -9,6 +9,7 @@ public final class ServerConfig {
     public static BeamConfig BEAM;
     public static BallConfig BALL;
     public static TeleportConfig TELEPORT;
+    public static TelekinesisConfig TELEKINESIS;
 
     private ServerConfig() {}
 
@@ -17,5 +18,6 @@ public final class ServerConfig {
         BEAM = new BeamConfig(builder);
         BALL = new BallConfig(builder);
         TELEPORT = new TeleportConfig(builder);
+        TELEKINESIS = new TelekinesisConfig(builder);
     }
 }

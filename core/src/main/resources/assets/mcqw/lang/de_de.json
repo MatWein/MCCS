@@ -21,5 +21,6 @@
   "hud.mcqw.lights.off": "aus",
   "hud.mcqw.block_damage": "Blockschaden: %s",
   "hud.mcqw.block_damage.on": "AN",
-  "hud.mcqw.block_damage.off": "aus"
+  "hud.mcqw.block_damage.off": "aus",
+  "key.mcqw.telekinesis": "Stab-Telekinese"
 }

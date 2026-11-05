@@ -35,6 +35,7 @@ public final class StaffCompat {
     public static void launch(Entity entity, Vec3 motion) {
         entity.setDeltaMovement(motion);
         entity.hurtMarked = true;
+        entity.hasImpulse = true;
     }
 
     public static SoundEvent explodeSound() {

@@ -103,7 +103,13 @@ public final class StaffSystems {
     /** The key for a system was pressed. */
     public static void perform(ServerPlayer player, StaffAction system) {
         if (system == StaffAction.BEAM_START) {
-            StaffBeam.start(player);
+            // the attack key throws what the telekinesis holds, and fires the lightning otherwise
+            if (StaffTelekinesis.isHolding(player)) StaffTelekinesis.throwHeld(player);
+            else StaffBeam.start(player);
+            return;
+        }
+        if (system == StaffAction.TELEKINESIS) {
+            StaffTelekinesis.toggle(player);
             return;
         }
         if (system == StaffAction.BEAM_STOP) {
@@ -180,6 +186,7 @@ public final class StaffSystems {
 
     public static void tick(MinecraftServer server) {
         StaffBeam.tick(server);
+        StaffTelekinesis.tick(server);
         StaffLights.tick(server);
         boolean drainNow = server.getTickCount() % DRAIN_INTERVAL == 0;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {

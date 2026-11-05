@@ -40,6 +40,7 @@ public final class McqwFabricClient implements ClientModInitializer {
         KeyBindingHelper.registerKeyBinding(KeyBindings.TELEPORT);
         KeyBindingHelper.registerKeyBinding(KeyBindings.LIGHTS);
         KeyBindingHelper.registerKeyBinding(KeyBindings.BLOCK_DAMAGE);
+        KeyBindingHelper.registerKeyBinding(KeyBindings.TELEKINESIS);
         ClientTickEvents.START_CLIENT_TICK.register(client -> StaffClient.onClientTickStart());
         ClientTickEvents.END_CLIENT_TICK.register(client -> StaffClient.onClientTickEnd());
         HudRenderCallback.EVENT.register((graphics, partialTick) ->
@@ -49,7 +50,7 @@ public final class McqwFabricClient implements ClientModInitializer {
                 BubbleRenderer.render(context.matrixStack().last(), false, context.camera(), context.tickDelta()));
         ClientPlayNetworking.registerGlobalReceiver(FabricNetwork.BEAM_STATE, (client, handler, buffer, sender) -> {
             BeamStatePacket packet = BeamStatePacket.decode(buffer);
-            client.execute(() -> BeamClient.update(packet.shooter(), packet.firing(), packet.targets()));
+            client.execute(() -> BeamClient.update(packet.shooter(), packet.firing(), packet.tether(), packet.targets()));
         });
         ClientPlayNetworking.registerGlobalReceiver(FabricNetwork.SERVER_CONFIG, (client, handler, buffer, sender) -> {
             Map<String, String> values = FabricNetwork.decodeConfig(buffer);

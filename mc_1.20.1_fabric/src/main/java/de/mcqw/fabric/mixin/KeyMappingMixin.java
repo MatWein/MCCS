@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Minecraft 1.20.1 allows one binding per key, and vanilla already uses C ("save hotbar") and L (advancements): the staff's keys also count
+ * Minecraft 1.20.1 allows one binding per key, and vanilla already uses C ("save hotbar") L (advancements) and the middle mouse button (pick block): the staff's keys also count
  * when another binding got their key, and that binding keeps working (Forge and Minecraft 26.3 handle shared keys themselves).
  */
 @Mixin(KeyMapping.class)
@@ -25,7 +25,7 @@ abstract class KeyMappingMixin {
 
     @Inject(method = "click", at = @At("HEAD"))
     private static void mcqw$clickStaffKeys(InputConstants.Key pressed, CallbackInfo callback) {
-        for (KeyMapping staffKey : List.of(KeyBindings.SHIELD, KeyBindings.CLOAK, KeyBindings.TELEPORT, KeyBindings.LIGHTS, KeyBindings.BLOCK_DAMAGE)) {
+        for (KeyMapping staffKey : List.of(KeyBindings.SHIELD, KeyBindings.CLOAK, KeyBindings.TELEPORT, KeyBindings.LIGHTS, KeyBindings.BLOCK_DAMAGE, KeyBindings.TELEKINESIS)) {
             KeyMappingMixin mapping = (KeyMappingMixin) (Object) staffKey;
             if (mapping.key.equals(pressed) && MAP.get(pressed) != staffKey) mapping.clickCount++;
         }

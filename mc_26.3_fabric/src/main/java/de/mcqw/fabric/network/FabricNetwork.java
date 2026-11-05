@@ -38,8 +38,8 @@ public final class FabricNetwork {
     public static void register() {
         PayloadTypeRegistry.serverboundPlay().register(StaffActionPacket.TYPE, StaffActionPacket.STREAM_CODEC);
         PayloadTypeRegistry.clientboundPlay().register(BeamStatePacket.TYPE, BeamStatePacket.STREAM_CODEC);
-        StaffBeam.sender = (shooter, firing, targets) -> {
-            BeamStatePacket packet = new BeamStatePacket(shooter.getId(), firing, targets);
+        StaffBeam.sender = (shooter, firing, tether, targets) -> {
+            BeamStatePacket packet = new BeamStatePacket(shooter.getId(), firing, tether, targets);
             for (ServerPlayer player : PlayerLookup.tracking(shooter)) ServerPlayNetworking.send(player, packet);
             ServerPlayNetworking.send(shooter, packet);
         };

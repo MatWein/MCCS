@@ -42,7 +42,7 @@ public final class StaffHud {
         StaffConfig config = ServerConfig.STAFF;
         boolean shieldOn = !shield.isEmpty();
         boolean cloakOn = !StaffSystems.activeCloak(player).isEmpty();
-        int drain = config.consumeEnergy() ? StaffSystems.drain(player, false) + (BeamClient.isFiring(player) ? ServerConfig.BEAM.drain() : 0) : 0;
+        int drain = config.consumeEnergy() ? StaffSystems.drain(player, false) + BeamClient.drain(player) : 0;
         List<HudLine> lines = StaffHudModel.lines(new StaffHudModel.State(StaffSystems.stored(staff), config.capacity(), shieldOn, cloakOn,
                 !StaffSystems.activeLights(player).isEmpty(), StaffData.blockDamage(staff), drain, config.consumeEnergy()), player.tickCount);
 

@@ -11,7 +11,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOL_VERSION = "2";
+    private static final String PROTOCOL_VERSION = "3";
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             Mcqw.id("main"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 
@@ -35,8 +35,8 @@ public final class ModNetwork {
                     context.get().setPacketHandled(true);
                 })
                 .add();
-        StaffBeam.sender = (shooter, firing, targets) ->
-                CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> shooter), new BeamStatePacket(shooter.getId(), firing, targets));
+        StaffBeam.sender = (shooter, firing, tether, targets) ->
+                CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> shooter), new BeamStatePacket(shooter.getId(), firing, tether, targets));
     }
 
     public static void sendToServer(Object packet) {

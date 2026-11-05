@@ -28,6 +28,8 @@ public final class BeamClient {
     private static final int ZIGZAG_TICKS = 2;
     private static final float MAIN_AMPLITUDE = 0.28f;
     private static final float CHAIN_AMPLITUDE = 0.22f;
+    private static final float TETHER_AMPLITUDE = 0.07f;
+    private static final float TETHER_SCALE = 0.5f;
     private static final float CHAIN_SCALE = 0.7f;
     private static final float SECOND_STRAND_SCALE = 0.6f;
     private static final int SPARKS = 2;
@@ -43,6 +45,7 @@ public final class BeamClient {
 
     private static final class Beam {
         private int[] targets;
+        private boolean tether;
         private int age;
     }
 
@@ -58,18 +61,22 @@ public final class BeamClient {
     }
 
     /** News from the server. */
-    public static void update(int shooter, boolean active, int[] targets) {
+    public static void update(int shooter, boolean active, boolean tether, int[] targets) {
         if (!active) {
             BEAMS.remove(shooter);
             return;
         }
         Beam beam = BEAMS.computeIfAbsent(shooter, id -> new Beam());
         beam.targets = targets;
+        beam.tether = tether;
         beam.age = 0;
     }
 
-    public static boolean isFiring(Player player) {
-        return BEAMS.containsKey(player.getId());
+    /** What the lightning or telekinesis of this player uses in FE/tick. */
+    public static int drain(Player player) {
+        Beam beam = BEAMS.get(player.getId());
+        if (beam == null) return 0;
+        return beam.tether ? ServerConfig.TELEKINESIS.drain() : ServerConfig.BEAM.drain();
     }
 
     static void onClientTickEnd() {
@@ -123,6 +130,11 @@ public final class BeamClient {
                     : BeamAim.end(player, ServerConfig.BEAM.range(), partialTick);
             float[] from = relative(start, cameraPosition);
             float[] to = relative(first, cameraPosition);
+            if (beam.tether) {
+                // the telekinesis: one calm line instead of the lightning
+                paths.accept(LightningBolt.path(from, to, seed, TETHER_AMPLITUDE), TETHER_SCALE);
+                return;
+            }
             paths.accept(LightningBolt.path(from, to, seed, MAIN_AMPLITUDE), 1f);
             paths.accept(LightningBolt.path(from, to, seed + 1, MAIN_AMPLITUDE), SECOND_STRAND_SCALE);
             Vec3 previous = first;

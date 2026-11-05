@@ -25,15 +25,18 @@ public final class StaffClient {
 
     private StaffClient() {}
 
-    /** Before Minecraft handles its keys: with the staff in hand L is the light, not the advancements screen. */
+    /** Before Minecraft handles its keys: with the staff in hand L is the light, the middle mouse button the telekinesis. */
     public static void onClientTickStart() {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player == null || StaffSystems.heldStaff(minecraft.player).isEmpty()) return;
-        KeyMapping advancements = minecraft.options.keyAdvancements;
-        if (advancements.same(KeyBindings.LIGHTS)) {
-            boolean pending = advancements.consumeClick();
-            while (pending) pending = advancements.consumeClick();
-        }
+        discardIfShared(minecraft.options.keyAdvancements, KeyBindings.LIGHTS);
+        discardIfShared(minecraft.options.keyPickItem, KeyBindings.TELEKINESIS);
+    }
+
+    private static void discardIfShared(KeyMapping vanilla, KeyMapping ours) {
+        if (!vanilla.same(ours)) return;
+        boolean pending = vanilla.consumeClick();
+        while (pending) pending = vanilla.consumeClick();
     }
 
     /** Whether using this hand must not replay the item's equip animation: the staff just stays in the picture. */
@@ -55,6 +58,7 @@ public final class StaffClient {
         pressed(minecraft, KeyBindings.TELEPORT, StaffAction.TELEPORT);
         pressed(minecraft, KeyBindings.LIGHTS, StaffAction.LIGHTS);
         pressed(minecraft, KeyBindings.BLOCK_DAMAGE, StaffAction.BLOCK_DAMAGE);
+        pressed(minecraft, KeyBindings.TELEKINESIS, StaffAction.TELEKINESIS);
         Set<Player> seen = new HashSet<>();
         for (Player player : minecraft.level.players()) {
             seen.add(player);

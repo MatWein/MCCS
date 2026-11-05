@@ -21,5 +21,6 @@
   "hud.mcqw.lights.off": "off",
   "hud.mcqw.block_damage": "Block damage: %s",
   "hud.mcqw.block_damage.on": "ON",
-  "hud.mcqw.block_damage.off": "off"
+  "hud.mcqw.block_damage.off": "off",
+  "key.mcqw.telekinesis": "Staff telekinesis"
 }

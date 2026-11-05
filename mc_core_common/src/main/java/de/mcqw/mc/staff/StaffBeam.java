@@ -29,10 +29,11 @@ import java.util.WeakHashMap;
 public final class StaffBeam {
     /** Tells everyone seeing the player about the lightning; set by the loader. */
     public interface Sender {
-        void send(ServerPlayer shooter, boolean firing, int[] targets);
+        /** {@code tether}: the calm connection of the telekinesis instead of the lightning. */
+        void send(ServerPlayer shooter, boolean firing, boolean tether, int[] targets);
     }
 
-    public static Sender sender = (shooter, firing, targets) -> {};
+    public static Sender sender = (shooter, firing, tether, targets) -> {};
 
     /** Clients that start seeing the player in the middle of the attack, or miss its end, catch up with this. */
     private static final int RESEND_INTERVAL = 10;
@@ -63,7 +64,7 @@ public final class StaffBeam {
     }
 
     static void stop(ServerPlayer player) {
-        if (FIRING.remove(player) != null) sender.send(player, false, new int[0]);
+        if (FIRING.remove(player) != null) sender.send(player, false, false, new int[0]);
     }
 
     static void tick(MinecraftServer server) {
@@ -100,7 +101,7 @@ public final class StaffBeam {
         }
         int[] ids = targets.stream().mapToInt(Entity::getId).toArray();
         if (state.age % RESEND_INTERVAL == 0 || !Arrays.equals(ids, state.sent)) {
-            sender.send(player, true, ids);
+            sender.send(player, true, false, ids);
             state.sent = ids;
         }
         state.age++;

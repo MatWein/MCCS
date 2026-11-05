@@ -15,6 +15,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /** Where the lightning goes; on the server for the hits, on the clients for the picture. */
 public final class BeamAim {
@@ -47,12 +48,21 @@ public final class BeamAim {
 
     /** The nearest entity the player aims at, in front of the first block, or null; paintings and item frames do not count. */
     public static Entity target(Player player, double range, double tolerance) {
+        return nearest(player, range, tolerance, BeamAim::canTarget);
+    }
+
+    static boolean canTarget(Entity entity) {
+        return entity.isAlive() && entity.isPickable() && entity.isAttackable() && !entity.isSpectator() && !(entity instanceof HangingEntity);
+    }
+
+    /** The nearest entity of the given kind the player aims at, in front of the first block, or null. */
+    static Entity nearest(Player player, double range, double tolerance, Predicate<Entity> kind) {
         Vec3 eye = player.getEyePosition(1f);
         Vec3 end = end(player, range, 1f);
         Entity nearest = null;
         double best = Double.MAX_VALUE;
         AABB area = new AABB(eye, end).inflate(tolerance + 1);
-        for (Entity candidate : player.level().getEntities(player, area, e -> e.isAlive() && e.isPickable() && e.isAttackable() && !e.isSpectator() && !(e instanceof HangingEntity))) {
+        for (Entity candidate : player.level().getEntities(player, area, kind)) {
             Optional<Vec3> hit = candidate.getBoundingBox().inflate(tolerance).clip(eye, end);
             double distance = hit.map(eye::distanceToSqr).orElse(Double.MAX_VALUE);
             if (distance < best) {

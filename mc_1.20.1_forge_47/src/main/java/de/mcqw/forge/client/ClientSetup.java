@@ -27,7 +27,7 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.targets());
+        BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.tether(), packet.targets());
         StaffClient.actionSender = action -> ModNetwork.sendToServer(new StaffActionPacket(action));
     }
 
@@ -43,6 +43,7 @@ public final class ClientSetup {
         event.register(KeyBindings.TELEPORT);
         event.register(KeyBindings.LIGHTS);
         event.register(KeyBindings.BLOCK_DAMAGE);
+        event.register(KeyBindings.TELEKINESIS);
     }
 
     @SubscribeEvent

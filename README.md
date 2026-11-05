@@ -57,6 +57,11 @@ you. It stays dark while you are cloaked. While you hold the staff, L does not o
 **Block damage (`K`, staff in a hand, off by default).** With it on, energy ball explosions break blocks, up to a blast resistance of 100 (obsidian
 survives), and the lightning sets the block it aims at on fire, if it can burn there. The setting is saved on the staff; you see it in the panel.
 
+**Telekinesis (middle mouse button, staff in the main hand).** A press lifts the mob, animal, item or other object you aim at, up to 24 blocks away, up to
+4 blocks large. It floats in front of you, connected to the crystal by a calm line. Another press lets it go; the attack key throws it away instead of firing the lightning, and
+living targets are hurt by hitting something at speed. Holding uses 100 FE/t, a throw 5,000 FE. Other players can only be lifted if `liftPlayers` is set. While you hold the staff,
+the button does not pick blocks. The settings are in `[telekinesis]`.
+
 **Lightning strikes** charge a staff you hold by 20 % of its capacity. During thunderstorms, natural lightning within 32 blocks strikes
 a player with an active shield under open sky, who can use that to charge without any other mods.
 

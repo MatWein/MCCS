@@ -18,5 +18,7 @@ public final class KeyBindings {
     public static final KeyMapping LIGHTS = new KeyMapping("key.mcqw.lights", InputConstants.KEY_L, CATEGORY);
     public static final KeyMapping BLOCK_DAMAGE = new KeyMapping("key.mcqw.block_damage", InputConstants.KEY_K, CATEGORY);
 
+    public static final KeyMapping TELEKINESIS = new KeyMapping("key.mcqw.telekinesis", InputConstants.Type.MOUSE, InputConstants.MOUSE_BUTTON_MIDDLE, CATEGORY);
+
     private KeyBindings() {}
 }

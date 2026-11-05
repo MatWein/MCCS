@@ -28,9 +28,9 @@ public final class FabricNetwork {
             StaffActionPacket packet = StaffActionPacket.decode(buf);
             server.execute(() -> packet.handle(player));
         });
-        StaffBeam.sender = (shooter, firing, targets) -> {
+        StaffBeam.sender = (shooter, firing, tether, targets) -> {
             FriendlyByteBuf buffer = PacketByteBufs.create();
-            BeamStatePacket.encode(new BeamStatePacket(shooter.getId(), firing, targets), buffer);
+            BeamStatePacket.encode(new BeamStatePacket(shooter.getId(), firing, tether, targets), buffer);
             for (ServerPlayer player : PlayerLookup.tracking(shooter)) ServerPlayNetworking.send(player, BEAM_STATE, PacketByteBufs.copy(buffer));
             ServerPlayNetworking.send(shooter, BEAM_STATE, buffer);
         };

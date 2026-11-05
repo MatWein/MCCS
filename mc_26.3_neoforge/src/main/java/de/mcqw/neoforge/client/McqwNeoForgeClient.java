@@ -25,7 +25,7 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(value = Mcqw.MOD_ID, dist = Dist.CLIENT)
 public final class McqwNeoForgeClient {
     public McqwNeoForgeClient(IEventBus modBus) {
-        BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.targets());
+        BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.tether(), packet.targets());
         StaffClient.actionSender = action -> ClientPacketDistributor.sendToServer(new StaffActionPacket(action));
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> event.registerEntityRenderer(EnergyBallEntity.TYPE, EnergyBallRenderer::new));
         modBus.addListener(RegisterKeyMappingsEvent.class, event -> {
@@ -35,6 +35,7 @@ public final class McqwNeoForgeClient {
             event.register(KeyBindings.TELEPORT);
             event.register(KeyBindings.LIGHTS);
             event.register(KeyBindings.BLOCK_DAMAGE);
+            event.register(KeyBindings.TELEKINESIS);
         });
         modBus.addListener(RegisterGuiLayersEvent.class, event -> event.registerAbove(VanillaGuiLayers.HOTBAR, Mcqw.id("staff_hud"),
                 (graphics, deltaTracker) -> StaffHud.render(ClientCompat.hudCanvas(graphics), graphics.guiWidth(), graphics.guiHeight())));

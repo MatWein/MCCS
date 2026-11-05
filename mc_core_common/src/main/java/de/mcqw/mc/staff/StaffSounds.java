@@ -48,6 +48,18 @@ final class StaffSounds {
         play(player, SoundEvents.LEVER_CLICK, 0.6f, on ? 0.8f : 0.6f);
     }
 
+    static void telekinesisLifted(ServerPlayer player) {
+        play(player, SoundEvents.ILLUSIONER_CAST_SPELL, 0.8f, 1.4f);
+    }
+
+    static void telekinesisReleased(ServerPlayer player) {
+        play(player, SoundEvents.CONDUIT_DEACTIVATE, 0.5f, 1.6f);
+    }
+
+    static void telekinesisThrown(ServerPlayer player) {
+        play(player, SoundEvents.FIRECHARGE_USE, 0.8f, 0.8f);
+    }
+
     static void shieldHit(ServerPlayer player) {
         play(player, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.8f, 1.6f);
     }

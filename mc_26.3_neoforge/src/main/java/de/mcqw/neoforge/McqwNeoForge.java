@@ -44,7 +44,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 /** MCQW for Minecraft 26.3 on NeoForge. */
 @Mod(Mcqw.MOD_ID)
 public final class McqwNeoForge {
-    private static final String NETWORK_PROTOCOL = "1";
+    private static final String NETWORK_PROTOCOL = "2";
 
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, Mcqw.MOD_ID);
     private static final DeferredRegister<DataComponentType<?>> COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, Mcqw.MOD_ID);
@@ -77,8 +77,8 @@ public final class McqwNeoForge {
             registrar.playToServer(StaffActionPacket.TYPE, StaffActionPacket.STREAM_CODEC, (packet, context) -> packet.handle((ServerPlayer) context.player()));
             registrar.playToClient(BeamStatePacket.TYPE, BeamStatePacket.STREAM_CODEC, (packet, context) -> packet.handle());
         });
-        StaffBeam.sender = (shooter, firing, targets) ->
-                PacketDistributor.sendToPlayersTrackingEntityAndSelf(shooter, new BeamStatePacket(shooter.getId(), firing, targets));
+        StaffBeam.sender = (shooter, firing, tether, targets) ->
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(shooter, new BeamStatePacket(shooter.getId(), firing, tether, targets));
         NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> StaffSystems.tick(event.getServer()));
         NeoForge.EVENT_BUS.addListener(AttackEntityEvent.class, event -> StaffSystems.onAttack(event.getEntity()));
         NeoForge.EVENT_BUS.addListener(EntityJoinLevelEvent.class, event -> {
