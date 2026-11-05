@@ -3,20 +3,29 @@ package de.mcqw.mc.client;
 import net.minecraft.client.model.geom.ModelPart;
 
 /**
- * Keeps the arm holding the staff still, so the staff stays upright while walking instead of swinging with the arm.
- * Crouching, riding and attacking are added by Minecraft afterwards and still apply.
+ * Holds the arm carrying the staff slightly away from the body and keeps it still, so the staff stays upright while
+ * walking instead of swinging with the arm. Crouching, riding and attacking are added by Minecraft afterwards and
+ * still apply.
  */
 public final class StaffArmPose {
     /**
-     * Vanilla's angle for an arm holding an item. The display rotation of the staff in third person
-     * (models/item/crystal_staff.json) cancels it out: change one and the other has to follow.
+     * The display transform of the staff in third person (models/item/crystal_staff.json) cancels this pose out. When
+     * changing these angles, also change ARM_FORWARD and ARM_OUTWARD in tools/make_staff_assets.py and run it.
      */
-    private static final float ARM_X_ROT = (float) (-Math.PI / 10);
+    private static final float ARM_FORWARD = (float) Math.toRadians(22.0);
+    private static final float ARM_OUTWARD = (float) Math.toRadians(9.0);
 
     private StaffArmPose() {}
 
-    public static void apply(ModelPart arm) {
-        arm.xRot = ARM_X_ROT;
+    public static void applyRight(ModelPart arm) {
+        arm.xRot = -ARM_FORWARD;
         arm.yRot = 0.0F;
+        arm.zRot = ARM_OUTWARD;
+    }
+
+    public static void applyLeft(ModelPart arm) {
+        arm.xRot = -ARM_FORWARD;
+        arm.yRot = 0.0F;
+        arm.zRot = -ARM_OUTWARD;
     }
 }

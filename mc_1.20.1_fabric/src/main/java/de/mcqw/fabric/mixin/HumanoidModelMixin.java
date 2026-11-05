@@ -21,12 +21,12 @@ abstract class HumanoidModelMixin {
 
     @Inject(method = "poseRightArm", at = @At("TAIL"))
     private void mcqw$holdStaffRight(LivingEntity entity, CallbackInfo ci) {
-        if (holdsStaff(entity, HumanoidArm.RIGHT)) StaffArmPose.apply(rightArm);
+        if (holdsStaff(entity, HumanoidArm.RIGHT)) StaffArmPose.applyRight(rightArm);
     }
 
     @Inject(method = "poseLeftArm", at = @At("TAIL"))
     private void mcqw$holdStaffLeft(LivingEntity entity, CallbackInfo ci) {
-        if (holdsStaff(entity, HumanoidArm.LEFT)) StaffArmPose.apply(leftArm);
+        if (holdsStaff(entity, HumanoidArm.LEFT)) StaffArmPose.applyLeft(leftArm);
     }
 
     private static boolean holdsStaff(LivingEntity entity, HumanoidArm arm) {

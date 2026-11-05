@@ -45,5 +45,5 @@ testing integrations such as Mekanism.
 the script and run it again instead of editing them by hand.
 
 The staff is 32 model units long, the height of the player model. Its upright pose in third person depends on two
-things that must match: the `thirdperson_righthand` display rotation in the model and the arm angle in
-`StaffArmPose`, which also stops the arm from swinging while walking.
+things that must match: the arm angles in `StaffArmPose` and the `thirdperson_righthand` display transform in the
+model, which the script calculates from the same angles. `StaffArmPose` also stops the arm from swinging while walking.

@@ -21,7 +21,10 @@ public final class ForgeCrystalStaffItem extends CrystalStaffItem {
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
             private final HumanoidModel.ArmPose pose = HumanoidModel.ArmPose.create("MCQW_STAFF", false,
-                    (model, entity, arm) -> StaffArmPose.apply(arm == HumanoidArm.RIGHT ? model.rightArm : model.leftArm));
+                    (model, entity, arm) -> {
+                        if (arm == HumanoidArm.RIGHT) StaffArmPose.applyRight(model.rightArm);
+                        else StaffArmPose.applyLeft(model.leftArm);
+                    });
 
             @Override
             public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {

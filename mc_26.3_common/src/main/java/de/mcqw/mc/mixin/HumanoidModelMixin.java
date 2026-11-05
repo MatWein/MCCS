@@ -20,11 +20,11 @@ abstract class HumanoidModelMixin {
 
     @Inject(method = "poseRightArm", at = @At("TAIL"))
     private void mcqw$holdStaffRight(HumanoidRenderState state, CallbackInfo ci) {
-        if (state.rightHandItemStack.getItem() instanceof CrystalStaffItem) StaffArmPose.apply(rightArm);
+        if (state.rightHandItemStack.getItem() instanceof CrystalStaffItem) StaffArmPose.applyRight(rightArm);
     }
 
     @Inject(method = "poseLeftArm", at = @At("TAIL"))
     private void mcqw$holdStaffLeft(HumanoidRenderState state, CallbackInfo ci) {
-        if (state.leftHandItemStack.getItem() instanceof CrystalStaffItem) StaffArmPose.apply(leftArm);
+        if (state.leftHandItemStack.getItem() instanceof CrystalStaffItem) StaffArmPose.applyLeft(leftArm);
     }
 }
