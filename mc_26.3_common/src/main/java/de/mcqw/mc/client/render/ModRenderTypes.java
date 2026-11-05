@@ -15,7 +15,7 @@ import net.minecraft.resources.Identifier;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** MCQW's own render types (glow and shield bubble). */
+/** MCQW's own render types (glow, lightning and shield bubble). */
 final class ModRenderTypes {
     /** Fades additive colors out in fog instead of adding the fog color (assets/mcqw/shaders/core/additive.fsh). */
     private static final Identifier ADDITIVE_FRAGMENT_SHADER = Mcqw.id("core/additive");
@@ -47,12 +47,28 @@ final class ModRenderTypes {
             .withColorTargetState(new ColorTargetState(BlendFunction.ADDITIVE))
             .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
             .build();
+    /** The staff's lightning: like the glow, visible from both sides. */
+    private static final RenderPipeline BEAM = RenderPipeline.builder(RenderPipelines.ENTITY_NO_LIGHTMAP_SNIPPET, RenderPipelines.EYES_SNIPPET)
+            .withLocation(Mcqw.id("pipeline/beam"))
+            .withFragmentShader(ADDITIVE_FRAGMENT_SHADER)
+            .withColorTargetState(new ColorTargetState(BlendFunction.ADDITIVE))
+            .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
+            .withCull(false)
+            .build();
+    private static final Map<Identifier, RenderType> BEAM_TYPES = new ConcurrentHashMap<>();
     private static final Map<Identifier, RenderType> GLOW_TYPES = new ConcurrentHashMap<>();
 
     private ModRenderTypes() {}
 
     static RenderType glow(Identifier texture) {
         return GLOW_TYPES.computeIfAbsent(texture, t -> RenderType.create("mcqw_glow", RenderSetup.builder(GLOW)
+                .withTexture("Sampler0", t)
+                .sortOnUpload()
+                .createRenderSetup()));
+    }
+
+    static RenderType beam(Identifier texture) {
+        return BEAM_TYPES.computeIfAbsent(texture, t -> RenderType.create("mcqw_beam", RenderSetup.builder(BEAM)
                 .withTexture("Sampler0", t)
                 .sortOnUpload()
                 .createRenderSetup()));

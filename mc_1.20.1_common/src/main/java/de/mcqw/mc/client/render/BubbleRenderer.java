@@ -20,7 +20,7 @@ import org.joml.Matrix4f;
 import java.util.Map;
 
 /**
- * Draws the shield and cloak bubbles of all players after clouds and weather instead of together with the entities (also
+ * Draws the shield and cloak bubbles and the lightning of all players after clouds and weather instead of together with the entities (also
  * in first person, where the own player is not rendered).
  *
  * <p>The bubble is additive and writes no depth (so water and glass behind it stay visible). Drawn with the
@@ -38,7 +38,6 @@ public final class BubbleRenderer {
      */
     public static void render(PoseStack.Pose worldPose, boolean rotationOnStack, Camera camera, float partialTick) {
         Map<Player, BubbleAnimation> bubbles = StaffClient.bubbles();
-        if (bubbles.isEmpty()) return;
         MultiBufferSource.BufferSource buffers = Minecraft.getInstance().renderBuffers().bufferSource();
         Vec3 cameraPosition = camera.getPosition();
         PoseStack poseStack = new PoseStack();
@@ -60,6 +59,7 @@ public final class BubbleRenderer {
             draw(poseStack.last(), buffers, intensity, EnergyBubble.wobble(shield), player.tickCount + partialTick, inside);
             poseStack.popPose();
         }
+        BeamRenderer.draw(camera, poseStack.last(), buffers, cameraPosition, partialTick);
         buffers.endBatch();
     }
 

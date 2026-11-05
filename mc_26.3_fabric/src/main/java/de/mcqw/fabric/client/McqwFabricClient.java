@@ -3,10 +3,12 @@ package de.mcqw.fabric.client;
 import de.mcqw.fabric.config.FabricConfigs;
 import de.mcqw.fabric.network.FabricNetwork;
 import de.mcqw.mc.Mcqw;
+import de.mcqw.mc.client.BeamClient;
 import de.mcqw.mc.client.ClientCompat;
 import de.mcqw.mc.client.KeyBindings;
 import de.mcqw.mc.client.StaffClient;
 import de.mcqw.mc.client.hud.StaffHud;
+import de.mcqw.mc.network.BeamStatePacket;
 import de.mcqw.mc.network.StaffActionPacket;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -26,6 +28,8 @@ public final class McqwFabricClient implements ClientModInitializer {
         HudElementRegistry.addLast(Mcqw.id("staff_hud"), (graphics, deltaTracker) ->
                 StaffHud.render(ClientCompat.hudCanvas(graphics), graphics.guiWidth(), graphics.guiHeight()));
         // handlers run on the client thread
+        ClientPlayNetworking.registerGlobalReceiver(BeamStatePacket.TYPE,
+                (packet, context) -> BeamClient.update(packet.shooter(), packet.firing(), packet.targets()));
         ClientPlayNetworking.registerGlobalReceiver(FabricNetwork.ServerConfigPacket.TYPE,
                 (packet, context) -> FabricConfigs.SERVER.apply(packet.values()));
         // back to the own settings after leaving a server

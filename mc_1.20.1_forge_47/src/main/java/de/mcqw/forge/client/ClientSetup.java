@@ -2,10 +2,12 @@ package de.mcqw.forge.client;
 
 import de.mcqw.forge.network.ModNetwork;
 import de.mcqw.mc.Mcqw;
+import de.mcqw.mc.client.BeamClient;
 import de.mcqw.mc.client.ClientCompat;
 import de.mcqw.mc.client.KeyBindings;
 import de.mcqw.mc.client.StaffClient;
 import de.mcqw.mc.client.hud.StaffHud;
+import de.mcqw.mc.network.BeamStatePacket;
 import de.mcqw.mc.network.StaffActionPacket;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
@@ -22,6 +24,7 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
+        BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.targets());
         StaffClient.actionSender = action -> ModNetwork.sendToServer(new StaffActionPacket(action));
     }
 

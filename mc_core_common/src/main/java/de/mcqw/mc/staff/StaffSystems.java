@@ -26,7 +26,7 @@ import java.util.WeakHashMap;
  */
 public final class StaffSystems {
     /** Energy is taken in steps, because each change of the stack goes over the network. */
-    private static final int DRAIN_INTERVAL = 10;
+    static final int DRAIN_INTERVAL = 10;
     /** Fire and lava hit every tick; the sound does not repeat that fast. */
     private static final int HIT_SOUND_INTERVAL = 10;
     private static final double CLOAK_FORGET_RANGE = 48;
@@ -90,6 +90,14 @@ public final class StaffSystems {
 
     /** The key for a system was pressed. */
     public static void perform(ServerPlayer player, StaffAction system) {
+        if (system == StaffAction.BEAM_START) {
+            StaffBeam.start(player);
+            return;
+        }
+        if (system == StaffAction.BEAM_STOP) {
+            StaffBeam.stop(player);
+            return;
+        }
         ItemStack active = active(player, system);
         if (!active.isEmpty()) {
             setOn(player, active, system, false);
@@ -117,9 +125,19 @@ public final class StaffSystems {
 
     /** Attacking with the staff gives a cloaked player away. */
     public static void onAttack(Entity attacker) {
-        if (attacker instanceof ServerPlayer player && isOn(player.getMainHandItem(), StaffAction.CLOAK) && !player.isPassenger()) {
+        if (attacker instanceof ServerPlayer player) endCloak(player);
+    }
+
+    /** Ends the cloak of the staff in the main hand. */
+    static void endCloak(ServerPlayer player) {
+        if (isOn(player.getMainHandItem(), StaffAction.CLOAK) && !player.isPassenger()) {
             setOn(player, player.getMainHandItem(), StaffAction.CLOAK, false);
         }
+    }
+
+    /** The staff in the main hand, or an empty stack; riding players count as having none. */
+    public static ItemStack mainStaff(LivingEntity entity) {
+        return !entity.isPassenger() && isStaff(entity.getMainHandItem()) ? entity.getMainHandItem() : ItemStack.EMPTY;
     }
 
     private static void loseMobPursuers(ServerPlayer player) {
@@ -129,6 +147,7 @@ public final class StaffSystems {
     }
 
     public static void tick(MinecraftServer server) {
+        StaffBeam.tick(server);
         boolean drainNow = server.getTickCount() % DRAIN_INTERVAL == 0;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             normalize(player.getMainHandItem());
@@ -224,7 +243,7 @@ public final class StaffSystems {
     }
 
     /** Takes the amount; if it is not available the staff is emptied and false is returned. */
-    private static boolean consume(ItemStack staff, long amount) {
+    static boolean consume(ItemStack staff, long amount) {
         int stored = stored(staff);
         boolean enough = stored >= amount;
         StaffData.setSavedEnergy(staff, enough ? (int) (stored - amount) : 0);

@@ -1,17 +1,32 @@
 package de.mcqw.mc.client;
 
 import de.mcqw.mc.client.hud.HudCanvas;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import org.joml.Vector3f;
 
 /** Client calls that differ between Minecraft versions, for the shared client code. */
 public final class ClientCompat {
     private ClientCompat() {}
 
+    public static boolean screenOpen(Minecraft minecraft) {
+        return minecraft.screen != null;
+    }
+
     public static boolean hudHidden(Minecraft minecraft) {
         return minecraft.options.hideGui;
+    }
+
+    /** The camera's forward, up and left directions. */
+    public static float[][] cameraBasis(Camera camera) {
+        return new float[][]{vector(camera.getLookVector()), vector(camera.getUpVector()), vector(camera.getLeftVector())};
+    }
+
+    private static float[] vector(Vector3f v) {
+        return new float[]{v.x(), v.y(), v.z()};
     }
 
     public static HudCanvas hudCanvas(GuiGraphics graphics) {

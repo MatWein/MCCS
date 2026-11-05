@@ -10,7 +10,8 @@
   "client": [
     "HumanoidModelMixin",
     "KeyMappingMixin",
-    "LivingEntityRendererMixin"
+    "LivingEntityRendererMixin",
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

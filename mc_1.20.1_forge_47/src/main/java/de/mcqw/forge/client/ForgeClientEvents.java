@@ -1,10 +1,12 @@
 package de.mcqw.forge.client;
 
 import de.mcqw.mc.Mcqw;
+import de.mcqw.mc.client.BeamClient;
 import de.mcqw.mc.client.StaffClient;
 import de.mcqw.mc.client.render.BubbleRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import de.mcqw.mc.client.render.CloakedPlayerRenderer;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.TickEvent;
@@ -19,6 +21,15 @@ public final class ForgeClientEvents {
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) StaffClient.onClientTickEnd();
+    }
+
+    /** The attack key fires the lightning (on the other platforms this is a mixin). */
+    @SubscribeEvent
+    public static void onInteraction(InputEvent.InteractionKeyMappingTriggered event) {
+        if (event.isAttack() && BeamClient.takesAttackKey()) {
+            event.setCanceled(true);
+            event.setSwingHand(false);
+        }
     }
 
     @SubscribeEvent

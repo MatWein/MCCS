@@ -2,6 +2,7 @@ package de.mcqw.fabric.client;
 
 import de.mcqw.fabric.config.FabricConfigs;
 import de.mcqw.fabric.network.FabricNetwork;
+import de.mcqw.mc.client.BeamClient;
 import de.mcqw.mc.client.ClientCompat;
 import de.mcqw.mc.client.KeyBindings;
 import de.mcqw.mc.client.StaffClient;
@@ -14,6 +15,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import de.mcqw.mc.network.BeamStatePacket;
 import de.mcqw.mc.network.StaffActionPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.FriendlyByteBuf;
@@ -37,6 +39,10 @@ public final class McqwFabricClient implements ClientModInitializer {
         // LAST comes after clouds and weather, when the camera rotation is already off the model-view stack
         WorldRenderEvents.LAST.register(context ->
                 BubbleRenderer.render(context.matrixStack().last(), false, context.camera(), context.tickDelta()));
+        ClientPlayNetworking.registerGlobalReceiver(FabricNetwork.BEAM_STATE, (client, handler, buffer, sender) -> {
+            BeamStatePacket packet = BeamStatePacket.decode(buffer);
+            client.execute(() -> BeamClient.update(packet.shooter(), packet.firing(), packet.targets()));
+        });
         ClientPlayNetworking.registerGlobalReceiver(FabricNetwork.SERVER_CONFIG, (client, handler, buffer, sender) -> {
             Map<String, String> values = FabricNetwork.decodeConfig(buffer);
             client.execute(() -> FabricConfigs.SERVER.apply(values));

@@ -1,0 +1,171 @@
+package de.mcqw.mc.client;
+
+import de.mcqw.core.config.ServerConfig;
+import de.mcqw.core.render.LightningBolt;
+import de.mcqw.core.staff.StaffAction;
+import de.mcqw.mc.staff.BeamAim;
+import de.mcqw.mc.staff.StaffSystems;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+
+/**
+ * The client side of the lightning: the attack key, and what the server said about everyone's lightning. The picture is
+ * made here, each Minecraft version only draws the resulting paths.
+ */
+public final class BeamClient {
+    /** Without news from the server the lightning ends: the client may have missed that. */
+    private static final int EXPIRY_TICKS = 30;
+    /** A new zigzag this often. */
+    private static final int ZIGZAG_TICKS = 2;
+    private static final float MAIN_AMPLITUDE = 0.28f;
+    private static final float CHAIN_AMPLITUDE = 0.22f;
+    private static final float CHAIN_SCALE = 0.7f;
+    private static final float SECOND_STRAND_SCALE = 0.6f;
+    private static final int SPARKS = 2;
+    private static final double SPARK_SPREAD = 0.3;
+    private static final double SPARK_SPEED = 0.15;
+
+    // The crystal relative to the feet, from the third person pose in tools/make_staff_assets.py
+    private static final double CRYSTAL_RIGHT = 0.43;
+    private static final double CRYSTAL_FORWARD = 0.2;
+    private static final double CRYSTAL_UP = 1.67;
+    private static final double CROUCH_DROP = 0.3;
+
+    // The crystal relative to the camera in first person, from the display transform in tools/make_staff_assets.py.
+    // Held items have their own field of view: the sideways offsets are scaled from it to the world's.
+    private static final double FIRST_PERSON_RIGHT = 0.618;
+    private static final double FIRST_PERSON_UP = 0.02;
+    private static final double FIRST_PERSON_FORWARD = 0.814;
+    private static final double HAND_FOV_DEGREES = 70;
+
+    private static final class Beam {
+        private int[] targets;
+        private int age;
+    }
+
+    private static final Map<Integer, Beam> BEAMS = new HashMap<>();
+    private static boolean firing;
+
+    private BeamClient() {}
+
+    /** The attack key belongs to the lightning while the staff is in the main hand: no mining, no melee. */
+    public static boolean takesAttackKey() {
+        Player player = Minecraft.getInstance().player;
+        return player != null && !player.isSpectator() && !StaffSystems.mainStaff(player).isEmpty();
+    }
+
+    /** News from the server. */
+    public static void update(int shooter, boolean active, int[] targets) {
+        if (!active) {
+            BEAMS.remove(shooter);
+            return;
+        }
+        Beam beam = BEAMS.computeIfAbsent(shooter, id -> new Beam());
+        beam.targets = targets;
+        beam.age = 0;
+    }
+
+    public static boolean isFiring(Player player) {
+        return BEAMS.containsKey(player.getId());
+    }
+
+    static void onClientTickEnd() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null || minecraft.player == null) {
+            BEAMS.clear();
+            firing = false;
+            return;
+        }
+        boolean wanted = takesAttackKey() && !ClientCompat.screenOpen(minecraft) && minecraft.options.keyAttack.isDown();
+        if (wanted != firing) {
+            firing = wanted;
+            StaffClient.actionSender.accept(wanted ? StaffAction.BEAM_START : StaffAction.BEAM_STOP);
+        }
+        BEAMS.values().removeIf(beam -> ++beam.age > EXPIRY_TICKS);
+        BEAMS.forEach((shooter, beam) -> sparks(minecraft, shooter, beam));
+    }
+
+    private static void sparks(Minecraft minecraft, int shooter, Beam beam) {
+        if (beam.targets.length == 0) {
+            if (minecraft.level.getEntity(shooter) instanceof Player player) {
+                sparksAt(minecraft, BeamAim.end(player, ServerConfig.BEAM.range(), 1f));
+            }
+            return;
+        }
+        for (int id : beam.targets) {
+            Entity target = minecraft.level.getEntity(id);
+            if (target != null) sparksAt(minecraft, BeamAim.center(target));
+        }
+    }
+
+    private static void sparksAt(Minecraft minecraft, Vec3 point) {
+        var random = minecraft.level.getRandom();
+        for (int i = 0; i < SPARKS; i++) {
+            minecraft.level.addParticle(ParticleTypes.ELECTRIC_SPARK,
+                    point.x + (random.nextDouble() - 0.5) * SPARK_SPREAD, point.y + (random.nextDouble() - 0.5) * SPARK_SPREAD, point.z + (random.nextDouble() - 0.5) * SPARK_SPREAD,
+                    (random.nextDouble() - 0.5) * SPARK_SPEED, (random.nextDouble() - 0.5) * SPARK_SPEED, (random.nextDouble() - 0.5) * SPARK_SPEED);
+        }
+    }
+
+    /** Hands over this frame's lightning paths, relative to the camera, with their width scale. */
+    public static void forEachPath(Camera camera, Vec3 cameraPosition, float partialTick, BiConsumer<float[][], Float> paths) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null || BEAMS.isEmpty()) return;
+        BEAMS.forEach((shooter, beam) -> {
+            if (!(minecraft.level.getEntity(shooter) instanceof Player player)) return;
+            long seed = (player.tickCount / ZIGZAG_TICKS) * 31L + shooter;
+            Vec3 start = crystal(minecraft, camera, player, cameraPosition, partialTick);
+            Vec3 first = beam.targets.length > 0 && minecraft.level.getEntity(beam.targets[0]) != null
+                    ? BeamAim.center(minecraft.level.getEntity(beam.targets[0]))
+                    : BeamAim.end(player, ServerConfig.BEAM.range(), partialTick);
+            float[] from = relative(start, cameraPosition);
+            float[] to = relative(first, cameraPosition);
+            paths.accept(LightningBolt.path(from, to, seed, MAIN_AMPLITUDE), 1f);
+            paths.accept(LightningBolt.path(from, to, seed + 1, MAIN_AMPLITUDE), SECOND_STRAND_SCALE);
+            Vec3 previous = first;
+            for (int i = 1; i < beam.targets.length; i++) {
+                Entity target = minecraft.level.getEntity(beam.targets[i]);
+                if (target == null) continue;
+                Vec3 next = BeamAim.center(target);
+                paths.accept(LightningBolt.path(relative(previous, cameraPosition), relative(next, cameraPosition), seed + 2L * i, CHAIN_AMPLITUDE), CHAIN_SCALE);
+                previous = next;
+            }
+        });
+    }
+
+    private static float[] relative(Vec3 point, Vec3 camera) {
+        return new float[]{(float) (point.x - camera.x), (float) (point.y - camera.y), (float) (point.z - camera.z)};
+    }
+
+    private static Vec3 crystal(Minecraft minecraft, Camera camera, Player player, Vec3 cameraPosition, float partialTick) {
+        boolean leftHanded = player.getMainArm() == HumanoidArm.LEFT;
+        if (player == minecraft.player && minecraft.getCameraEntity() == player && minecraft.options.getCameraType().isFirstPerson()) {
+            float[][] basis = ClientCompat.cameraBasis(camera);
+            double fovScale = Math.tan(Math.toRadians(minecraft.options.fov().get()) / 2) / Math.tan(Math.toRadians(HAND_FOV_DEGREES) / 2);
+            double right = (leftHanded ? -FIRST_PERSON_RIGHT : FIRST_PERSON_RIGHT) * fovScale;
+            double up = FIRST_PERSON_UP * fovScale;
+            return cameraPosition
+                    .add(basis[0][0] * FIRST_PERSON_FORWARD, basis[0][1] * FIRST_PERSON_FORWARD, basis[0][2] * FIRST_PERSON_FORWARD)
+                    .add(basis[1][0] * up, basis[1][1] * up, basis[1][2] * up)
+                    .add(-basis[2][0] * right, -basis[2][1] * right, -basis[2][2] * right);
+        }
+        float yaw = Mth.rotLerp(partialTick, player.yBodyRotO, player.yBodyRot) * Mth.DEG_TO_RAD;
+        double side = leftHanded ? -CRYSTAL_RIGHT : CRYSTAL_RIGHT;
+        double forwardX = -Mth.sin(yaw);
+        double forwardZ = Mth.cos(yaw);
+        double rightX = -Mth.cos(yaw);
+        double rightZ = -Mth.sin(yaw);
+        double up = CRYSTAL_UP - (player.isCrouching() ? CROUCH_DROP : 0);
+        return player.getPosition(partialTick).add(forwardX * CRYSTAL_FORWARD + rightX * side, up, forwardZ * CRYSTAL_FORWARD + rightZ * side);
+    }
+}

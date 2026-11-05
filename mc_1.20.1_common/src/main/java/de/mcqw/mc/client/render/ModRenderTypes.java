@@ -22,6 +22,18 @@ final class ModRenderTypes extends RenderType {
         return energyBubble(texture, uOffset, vOffset, CULL);
     }
 
+    /** The staff's lightning: full bright, additive and visible from both sides. */
+    static RenderType beam(ResourceLocation texture) {
+        return create("mcqw_beam", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, BUFFER_SIZE, false, true,
+                RenderType.CompositeState.builder()
+                        .setShaderState(RENDERTYPE_EYES_SHADER)
+                        .setTextureState(new TextureStateShard(texture, false, false))
+                        .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                        .setWriteMaskState(COLOR_WRITE)
+                        .setCullState(NO_CULL)
+                        .createCompositeState(false));
+    }
+
     /** The same seen from inside, where culling would remove it. */
     static RenderType energyBubbleInside(ResourceLocation texture, float uOffset, float vOffset) {
         return energyBubble(texture, uOffset, vOffset, NO_CULL);

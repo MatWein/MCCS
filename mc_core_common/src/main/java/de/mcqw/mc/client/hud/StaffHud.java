@@ -6,6 +6,7 @@ import de.mcqw.core.hud.HudColors;
 import de.mcqw.core.hud.HudLine;
 import de.mcqw.core.hud.HudText;
 import de.mcqw.core.hud.StaffHudModel;
+import de.mcqw.mc.client.BeamClient;
 import de.mcqw.mc.client.ClientCompat;
 import de.mcqw.mc.staff.StaffSystems;
 import net.minecraft.client.Minecraft;
@@ -40,7 +41,7 @@ public final class StaffHud {
         StaffConfig config = ServerConfig.STAFF;
         boolean shieldOn = !shield.isEmpty();
         boolean cloakOn = !StaffSystems.activeCloak(player).isEmpty();
-        int drain = config.consumeEnergy() ? StaffSystems.drain(player, false) : 0;
+        int drain = config.consumeEnergy() ? StaffSystems.drain(player, false) + (BeamClient.isFiring(player) ? ServerConfig.BEAM.drain() : 0) : 0;
         List<HudLine> lines = StaffHudModel.lines(new StaffHudModel.State(StaffSystems.stored(staff), config.capacity(), shieldOn, cloakOn,
                 drain, config.consumeEnergy()), player.tickCount);
 

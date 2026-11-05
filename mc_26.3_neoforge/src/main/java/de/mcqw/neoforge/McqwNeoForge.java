@@ -2,8 +2,10 @@ package de.mcqw.neoforge;
 
 import de.mcqw.core.McqwIds;
 import de.mcqw.mc.Mcqw;
+import de.mcqw.mc.network.BeamStatePacket;
 import de.mcqw.mc.network.StaffActionPacket;
 import de.mcqw.mc.registry.McqwObjects;
+import de.mcqw.mc.staff.StaffBeam;
 import de.mcqw.mc.staff.StaffData;
 import de.mcqw.mc.staff.StaffSystems;
 import de.mcqw.neoforge.config.NeoForgeConfigs;
@@ -26,6 +28,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -55,8 +58,13 @@ public final class McqwNeoForge {
         modBus.addListener(McqwNeoForge::onBuildContents);
         modBus.addListener(RegisterCapabilitiesEvent.class, event -> event.registerItem(Capabilities.Energy.ITEM,
                 (stack, access) -> new StaffEnergyHandler(access), CRYSTAL_STAFF.get()));
-        modBus.addListener(RegisterPayloadHandlersEvent.class, event -> event.registrar(NETWORK_PROTOCOL).playToServer(
-                StaffActionPacket.TYPE, StaffActionPacket.STREAM_CODEC, (packet, context) -> packet.handle((ServerPlayer) context.player())));
+        modBus.addListener(RegisterPayloadHandlersEvent.class, event -> {
+            var registrar = event.registrar(NETWORK_PROTOCOL);
+            registrar.playToServer(StaffActionPacket.TYPE, StaffActionPacket.STREAM_CODEC, (packet, context) -> packet.handle((ServerPlayer) context.player()));
+            registrar.playToClient(BeamStatePacket.TYPE, BeamStatePacket.STREAM_CODEC, (packet, context) -> packet.handle());
+        });
+        StaffBeam.sender = (shooter, firing, targets) ->
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(shooter, new BeamStatePacket(shooter.getId(), firing, targets));
         NeoForge.EVENT_BUS.addListener(ServerTickEvent.Post.class, event -> StaffSystems.tick(event.getServer()));
         NeoForge.EVENT_BUS.addListener(AttackEntityEvent.class, event -> StaffSystems.onAttack(event.getEntity()));
         NeoForge.EVENT_BUS.addListener(LivingIncomingDamageEvent.class, event -> {

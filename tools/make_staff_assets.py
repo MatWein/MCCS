@@ -18,6 +18,7 @@ MODEL = ROOT / "mc_core_common/src/main/resources/assets/mcqw/models/item/crysta
 ASSETS = ROOT / "core/src/main/resources/assets/mcqw"
 TEXTURE = ASSETS / "textures/item/crystal_staff.png"
 ICON = ASSETS / "icon.png"
+BEAM = ASSETS / "textures/entity/beam.png"
 
 # Staff axis and vertical extent. Minecraft allows element coordinates from -16 to 32.
 AXIS = 8.0
@@ -230,6 +231,20 @@ def write_texture():
     image.save(TEXTURE)
 
 
+def write_beam():
+    """The lightning's ribbon: bright in the middle and fading to nothing (black, it is drawn additively) at both edges."""
+    size = 16
+    image = Image.new("RGBA", (size, size))
+    pixels = image.load()
+    for y in range(size):
+        edge = 1 - abs(y + 0.5 - size / 2) / (size / 2)
+        value = int(255 * edge * edge)
+        for x in range(size):
+            pixels[x, y] = (value, value, value, 255)
+    BEAM.parent.mkdir(parents=True, exist_ok=True)
+    image.save(BEAM)
+
+
 def write_icon():
     size = 128
     image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -248,3 +263,4 @@ if __name__ == "__main__":
     write_model()
     write_texture()
     write_icon()
+    write_beam()

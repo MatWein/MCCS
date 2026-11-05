@@ -1,10 +1,12 @@
 package de.mcqw.neoforge.client;
 
 import de.mcqw.mc.Mcqw;
+import de.mcqw.mc.client.BeamClient;
 import de.mcqw.mc.client.ClientCompat;
 import de.mcqw.mc.client.KeyBindings;
 import de.mcqw.mc.client.StaffClient;
 import de.mcqw.mc.client.hud.StaffHud;
+import de.mcqw.mc.network.BeamStatePacket;
 import de.mcqw.mc.network.StaffActionPacket;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -20,6 +22,7 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(value = Mcqw.MOD_ID, dist = Dist.CLIENT)
 public final class McqwNeoForgeClient {
     public McqwNeoForgeClient(IEventBus modBus) {
+        BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.targets());
         StaffClient.actionSender = action -> ClientPacketDistributor.sendToServer(new StaffActionPacket(action));
         modBus.addListener(RegisterKeyMappingsEvent.class, event -> {
             event.registerCategory(KeyBindings.CATEGORY);

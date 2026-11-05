@@ -26,6 +26,7 @@ public final class StaffClient {
 
     public static void onClientTickEnd() {
         Minecraft minecraft = Minecraft.getInstance();
+        BeamClient.onClientTickEnd();
         if (minecraft.level == null || minecraft.player == null) {
             BUBBLES.clear();
             return;

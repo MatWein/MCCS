@@ -12,7 +12,8 @@
     "EntityRenderDispatcherMixin",
     "HumanoidModelMixin",
     "LevelRendererMixin",
-    "LivingEntityRendererMixin"
+    "LivingEntityRendererMixin",
+    "MinecraftMixin"
   ],
   "injectors": {
     "defaultRequire": 1

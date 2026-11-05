@@ -8,10 +8,10 @@ of the head.
 
 Get it from the creative inventory, tab **Combat**: a new staff (20 % charge) and a fully charged one.
 
-## Shield and cloak
+## Shield, cloak and lightning
 
-Both only work while the staff is in a hand and you are not riding anything: putting the staff away or mounting (horse,
-boat, jumper, ...) pauses them and hides the panel, afterwards they resume. Both keys can be rebound under
+Shield and cloak work while the staff is in a hand; none of this works while you ride anything (horse, boat, jumper, ...) or
+when the staff is put away: shield and cloak pause and resume afterwards, the panel hides. The keys can be rebound under
 *Options → Controls → MCQW*. The sounds are those of MCPJ's jumper.
 
 **Shield (`V`).** A bubble around the player absorbs all damage except `/kill` and the void, without damage sounds.
@@ -20,6 +20,17 @@ Hits make it flash and sound. In first person your own bubble only shows when it
 **Cloak (`C`).** After half a second you are invisible to others including armor and items, apart from a very faint energy
 bubble; you yourself see a faint glowing outline of your body in third person. Mobs lose track of you and cannot target
 you. You remain solid, and sounds you make can still be heard. Attacking with the staff in your main hand ends the cloak.
+
+**Lightning (hold the attack key, staff in the main hand).** A flickering lightning runs from the crystal to what you aim
+at, up to 24 blocks away, and keeps running as long as you hold the key; it ends at the first block or in the air without
+doing damage. With the staff in the main hand the attack key belongs to the lightning: no mining and no melee. Firing ends the
+cloak.
+
+- It deals 8 damage per second, split into 4 hits. Staying on the same target charges it from 50 % to 150 % within 3 seconds.
+- It jumps on to up to 3 further hostile mobs, up to 6 blocks per jump, with half the damage each time. Pets, villagers and
+  players are only hit when aimed at directly.
+- Targets in water or rain take 1.5 times the damage and the lightning jumps 1.5 times as far from them.
+- Hits slow mobs down strongly while the lightning is on them and set targets on fire unless they are wet. Blocks never burn.
 
 A small panel at the bottom left shows the charge and both systems while you hold the staff, and also the consumption and
 remaining time while they use energy. The time ignores the extra drain under fire.
@@ -47,6 +58,10 @@ Settings live in `world/serverconfig/mcqw-server.toml` on Forge, in `config/mcqw
 | `cloakDrain` | 40 FE/t | |
 | `cloakWaterFactor` / `cloakLavaFactor` | 1.5 / 2 | cloak drain under water / touching lava |
 | `underFireFactor` / `underFireSeconds` | 2 / 2 s | shield and cloak drain after being hit |
+
+The lightning has its own section `[beam]`, with `damagePerSecond`, `hitsPerSecond`, `range`, `aimTolerance`, `drain` (500 FE/t,
+about 8 minutes of firing on a full staff), `chainTargets`, `chainRange`, `chainFalloff`, `chargeSeconds`, `chargeStart`, `chargeMax`,
+`wetDamageFactor`, `wetChainRangeFactor`, `slowTicks`, `slowLevel` and `fireSeconds`.
 
 ## Building
 

@@ -9,6 +9,11 @@ import net.minecraft.sounds.SoundSource;
 final class StaffSounds {
     private StaffSounds() {}
 
+    /** Part of the lightning's crackle; it repeats as long as the lightning runs. */
+    static void beamCrackle(ServerPlayer player, float pitch) {
+        play(player, SoundEvents.LIGHTNING_BOLT_IMPACT, 0.25f, pitch);
+    }
+
     static void shieldHit(ServerPlayer player) {
         play(player, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.8f, 1.6f);
     }
