@@ -14,6 +14,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -89,7 +91,11 @@ public final class StaffBall {
             if (state.isAir() || !state.getFluidState().isEmpty()) continue;
             if (state.getDestroySpeed(level, pos) < 0 || state.getBlock().getExplosionResistance() > config.maxBlockResistance()) continue;
             if (owner instanceof Player player && !level.mayInteract(player, pos)) continue;
-            level.destroyBlock(pos, random.nextDouble() < config.blockDropChance(), ball);
+            // not destroyBlock: that plays each block's breaking sound on top of the explosion
+            if (random.nextDouble() < config.blockDropChance()) {
+                Block.dropResources(state, level, pos, state.hasBlockEntity() ? level.getBlockEntity(pos) : null, ball, ItemStack.EMPTY);
+            }
+            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
         }
     }
 
