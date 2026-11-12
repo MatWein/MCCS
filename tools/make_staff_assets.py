@@ -196,21 +196,24 @@ def write_item_model_1_20(kind):
     (ITEM_MODELS_1_20 / f"{kind}.json").write_text(json.dumps(model, indent=1) + "\n")
 
 
-# the hands, where the crystal's light is shown (not in the inventory, on the ground or in item frames)
-HANDS = ["firstperson_righthand", "firstperson_lefthand", "thirdperson_righthand", "thirdperson_lefthand"]
+# the hands, where the crystal's light is shown (not in the inventory, on the ground or in item frames); in first person
+# the crystal is drawn narrower and taller to keep its proportions
+FIRST_PERSON = ["firstperson_righthand", "firstperson_lefthand"]
+THIRD_PERSON = ["thirdperson_righthand", "thirdperson_lefthand"]
 
 
 def write_item_definition(kind):
     """Minecraft 26.x: the body, and the crystal drawn by the mod, with its light in the hands."""
-    def crystal(effects):
+    def crystal(**options):
         return {"type": "minecraft:special", "base": f"mccs:item/{kind}_body",
-                "model": {"type": "mccs:crystal", "effects": effects}}
+                "model": {"type": "mccs:crystal", **options}}
 
     crystal_by_context = {
         "type": "minecraft:select",
         "property": "minecraft:display_context",
-        "cases": [{"when": HANDS, "model": crystal(True)}],
-        "fallback": crystal(False),
+        "cases": [{"when": FIRST_PERSON, "model": crystal(effects=True, first_person=True)},
+                  {"when": THIRD_PERSON, "model": crystal(effects=True)}],
+        "fallback": crystal(effects=False),
     }
     body = {"type": "minecraft:model", "model": f"mccs:item/{kind}_body"}
     definition = {"model": {"type": "minecraft:composite", "models": [body, crystal_by_context]}}

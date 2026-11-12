@@ -44,7 +44,7 @@ public final class CrystalPreview {
                     Frame frame = new Frame(SIZE, sky);
                     float[] pose = pose(views[c][0], views[c][1], views[c].length > 2 ? views[c][2] : 1.45f);
                     frame.drawStaff(pose);
-                    var state = new CrystalRender.State(kind, 100, 100, time, 7);
+                    var state = new CrystalRender.State(kind, 100, 100, time, 7, false);
                     List<Quad> body = new ArrayList<>();
                     List<Quad> lights = new ArrayList<>();
                     CrystalRender.draw(state, pose, new float[]{1, 0, 0}, new float[]{0, 1, 0}, new CrystalRender.Output() {

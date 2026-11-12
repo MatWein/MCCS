@@ -42,9 +42,11 @@ public final class StaffCrystalRenderer implements SpecialModelRenderer<StaffEff
     private static final float CRYSTAL_TOP = 23.2f / 16;
 
     private final boolean effects;
+    private final boolean firstPerson;
 
-    private StaffCrystalRenderer(boolean effects) {
+    private StaffCrystalRenderer(boolean effects, boolean firstPerson) {
         this.effects = effects;
+        this.firstPerson = firstPerson;
     }
 
     @Override
@@ -63,7 +65,7 @@ public final class StaffCrystalRenderer implements SpecialModelRenderer<StaffEff
         // space has the world's axes, and the camera's right and up come from the camera
         float[][] basis = ClientCompat.cameraBasis(minecraft.gameRenderer.mainCamera());
         float[] right = {-basis[2][0], -basis[2][1], -basis[2][2]};
-        StaffEffects.draw(look, itemPose, right, basis[1], time, drawing);
+        StaffEffects.draw(look, itemPose, right, basis[1], time, firstPerson, drawing);
     }
 
     /**
@@ -116,15 +118,16 @@ public final class StaffCrystalRenderer implements SpecialModelRenderer<StaffEff
         return StaffEffects.look(stack);
     }
 
-    /** {@code effects}: whether the crystal's light is shown as well (in the hands). */
-    public record Unbaked(boolean effects) implements SpecialModelRenderer.Unbaked<StaffEffects.Look> {
+    /** {@code effects}: whether the crystal's light is shown as well (in the hands); {@code first_person}: seen in first person. */
+    public record Unbaked(boolean effects, boolean firstPerson) implements SpecialModelRenderer.Unbaked<StaffEffects.Look> {
         public static final MapCodec<Unbaked> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-                Codec.BOOL.optionalFieldOf("effects", false).forGetter(Unbaked::effects)
+                Codec.BOOL.optionalFieldOf("effects", false).forGetter(Unbaked::effects),
+                Codec.BOOL.optionalFieldOf("first_person", false).forGetter(Unbaked::firstPerson)
         ).apply(i, Unbaked::new));
 
         @Override
         public SpecialModelRenderer<StaffEffects.Look> bake(SpecialModelRenderer.BakingContext context) {
-            return new StaffCrystalRenderer(effects);
+            return new StaffCrystalRenderer(effects, firstPerson);
         }
 
         @Override

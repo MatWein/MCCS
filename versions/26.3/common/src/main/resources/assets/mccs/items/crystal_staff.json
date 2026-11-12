@@ -13,7 +13,20 @@
           {
             "when": [
               "firstperson_righthand",
-              "firstperson_lefthand",
+              "firstperson_lefthand"
+            ],
+            "model": {
+              "type": "minecraft:special",
+              "base": "mccs:item/crystal_staff_body",
+              "model": {
+                "type": "mccs:crystal",
+                "effects": true,
+                "first_person": true
+              }
+            }
+          },
+          {
+            "when": [
               "thirdperson_righthand",
               "thirdperson_lefthand"
             ],

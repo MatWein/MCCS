@@ -36,8 +36,8 @@ public final class StaffEffects {
 
     /** What decides the crystal of a staff stack in this frame. */
     public record Look(StaffKind kind, int stored, int capacity, int seed, float charge) {
-        CrystalRender.State state(float time) {
-            return new CrystalRender.State(kind, stored, capacity, time, seed);
+        CrystalRender.State state(float time, boolean firstPerson) {
+            return new CrystalRender.State(kind, stored, capacity, time, seed, firstPerson);
         }
     }
 
@@ -64,20 +64,22 @@ public final class StaffEffects {
     /**
      * The crystal with all of its light, and the ball being charged, for a staff in a hand. {@code itemPose} maps the
      * item's model space to render space (the camera at its origin); {@code right} and {@code up} are the camera's
-     * directions in render space.
+     * directions in render space. {@code firstPerson}: the staff is seen in first person, where the crystal keeps its
+     * proportions by being drawn narrower and taller.
      */
-    public static void draw(Look look, Matrix4fc itemPose, float[] right, float[] up, float time, Output output) {
+    public static void draw(Look look, Matrix4fc itemPose, float[] right, float[] up, float time, boolean firstPerson, Output output) {
         float[] pose = itemPose.get(new float[16]);
-        CrystalRender.draw(look.state(time), pose, right, up, output);
+        CrystalRender.State state = look.state(time, firstPerson);
+        CrystalRender.draw(state, pose, right, up, output);
         if (look.charge() >= 0) {
             float fullSize = (float) ServerConfig.BALL.chargedSizeFactor();
-            output.orb(CrystalRender.center(pose), EnergyOrb.previewSize(look.charge(), fullSize) * CrystalRender.scale(pose), look.charge(), time);
+            output.orb(CrystalRender.center(state, pose), EnergyOrb.previewSize(look.charge(), fullSize) * CrystalRender.scale(pose), look.charge(), time);
         }
     }
 
     /** The crystal alone: for the inventory, the ground and item frames. */
     public static void drawCrystal(Look look, float time, CrystalRender.Output output) {
-        CrystalRender.drawBody(look.state(time), output);
+        CrystalRender.drawBody(look.state(time, false), output);
     }
 
     /** Sparks fly off well charged crystals of other players (in first person they would fly in front of the eyes). */

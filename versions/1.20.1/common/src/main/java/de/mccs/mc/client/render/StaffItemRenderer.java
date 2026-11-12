@@ -75,7 +75,7 @@ public final class StaffItemRenderer {
         StaffEffects.Look look = StaffEffects.look(stack);
         Drawing drawing = new Drawing(pose, buffers);
         if (inHand(context)) {
-            StaffEffects.draw(look, pose.pose(), VIEW_RIGHT, VIEW_UP, time(), drawing);
+            StaffEffects.draw(look, pose.pose(), VIEW_RIGHT, VIEW_UP, time(), context.firstPerson(), drawing);
         } else {
             StaffEffects.drawCrystal(look, time(), drawing);
         }

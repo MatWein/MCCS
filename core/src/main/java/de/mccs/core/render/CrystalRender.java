@@ -43,13 +43,21 @@ public final class CrystalRender {
         void light(Light light, Consumer<VertexSink> emitter);
     }
 
-    /** What decides the crystal's look: kind, charge, time in ticks and a seed for glints and arcs. */
-    public record State(StaffKind kind, int stored, int capacity, float time, long seed) {}
+    /**
+     * What decides the crystal's look: kind, charge, time in ticks, a seed for glints and arcs, and whether it is seen in
+     * first person (held items are seen from very close and at the edge of the picture there, which makes the crystal look
+     * squat: it is drawn narrower and taller to keep its proportions).
+     */
+    public record State(StaffKind kind, int stored, int capacity, float time, long seed, boolean firstPerson) {}
 
     private static final int LOW_LOOK = 3;
     /** The middle of the crystal in item model space: arcs and the ball being charged are centered on it. */
     public static final float[] CRYSTAL_CENTER = {0.5f, 19.6f / 16, 0.5f};
     private static final float[] HALO_CENTER = {0.5f, 18.2f / 16, 0.5f};
+    /** In first person: the crystal's width and height relative to the other views, measured from its foot. */
+    private static final float FIRST_PERSON_WIDTH = 0.8f;
+    private static final float FIRST_PERSON_HEIGHT = 1.15f;
+    private static final float FOOT = 16.4f;
 
     // charge and pulse
     private static final float MIN_BRIGHTNESS = 0.45f;
@@ -139,8 +147,8 @@ public final class CrystalRender {
     }
 
     /** Where the crystal's middle is in render space, e.g. for the ball being charged. */
-    public static float[] center(float[] itemPose) {
-        return transform(itemPose, CRYSTAL_CENTER);
+    public static float[] center(State state, float[] itemPose) {
+        return transform(itemPose, fit(palette(state), CRYSTAL_CENTER));
     }
 
     /** The item's own scale (held items are smaller in first person, and so is everything at the crystal). */
@@ -156,7 +164,7 @@ public final class CrystalRender {
     // ---- colors
 
     /** The crystal's colors at this charge (before brightness), its brightness, the time for moving things (NaN: still, nearly empty). */
-    private record Palette(float[] hot, float[] glow, float[] tip, float brightness, float time) {}
+    private record Palette(float[] hot, float[] glow, float[] tip, float brightness, float time, float width, float height) {}
 
     private static Palette palette(State state) {
         boolean low = StaffEnergy.crystalLook(state.stored(), state.capacity()) == LOW_LOOK;
@@ -173,7 +181,9 @@ public final class CrystalRender {
             hot[c] = glow[c] + (1 - glow[c]) * HOT_WHITENESS;
             tip[c] = glow[c] + (1 - glow[c]) * TIP_WHITENESS;
         }
-        return new Palette(hot, glow, tip, brightness, low ? Float.NaN : time);
+        float width = state.firstPerson() ? FIRST_PERSON_WIDTH : 1f;
+        float height = state.firstPerson() ? FIRST_PERSON_HEIGHT : 1f;
+        return new Palette(hot, glow, tip, brightness, low ? Float.NaN : time, width, height);
     }
 
     /** From hot (foot) to the light kind's color (tip). */
@@ -204,7 +214,7 @@ public final class CrystalRender {
                     float band = Float.isNaN(palette.time()) ? 0
                             : (float) Math.pow(Math.max(0, Math.sin(along[i] * BAND_SPACING - palette.time() * BAND_SPEED)), BAND_SHARPNESS) * BAND_STRENGTH;
                     float[] color = along(palette, along[i], palette.brightness() * BODY_LIGHT * (shade + band));
-                    float[] p = modelSpace(corners[i]);
+                    float[] p = modelSpace(palette, corners[i]);
                     float u = i == 1 || i == 2 ? 1f : 0f;
                     sink.vertex(p[0], p[1], p[2], clamp(color[0]), clamp(color[1]), clamp(color[2]), 1f, u, 1 - along[i], normal[0], normal[1], normal[2]);
                 }
@@ -260,8 +270,9 @@ public final class CrystalRender {
                 : HALO_RADIUS_RANGE * (palette.brightness() - MIN_BRIGHTNESS) / (1 - MIN_BRIGHTNESS) + HALO_PULSE * (float) Math.sin(palette.time() * HALO_PULSE_SPEED));
         float[] color = scaled(palette.glow(), palette.brightness() * HALO_LIGHT);
         // behind the crystal, and once more in front of it, so its light also lies over the crystal
-        billboards.quad(sink, billboards.at(HALO_CENTER, 0), radius, color);
-        billboards.quad(sink, billboards.at(HALO_CENTER, radius), radius, color);
+        float[] center = fit(palette, HALO_CENTER);
+        billboards.quad(sink, billboards.at(center, 0), radius, color);
+        billboards.quad(sink, billboards.at(center, radius), radius, color);
     }
 
     private static void emitBloom(Palette palette, Billboards billboards, VertexSink sink) {
@@ -272,18 +283,18 @@ public final class CrystalRender {
                 float along = 0.15f + 0.72f * i / (count - 1);
                 float radius = shard.radius() / 16 * BLOOM_SIZE * (1 - 0.3f * along);
                 float[] color = scaled(palette.glow(), palette.brightness() * BLOOM_LIGHT * (1 - 0.1f * along));
-                billboards.quad(sink, billboards.at(modelSpace(CrystalShape.axisPoint(shard, along)), radius * BLOOM_LIFT), radius, color);
+                billboards.quad(sink, billboards.at(modelSpace(palette, CrystalShape.axisPoint(shard, along)), radius * BLOOM_LIFT), radius, color);
             }
         }
         // the hot spot at the main shard's foot
-        float[] foot = modelSpace(CrystalShape.axisPoint(CrystalShape.SHARDS[0], 0.12f));
+        float[] foot = modelSpace(palette, CrystalShape.axisPoint(CrystalShape.SHARDS[0], 0.12f));
         billboards.quad(sink, billboards.at(foot, HOT_SPOT_RADIUS), HOT_SPOT_RADIUS, scaled(palette.hot(), palette.brightness() * HOT_SPOT_LIGHT));
     }
 
     private static void emitEdges(Palette palette, Billboards billboards, VertexSink sink) {
         for (CrystalShape.Shard shard : CrystalShape.SHARDS) {
             CrystalShape.edges(shard, (from, to, alongFrom, alongTo) -> billboards.ribbon(sink,
-                    billboards.at(modelSpace(from), EDGE_LIFT), billboards.at(modelSpace(to), EDGE_LIFT), EDGE_WIDTH,
+                    billboards.at(modelSpace(palette, from), EDGE_LIFT), billboards.at(modelSpace(palette, to), EDGE_LIFT), EDGE_WIDTH,
                     along(palette, alongFrom, palette.brightness() * EDGE_LIGHT), along(palette, alongTo, palette.brightness() * EDGE_LIGHT)));
         }
     }
@@ -303,13 +314,13 @@ public final class CrystalRender {
             float flash = (float) Math.sin(Math.PI * age / GLINT_DURATION);
             float[] corner = points.get((int) Math.floorMod(mix(slot + cycle * 0x9E3779B97F4A7C15L), points.size()));
             float radius = GLINT_RADIUS * (0.4f + 0.6f * flash);
-            billboards.quad(sink, billboards.at(modelSpace(corner), radius), radius, scaled(white, palette.brightness() * flash));
+            billboards.quad(sink, billboards.at(modelSpace(palette, corner), radius), radius, scaled(white, palette.brightness() * flash));
         }
     }
 
     private static void emitArcs(Palette palette, State state, Billboards billboards, VertexSink sink) {
         if (Float.isNaN(palette.time()) || !crackles(state.stored(), state.capacity())) return;
-        float[] center = billboards.at(CRYSTAL_CENTER, 0);
+        float[] center = billboards.at(fit(palette, CRYSTAL_CENTER), 0);
         for (int i = 0; i < ARCS; i++) {
             long moment = (long) (palette.time() / ARC_TICKS);
             long arcState = (moment * 31 + i) * 0x5DEECE66DL + state.seed();
@@ -330,9 +341,14 @@ public final class CrystalRender {
 
     // ---- small helpers
 
-    /** From the shape's model units (around the staff's axis) to item model space. */
-    private static float[] modelSpace(float[] units) {
-        return new float[]{0.5f + units[0] / 16, units[1] / 16, 0.5f + units[2] / 16};
+    /** From the shape's model units (around the staff's axis) to item model space, in the proportions of the view. */
+    private static float[] modelSpace(Palette palette, float[] units) {
+        return new float[]{0.5f + units[0] * palette.width() / 16, (FOOT + (units[1] - FOOT) * palette.height()) / 16, 0.5f + units[2] * palette.width() / 16};
+    }
+
+    /** A point of item model space in the proportions of the view. */
+    private static float[] fit(Palette palette, float[] point) {
+        return modelSpace(palette, new float[]{(point[0] - 0.5f) * 16, point[1] * 16, (point[2] - 0.5f) * 16});
     }
 
     static float[] transform(float[] m, float[] p) {

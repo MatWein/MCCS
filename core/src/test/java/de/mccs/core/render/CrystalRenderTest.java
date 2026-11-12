@@ -40,7 +40,7 @@ class CrystalRenderTest {
 
     private static Recorder draw(StaffKind kind, int stored, float time) {
         Recorder recorder = new Recorder();
-        CrystalRender.draw(new CrystalRender.State(kind, stored, 100, time, 7), IN_FRONT, new float[]{1, 0, 0}, new float[]{0, 1, 0}, recorder);
+        CrystalRender.draw(new CrystalRender.State(kind, stored, 100, time, 7, false), IN_FRONT, new float[]{1, 0, 0}, new float[]{0, 1, 0}, recorder);
         return recorder;
     }
 
@@ -102,7 +102,28 @@ class CrystalRenderTest {
         assertEquals(1f, CrystalRender.scale(IDENTITY), 1e-5f);
         float[] half = {0.5f, 0, 0, 0, 0, 0.5f, 0, 0, 0, 0, 0.5f, 0, 0, 0, 0, 1};
         assertEquals(0.5f, CrystalRender.scale(half), 1e-5f);
-        assertEquals(CrystalRender.CRYSTAL_CENTER[1], CrystalRender.center(IDENTITY)[1], 1e-5f);
+        CrystalRender.State state = new CrystalRender.State(StaffKind.NORMAL, 100, 100, 0, 7, false);
+        assertEquals(CrystalRender.CRYSTAL_CENTER[1], CrystalRender.center(state, IDENTITY)[1], 1e-5f);
+    }
+
+    @Test
+    void inFirstPersonTheCrystalIsNarrowerAndTaller() {
+        float[] normal = extent(false);
+        float[] firstPerson = extent(true);
+        assertTrue(firstPerson[0] < normal[0], "narrower");
+        assertTrue(firstPerson[1] > normal[1], "taller");
+    }
+
+    /** Widest distance from the staff's axis and highest point of the body. */
+    private static float[] extent(boolean firstPerson) {
+        Recorder recorder = new Recorder();
+        CrystalRender.drawBody(new CrystalRender.State(StaffKind.NORMAL, 100, 100, 0, 7, firstPerson), recorder);
+        float[] result = new float[2];
+        for (float[] v : recorder.body) {
+            result[0] = Math.max(result[0], (float) Math.hypot(v[0] - 0.5f, v[2] - 0.5f));
+            result[1] = Math.max(result[1], v[1]);
+        }
+        return result;
     }
 
     @Test
