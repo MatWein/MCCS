@@ -8,11 +8,14 @@ import de.mccs.mc.client.KeyBindings;
 import de.mccs.mc.client.StaffClient;
 import de.mccs.mc.client.hud.StaffHud;
 import de.mccs.mc.client.render.EnergyBallRenderer;
+import de.mccs.mc.client.render.StaffItemRenderer;
 import de.mccs.mc.entity.EnergyBallEntity;
 import de.mccs.mc.network.BeamStatePacket;
 import de.mccs.mc.network.StaffActionPacket;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
@@ -29,6 +32,13 @@ public final class ClientSetup {
     public static void onClientSetup(FMLClientSetupEvent event) {
         BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.tether(), packet.targets());
         StaffClient.actionSender = action -> ModNetwork.sendToServer(new StaffActionPacket(action));
+        StaffItemRenderer.models = id -> Minecraft.getInstance().getModelManager().getModel(id);
+    }
+
+    /** The staffs' body models, which their item renderer draws itself. */
+    @SubscribeEvent
+    public static void onRegisterModels(ModelEvent.RegisterAdditional event) {
+        StaffItemRenderer.bodyModels().forEach(event::register);
     }
 
     @SubscribeEvent

@@ -1,32 +1,39 @@
 {
   "model": {
-    "type": "minecraft:range_dispatch",
-    "property": "minecraft:custom_model_data",
-    "index": 0,
-    "fallback": {
-      "type": "minecraft:model",
-      "model": "mccs:item/high_energy_crystal_staff"
-    },
-    "entries": [
+    "type": "minecraft:composite",
+    "models": [
       {
-        "threshold": 1,
-        "model": {
-          "type": "minecraft:model",
-          "model": "mccs:item/high_energy_crystal_staff_medium"
-        }
+        "type": "minecraft:model",
+        "model": "mccs:item/high_energy_crystal_staff_body"
       },
       {
-        "threshold": 2,
-        "model": {
-          "type": "minecraft:model",
-          "model": "mccs:item/high_energy_crystal_staff_dim"
-        }
-      },
-      {
-        "threshold": 3,
-        "model": {
-          "type": "minecraft:model",
-          "model": "mccs:item/high_energy_crystal_staff_low"
+        "type": "minecraft:select",
+        "property": "minecraft:display_context",
+        "cases": [
+          {
+            "when": [
+              "firstperson_righthand",
+              "firstperson_lefthand",
+              "thirdperson_righthand",
+              "thirdperson_lefthand"
+            ],
+            "model": {
+              "type": "minecraft:special",
+              "base": "mccs:item/high_energy_crystal_staff_body",
+              "model": {
+                "type": "mccs:crystal",
+                "effects": true
+              }
+            }
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:special",
+          "base": "mccs:item/high_energy_crystal_staff_body",
+          "model": {
+            "type": "mccs:crystal",
+            "effects": false
+          }
         }
       }
     ]

@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """Generates the crystal staffs' item models, their textures and the mod icon.
 
-There is one staff per kind (StaffKind): all share the geometry of models/item/crystal_staff.json and differ only in
-the colors of their texture.
+There is one staff per kind (StaffKind): all share the geometry of models/item/crystal_staff_shape.json and differ only
+in the colors of their texture (models/item/<kind>_body.json). The models hold the staff without its crystal: the crystal
+shines on its own and changes with the charge, so the mod draws it at runtime (CrystalGlow, with textures/entity/crystal.png):
+- Minecraft 1.20.1: the item model is "builtin/entity" with the staff's display transforms, and StaffItemRenderer draws
+  the body model, the crystal and its light
+- Minecraft 26.x: items/<kind>.json combines the body model with the special model "mccs:crystal" (with the light in the
+  hands)
 
 Run from anywhere: python3 tools/make_staff_assets.py
 
@@ -18,15 +23,18 @@ from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
 MODELS = ROOT / "shared/mc/all/resources/assets/mccs/models/item"
+# Minecraft 1.20.1's item models ("builtin/entity", drawn by StaffItemRenderer)
+ITEM_MODELS_1_20 = ROOT / "versions/1.20.1/common/src/main/resources/assets/mccs/models/item"
 # Minecraft 26.x picks an item's model through items/<item>.json
 ITEM_DEFINITIONS = ROOT / "versions/26.3/common/src/main/resources/assets/mccs/items"
 ASSETS = ROOT / "core/src/main/resources/assets/mccs"
 TEXTURES = ASSETS / "textures/item"
-# the staff whose model holds the geometry; the other kinds take it as parent
-BASE_KIND = "crystal_staff"
+SHAPE = "crystal_staff_shape"
 ICON = ASSETS / "icon.png"
 BEAM = ASSETS / "textures/entity/beam.png"
 CRYSTAL_GLOW = ASSETS / "textures/entity/crystal_glow.png"
+CRYSTAL_FACETS = ASSETS / "textures/entity/crystal.png"
+GLINT = ASSETS / "textures/entity/glint.png"
 
 # Staff axis and vertical extent. Minecraft allows element coordinates from -16 to 32.
 AXIS = 8.0
@@ -40,7 +48,6 @@ SHAFT = (0, 0, 4, 32)
 GRIP = (4, 0, 8, 16)
 GLOW = (4, 16, 8, 20)
 STEEL = (8, 0, 16, 16)
-CRYSTAL = (16, 0, 32, 16)
 
 # The arm pose of StaffArmPose, in degrees: forward and away from the body. Keep both in sync with that class.
 ARM_FORWARD = 22.0
@@ -146,9 +153,7 @@ def elements():
     parts += octagon(3.2, 15.4, 16.1, SHAFT)
     parts += glow_ring(2.2, 16.1)
     parts += fins()
-    # the crystal floats above the emitter: a long, double-pointed shard, unshaded so it looks lit from within
-    for width, y0, y1 in ((1.2, 17.2, 18), (2.4, 18, 19), (3.2, 19, 21), (2.5, 21, 22.4), (1.4, 22.4, 23.4), (0.6, 23.4, TOP)):
-        parts += octagon(width, y0, y1, CRYSTAL, shade=False)
+    # the crystal floating above the emitter is drawn by the mod (CrystalGlow.CRYSTAL_LAYERS)
     return parts
 
 
@@ -177,36 +182,38 @@ def display():
     }
 
 
-def write_model(kind):
-    """The kind's model: the geometry itself for the base kind, otherwise the base model with this kind's texture."""
-    texture = f"mccs:item/{kind}"
-    model = {"textures": {"staff": texture, "particle": texture}}
-    if kind == BASE_KIND:
-        model["elements"] = elements()
-        model["display"] = display()
-    else:
-        model = {"parent": f"mccs:item/{BASE_KIND}", **model}
-    # Minecraft 1.20.1 selects the crystal's look here (overrides are not inherited from the parent);
-    # 26.3 does it in items/<kind>.json and ignores this
-    model["overrides"] = [{"predicate": {"custom_model_data": threshold}, "model": f"mccs:item/{kind}_{name}"}
-                          for name, threshold in LOOK_THRESHOLDS.items()]
+def write_shape():
+    """The geometry shared by all staffs (without the crystal); the body models only fill in the texture."""
+    model = {"textures": {"particle": "#staff"}, "elements": elements(), "display": display()}
     MODELS.mkdir(parents=True, exist_ok=True)
-    (MODELS / f"{kind}.json").write_text(json.dumps(model, indent=1) + "\n")
+    (MODELS / f"{SHAPE}.json").write_text(json.dumps(model, indent=1) + "\n")
+
+
+def write_item_model_1_20(kind):
+    """Minecraft 1.20.1: "builtin/entity" hands the drawing to StaffItemRenderer, with the staff's display transforms."""
+    model = {"parent": "builtin/entity", "textures": {"particle": f"mccs:item/{kind}"}, "display": display()}
+    ITEM_MODELS_1_20.mkdir(parents=True, exist_ok=True)
+    (ITEM_MODELS_1_20 / f"{kind}.json").write_text(json.dumps(model, indent=1) + "\n")
+
+
+# the hands, where the crystal's light is shown (not in the inventory, on the ground or in item frames)
+HANDS = ["firstperson_righthand", "firstperson_lefthand", "thirdperson_righthand", "thirdperson_lefthand"]
 
 
 def write_item_definition(kind):
-    """Minecraft 26.x: the crystal's look by the custom model data that StaffData sets."""
-    def model(name):
-        return {"type": "minecraft:model", "model": name}
+    """Minecraft 26.x: the body, and the crystal drawn by the mod, with its light in the hands."""
+    def crystal(effects):
+        return {"type": "minecraft:special", "base": f"mccs:item/{kind}_body",
+                "model": {"type": "mccs:crystal", "effects": effects}}
 
-    definition = {"model": {
-        "type": "minecraft:range_dispatch",
-        "property": "minecraft:custom_model_data",
-        "index": 0,
-        "fallback": model(f"mccs:item/{kind}"),
-        "entries": [{"threshold": threshold, "model": model(f"mccs:item/{kind}_{name}")}
-                    for name, threshold in LOOK_THRESHOLDS.items()],
-    }}
+    crystal_by_context = {
+        "type": "minecraft:select",
+        "property": "minecraft:display_context",
+        "cases": [{"when": HANDS, "model": crystal(True)}],
+        "fallback": crystal(False),
+    }
+    body = {"type": "minecraft:model", "model": f"mccs:item/{kind}_body"}
+    definition = {"model": {"type": "minecraft:composite", "models": [body, crystal_by_context]}}
     ITEM_DEFINITIONS.mkdir(parents=True, exist_ok=True)
     (ITEM_DEFINITIONS / f"{kind}.json").write_text(json.dumps(definition, indent=2) + "\n")
 
@@ -218,54 +225,17 @@ def fill(pixels, region, color_at):
             pixels[x, y] = (*color_at(x - x0, y - y0), 255)
 
 
-# The crystal's looks by charge (StaffEnergy.crystalLook): model suffix and what happens to its color.
-CRYSTAL_LOOKS = {
-    "medium": lambda r, g, b: (int(r * 0.7), int(g * 0.7), int(b * 0.75)),
-    "dim": lambda r, g, b: (int(r * 0.4), int(g * 0.42), int(b * 0.5)),
-    # red, whatever color the crystal has
-    "low": lambda r, g, b: (min(255, int(max(r, g, b) * 0.95)), int(g * 0.28), int(min(r, g, b) * 0.35)),
-}
-LOOK_THRESHOLDS = {"medium": 1, "dim": 2, "low": 3}
+def write_body_model(kind):
+    texture = f"mccs:item/{kind}"
+    model = {"parent": f"mccs:item/{SHAPE}", "textures": {"staff": texture, "particle": texture}}
+    (MODELS / f"{kind}_body.json").write_text(json.dumps(model, indent=1) + "\n")
 
 
-def write_looks(kind, image):
-    """A texture and a model per look; the model only swaps the texture of the base model."""
-    x0, y0, x1, y1 = CRYSTAL
-    for name, recolor in CRYSTAL_LOOKS.items():
-        look = image.copy()
-        pixels = look.load()
-        for y in range(y0, y1):
-            for x in range(x0, x1):
-                r, g, b, a = pixels[x, y]
-                pixels[x, y] = (*recolor(r, g, b), a)
-        look.save(TEXTURES / f"{kind}_{name}.png")
-        texture = f"mccs:item/{kind}_{name}"
-        model = {"parent": f"mccs:item/{BASE_KIND}", "textures": {"staff": texture, "particle": texture}}
-        (MODELS / f"{kind}_{name}.json").write_text(json.dumps(model, indent=1) + "\n")
-
-
-def blue_crystal(x, y):
-    """Bright at the top, deep blue at the bottom, with a soft highlight down the middle of each face."""
-    height = 1 - y / 15
-    highlight = max(0.0, 1 - abs(x - 7.5) / 3.5) * 40
-    return (min(255, int(30 + 80 * height + highlight)),
-            min(255, int(130 + 90 * height + highlight)),
-            min(255, int(225 + 30 * height + highlight / 2)))
-
-
-def orange_crystal(x, y):
-    """Golden yellow at the top, deep orange at the bottom, with the same highlight as the blue one."""
-    height = 1 - y / 15
-    highlight = max(0.0, 1 - abs(x - 7.5) / 3.5) * 40
-    return (min(255, int(225 + 30 * height + highlight / 2)),
-            min(255, int(95 + 100 * height + highlight)),
-            min(255, int(15 + 55 * height + highlight / 2)))
-
-
-# The kinds of staff (StaffKind): item name -> crystal color and the color of the glowing rings and energy lines.
+# The kinds of staff (StaffKind): item name -> color of the glowing rings and energy lines (the crystal's colors are in
+# StaffKind).
 KINDS = {
-    "crystal_staff": {"crystal": blue_crystal, "glow": (120, 235, 255)},
-    "high_energy_crystal_staff": {"crystal": orange_crystal, "glow": (255, 225, 120)},
+    "crystal_staff": {"glow": (120, 235, 255)},
+    "high_energy_crystal_staff": {"glow": (255, 225, 120)},
 }
 
 
@@ -301,10 +271,29 @@ def write_texture(kind, colors):
     fill(pixels, GRIP, grip)
     fill(pixels, GLOW, glow)
     fill(pixels, STEEL, steel)
-    fill(pixels, CRYSTAL, colors["crystal"])
     TEXTURES.mkdir(parents=True, exist_ok=True)
     image.save(TEXTURES / f"{kind}.png")
-    write_looks(kind, image)
+    write_body_model(kind)
+
+
+def write_crystal_facets():
+    """
+    The facets of the crystal the mod draws, in grey (CrystalRender colors them): bright and smooth, a little brighter
+    down the middle of each face, with faint streaks along the crystal like the growth lines of real quartz. The edges
+    are drawn as glowing lines by the mod.
+    """
+    size = 32
+    rng = random.Random(3)
+    image = Image.new("RGBA", (size, size))
+    pixels = image.load()
+    streaks = [rng.uniform(-0.06, 0.06) for _ in range(size)]
+    for y in range(size):
+        for x in range(size):
+            middle = 1 - abs(x + 0.5 - size / 2) / (size / 2)
+            value = 0.8 + 0.2 * middle + streaks[x] + rng.uniform(-0.015, 0.015)
+            pixels[x, y] = (*(round(255 * max(0.0, min(1.0, value))),) * 3, 255)
+    CRYSTAL_FACETS.parent.mkdir(parents=True, exist_ok=True)
+    image.save(CRYSTAL_FACETS)
 
 
 def write_beam():
@@ -322,17 +311,44 @@ def write_beam():
 
 
 def write_crystal_glow():
-    """The crystal's halo: bright in the middle, fading to nothing (black, it is drawn additively) at the edge."""
-    size = 32
+    """
+    The crystal's halo: bright in the middle, fading to nothing (black, it is drawn additively) at the edge. Large and
+    filtered linearly (the .mcmeta file), so it shows no pixels even close up.
+    """
+    size = 128
     image = Image.new("RGBA", (size, size))
     pixels = image.load()
     for y in range(size):
         for x in range(size):
             distance = math.hypot(x + 0.5 - size / 2, y + 0.5 - size / 2) / (size / 2)
-            value = int(255 * max(0.0, 1 - distance) ** 2)
+            value = round(255 * max(0.0, 1 - distance) ** 2)
             pixels[x, y] = (value, value, value, 255)
-    CRYSTAL_GLOW.parent.mkdir(parents=True, exist_ok=True)
-    image.save(CRYSTAL_GLOW)
+    save_smooth(image, CRYSTAL_GLOW)
+
+
+def write_glint():
+    """A glint on the crystal: a four-pointed star with a small soft core, filtered linearly like the halo."""
+    size = 64
+    image = Image.new("RGBA", (size, size))
+    pixels = image.load()
+    for y in range(size):
+        for x in range(size):
+            dx = abs(x + 0.5 - size / 2) / (size / 2)
+            dy = abs(y + 0.5 - size / 2) / (size / 2)
+            # thin rays along both axes, thinner towards their tips, and a round core
+            rays = max(max(0.0, 1 - dx) ** 2 * max(0.0, 1 - dy / 0.06 / max(0.05, 1 - dx)),
+                       max(0.0, 1 - dy) ** 2 * max(0.0, 1 - dx / 0.06 / max(0.05, 1 - dy)))
+            core = max(0.0, 1 - math.hypot(dx, dy) / 0.35) ** 2
+            value = round(255 * min(1.0, rays + core))
+            pixels[x, y] = (value, value, value, 255)
+    save_smooth(image, GLINT)
+
+
+def save_smooth(image, path):
+    """Saves a texture that Minecraft filters linearly instead of showing its pixels."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image.save(path)
+    path.with_name(path.name + ".mcmeta").write_text(json.dumps({"texture": {"blur": True}}, indent=2) + "\n")
 
 
 def write_icon():
@@ -350,8 +366,11 @@ def write_icon():
 
 
 if __name__ == "__main__":
+    write_shape()
+    write_crystal_facets()
+    write_glint()
     for kind, colors in KINDS.items():
-        write_model(kind)
+        write_item_model_1_20(kind)
         write_item_definition(kind)
         write_texture(kind, colors)
     write_icon()

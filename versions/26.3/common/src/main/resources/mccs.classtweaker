@@ -5,3 +5,7 @@ accessible field net/minecraft/client/renderer/RenderPipelines ENERGY_SWIRL_SNIP
 # the glow render type (additive like vanilla's eyes up to 1.21)
 accessible field net/minecraft/client/renderer/RenderPipelines ENTITY_NO_LIGHTMAP_SNIPPET Lcom/mojang/renderpearl/api/pipeline/RenderPipeline$Snippet;
 accessible field net/minecraft/client/renderer/RenderPipelines EYES_SNIPPET Lcom/mojang/renderpearl/api/pipeline/RenderPipeline$Snippet;
+# Fabric registers the crystal (special item model) here; NeoForge has an event for it
+accessible field net/minecraft/client/renderer/special/SpecialModelRenderers ID_MAPPER Lnet/minecraft/util/ExtraCodecs$LateBoundIdMapper;
+# the crystal's render type (emissive like vanilla's, but opaque and with depth)
+accessible field net/minecraft/client/renderer/RenderPipelines ENTITY_EMISSIVE_SNIPPET Lcom/mojang/renderpearl/api/pipeline/RenderPipeline$Snippet;

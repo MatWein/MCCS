@@ -1,5 +1,13 @@
 package de.mccs.fabric.client;
 
+import de.mccs.core.staff.StaffKind;
+import de.mccs.mc.Mccs;
+import de.mccs.mc.client.render.StaffItemRenderer;
+import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import de.mccs.fabric.config.FabricConfigs;
 import de.mccs.fabric.network.FabricNetwork;
 import de.mccs.mc.client.BeamClient;
@@ -35,6 +43,13 @@ public final class MccsFabricClient implements ClientModInitializer {
             ClientPlayNetworking.send(FabricNetwork.STAFF_ACTION, buffer);
         };
         EntityRendererRegistry.register(EnergyBallEntity.TYPE, EnergyBallRenderer::new);
+        // the staffs' item models are "builtin/entity": Minecraft hands their drawing to StaffItemRenderer, which draws
+        // the body model and the crystal itself
+        for (StaffKind kind : StaffKind.values()) {
+            BuiltinItemRendererRegistry.INSTANCE.register(BuiltInRegistries.ITEM.get(Mccs.id(kind.id())), StaffItemRenderer::render);
+        }
+        ModelLoadingPlugin.register(context -> context.addModels(StaffItemRenderer.bodyModels()));
+        StaffItemRenderer.models = id -> BakedModelManagerHelper.getModel(Minecraft.getInstance().getModelManager(), id);
         KeyBindingHelper.registerKeyBinding(KeyBindings.SHIELD);
         KeyBindingHelper.registerKeyBinding(KeyBindings.CLOAK);
         KeyBindingHelper.registerKeyBinding(KeyBindings.TELEPORT);

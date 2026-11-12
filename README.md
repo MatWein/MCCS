@@ -34,8 +34,9 @@ Korean and Simplified Chinese.
   ```
 
 The staff is carried upright like a shepherd's staff, held near its middle and reaching from the ground to the top of
-the head. The crystal glows according to the charge, crackles with small arcs from 60 % and turns red below 10 %; the
-item has an energy bar.
+the head. Its crystal, a cluster of glowing quartz shards, shines on its own: almost white at its foot, with glowing
+edges, glints and a soft halo. It is brighter the fuller the staff is, crackles with small arcs from 60 % and turns red
+and flickers below 10 %; the item has an energy bar.
 
 ## Controls
 
@@ -143,7 +144,7 @@ loader. Code is written once and placed as widely as it compiles:
 
 | Folder | Contents |
 |---|---|
-| `core/` | the game logic in plain Java 17, without any Minecraft or mod loader API (`StaffKind` defines the two staffs); version-independent assets (textures, translations in 12 languages, icon) |
+| `core/` | the game logic in plain Java 17, without any Minecraft or mod loader API (`StaffKind` defines the two staffs, `CrystalRender` makes the crystal and its light); version-independent assets (textures, translations in 12 languages, icon) |
 | `shared/mc/all/` | Minecraft code that compiles unchanged against every supported version: staff systems (shield, cloak, lightning, ball, teleport, light, telekinesis), client effects, HUD, arm pose; also the item models |
 | `shared/fabric/all/` | Fabric code shared by every version: TOML config with server sync, Team Reborn Energy |
 | `versions/<version>/` | one folder per Minecraft version; its `gradle.properties` holds everything that differs between versions (Minecraft, Java, loader and API versions, which `shared/` folders are compiled in) |
@@ -177,8 +178,20 @@ testing integrations such as Mekanism. Its development server runs in `run-dev-s
 
 ### Model
 
-`tools/make_staff_assets.py` generates the item models, their textures (one set per staff kind, differing only in
-color) and the mod icon; the results are checked in. Edit the script and run it again instead of editing them by hand.
+`tools/make_staff_assets.py` generates the staff's models (without the crystal), their textures (one per staff kind,
+differing only in color), the textures of the crystal and its light, and the mod icon; the results are checked in. Edit
+the script and run it again instead of editing them by hand.
+
+The crystal is not part of the item model: it shines on its own and changes with the charge, so the mod draws it while it
+renders the staff item, with the item's own pose (Minecraft 1.20.1: the item model is `builtin/entity` and
+`StaffItemRenderer` draws the staff; 26.x: the special item model `mccs:crystal` in `items/<staff>.json`). Shape, colors
+and light are made in `core` (`CrystalShape`, `CrystalRender`). `tools/CrystalPreview.java` renders that same code to an
+image (several views, night and day, both staffs), to judge changes without starting Minecraft:
+
+```bash
+./gradlew :core:classes
+java -cp core/build/classes/java/main tools/CrystalPreview.java preview.png
+```
 
 The staff is 32 model units long, the height of the player model. Its upright pose in third person depends on two
 things that must match: the arm angles in `StaffArmPose` and the `thirdperson_righthand` display transform in the

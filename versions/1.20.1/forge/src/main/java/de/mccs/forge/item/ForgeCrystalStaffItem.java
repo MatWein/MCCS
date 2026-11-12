@@ -4,18 +4,23 @@ import de.mccs.core.config.ServerConfig;
 import de.mccs.core.config.StaffConfig;
 import de.mccs.core.staff.StaffEnergy;
 import de.mccs.mc.client.StaffArmPose;
+import de.mccs.mc.client.render.StaffItemRenderer;
 import de.mccs.core.staff.StaffKind;
 import de.mccs.mc.item.CrystalStaffItem;
 import de.mccs.mc.staff.StaffData;
 import de.mccs.mc.staff.StaffSystems;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.common.capabilities.Capability;
@@ -26,7 +31,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.function.Consumer;
 
-/** Forge's additions to the staff: Forge Energy and the arm pose (on the other platforms the pose is a mixin). */
+/** Forge's additions to the staff: Forge Energy, the item renderer and the arm pose (on the other platforms the pose is a mixin). */
 public final class ForgeCrystalStaffItem extends CrystalStaffItem {
     private static final int USE_ANIMATION_TICKS = 8;
     // Where vanilla puts a held item in first person (ItemInHandRenderer)
@@ -120,10 +125,30 @@ public final class ForgeCrystalStaffItem extends CrystalStaffItem {
                 return true;
             }
 
+            /** The item model is "builtin/entity": Minecraft hands the drawing to this renderer with the display transform applied. */
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return Renderer.INSTANCE;
+            }
+
             @Override
             public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {
                 return pose;
             }
         });
+    }
+
+    /** Forge's item renderer hook, handing over to the shared {@link StaffItemRenderer}; created on first use, when the game is ready. */
+    private static final class Renderer extends BlockEntityWithoutLevelRenderer {
+        static final Renderer INSTANCE = new Renderer();
+
+        private Renderer() {
+            super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
+        }
+
+        @Override
+        public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack poseStack, MultiBufferSource buffers, int light, int overlay) {
+            StaffItemRenderer.render(stack, context, poseStack, buffers, light, overlay);
+        }
     }
 }

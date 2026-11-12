@@ -1,5 +1,7 @@
 package de.mccs.neoforge.client;
 
+import de.mccs.mc.client.render.StaffCrystalRenderer;
+import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 import de.mccs.mc.Mccs;
 import de.mccs.mc.client.BeamClient;
 import de.mccs.mc.client.ClientCompat;
@@ -27,6 +29,7 @@ public final class MccsNeoForgeClient {
     public MccsNeoForgeClient(IEventBus modBus) {
         BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.tether(), packet.targets());
         StaffClient.actionSender = action -> ClientPacketDistributor.sendToServer(new StaffActionPacket(action));
+        modBus.addListener(RegisterSpecialModelRendererEvent.class, event -> event.register(StaffCrystalRenderer.ID, StaffCrystalRenderer.Unbaked.MAP_CODEC));
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> event.registerEntityRenderer(EnergyBallEntity.TYPE, EnergyBallRenderer::new));
         modBus.addListener(RegisterKeyMappingsEvent.class, event -> {
             event.registerCategory(KeyBindings.CATEGORY);

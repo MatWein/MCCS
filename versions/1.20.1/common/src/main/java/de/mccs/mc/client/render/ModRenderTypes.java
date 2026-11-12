@@ -22,12 +22,40 @@ final class ModRenderTypes extends RenderType {
         return energyBubble(texture, uOffset, vOffset, CULL);
     }
 
-    /** The staff's lightning: full bright, additive and visible from both sides. */
+    /** The staff's lightning and the crystal's arcs: full bright, additive and visible from both sides. */
     static RenderType beam(ResourceLocation texture) {
         return create("mccs_beam", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, BUFFER_SIZE, false, true,
                 RenderType.CompositeState.builder()
                         .setShaderState(RENDERTYPE_EYES_SHADER)
                         .setTextureState(new TextureStateShard(texture, false, false))
+                        .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                        .setWriteMaskState(COLOR_WRITE)
+                        .setCullState(NO_CULL)
+                        .createCompositeState(false));
+    }
+
+    /**
+     * The staff's crystal: shines on its own like vanilla's emissive entity parts (no light map) but is opaque and writes
+     * depth, so neither the staff behind it nor water drawn later shows through.
+     */
+    static RenderType crystal(ResourceLocation texture) {
+        return create("mccs_crystal", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, BUFFER_SIZE, true, false,
+                RenderType.CompositeState.builder()
+                        .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                        .setTextureState(new TextureStateShard(texture, false, false))
+                        .setTransparencyState(NO_TRANSPARENCY)
+                        .setCullState(NO_CULL)
+                        .setWriteMaskState(COLOR_DEPTH_WRITE)
+                        .setOverlayState(OVERLAY)
+                        .createCompositeState(true));
+    }
+
+    /** The crystal's light: like the lightning, but the soft glow texture is filtered smoothly instead of showing its pixels. */
+    static RenderType glow(ResourceLocation texture) {
+        return create("mccs_glow", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, BUFFER_SIZE, false, true,
+                RenderType.CompositeState.builder()
+                        .setShaderState(RENDERTYPE_EYES_SHADER)
+                        .setTextureState(new TextureStateShard(texture, true, false))
                         .setTransparencyState(ADDITIVE_TRANSPARENCY)
                         .setWriteMaskState(COLOR_WRITE)
                         .setCullState(NO_CULL)

@@ -1,5 +1,7 @@
 package de.mccs.fabric.client;
 
+import de.mccs.mc.client.render.StaffCrystalRenderer;
+import net.minecraft.client.renderer.special.SpecialModelRenderers;
 import de.mccs.fabric.config.FabricConfigs;
 import de.mccs.fabric.network.FabricNetwork;
 import de.mccs.mc.Mccs;
@@ -24,6 +26,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 public final class MccsFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        // the crystal and its light, a special item model in items/<staff>.json (accessible through the class tweaker)
+        SpecialModelRenderers.ID_MAPPER.put(StaffCrystalRenderer.ID, StaffCrystalRenderer.Unbaked.MAP_CODEC);
         StaffClient.actionSender = action -> ClientPlayNetworking.send(new StaffActionPacket(action));
         EntityRendererRegistry.register(EnergyBallEntity.TYPE, EnergyBallRenderer::new);
         KeyMappingHelper.registerKeyMapping(KeyBindings.SHIELD);
