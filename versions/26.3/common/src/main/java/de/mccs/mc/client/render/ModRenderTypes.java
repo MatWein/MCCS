@@ -59,6 +59,7 @@ final class ModRenderTypes {
             .withLocation(Mccs.id("pipeline/crystal"))
             .withShaderDefine("PER_FACE_LIGHTING")
             .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
+            .withColorTargetState(ColorTargetState.DEFAULT)
             .withCull(false)
             .build();
 
