@@ -10,12 +10,10 @@ import de.mccs.mc.Mccs;
 import de.mccs.mc.entity.EnergyBallEntity;
 import de.mccs.mc.registry.MccsObjects;
 import de.mccs.mc.staff.StaffData;
-import de.mccs.mc.staff.StaffLightning;
 import de.mccs.mc.staff.StaffLights;
 import de.mccs.mc.staff.StaffSystems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -24,7 +22,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -62,9 +59,6 @@ public final class MccsFabric implements ModInitializer {
         AttackEntityCallback.EVENT.register((player, level, hand, entity, hitResult) -> {
             StaffSystems.onAttack(player);
             return InteractionResult.PASS;
-        });
-        ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
-            if (entity instanceof LightningBolt bolt) StaffLightning.attract(bolt);
         });
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !StaffSystems.absorb(entity, source, amount));
         if (FabricLoader.getInstance().isModLoaded(TEAM_REBORN_ENERGY)) TeamRebornEnergy.register(staffs);

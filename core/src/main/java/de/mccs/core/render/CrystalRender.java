@@ -52,12 +52,12 @@ public final class CrystalRender {
 
     private static final int LOW_LOOK = 3;
     /** The middle of the crystal in item model space: arcs and the ball being charged are centered on it. */
-    public static final float[] CRYSTAL_CENTER = {0.5f, 19.6f / 16, 0.5f};
-    private static final float[] HALO_CENTER = {0.5f, 18.2f / 16, 0.5f};
+    public static final float[] CRYSTAL_CENTER = {0.5f, (CrystalShape.FOOT + 3.2f) / 16, 0.5f};
+    private static final float[] HALO_CENTER = {0.5f, (CrystalShape.FOOT + 1.8f) / 16, 0.5f};
     /** In first person: the crystal's width and height relative to the other views, measured from its foot. */
     private static final float FIRST_PERSON_WIDTH = 0.8f;
     private static final float FIRST_PERSON_HEIGHT = 1.15f;
-    private static final float FOOT = 16.4f;
+    private static final float FOOT = CrystalShape.FOOT;
 
     // charge and pulse
     private static final float MIN_BRIGHTNESS = 0.45f;

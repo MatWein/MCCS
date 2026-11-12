@@ -113,6 +113,8 @@ public final class StaffBall {
             if (StaffCompat.hurt(target, source, (float) (damage * share))) {
                 Vec3 away = targetCenter.subtract(center).normalize().scale(config.knockback() * share);
                 StaffCompat.launch(target, target.getDeltaMovement().add(away.x, away.y + KNOCKBACK_LIFT * share, away.z));
+            } else {
+                StaffSystems.deflected(target);
             }
         }
         if (blockDamage) breakBlocks(level, ball, owner, center, radius);

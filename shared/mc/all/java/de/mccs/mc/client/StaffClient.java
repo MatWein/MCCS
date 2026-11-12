@@ -1,5 +1,6 @@
 package de.mccs.mc.client;
 
+import de.mccs.core.config.ServerConfig;
 import de.mccs.core.staff.BubbleAnimation;
 import de.mccs.core.staff.StaffAction;
 import de.mccs.mc.staff.StaffData;
@@ -90,6 +91,15 @@ public final class StaffClient {
     public static boolean isHidden(Player player) {
         BubbleAnimation animation = BUBBLES.get(player);
         return animation != null && animation.isHidden();
+    }
+
+    /**
+     * Whether a player's shield is under fire as far as this client can tell (the server keeps its own count): it took a hit
+     * within the configured time, which raises what shield and cloak use.
+     */
+    public static boolean isUnderFire(Player player) {
+        BubbleAnimation animation = BUBBLES.get(player);
+        return animation != null && animation.ticksSinceHit() <= ServerConfig.STAFF.underFireTicks();
     }
 
     /** Whether the cloak hides the local player's own first person hand and what it holds. */

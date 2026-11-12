@@ -162,7 +162,7 @@ public final class StaffTelekinesis {
                 float damage = TelekinesisMath.impact(thrown.lastSpeed, MIN_IMPACT_SPEED, config.impactDamage(), config.maxImpactDamage());
                 if (damage > 0) {
                     DamageSource source = entity.damageSources().playerAttack(thrown.thrower);
-                    StaffCompat.hurt(entity, source, damage);
+                    if (!StaffCompat.hurt(entity, source, damage)) StaffSystems.deflected(entity);
                 }
                 return true;
             }

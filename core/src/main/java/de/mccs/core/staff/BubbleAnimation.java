@@ -16,6 +16,8 @@ public final class BubbleAnimation {
     private float cloakOld;
     private int flash;
     private int lastHits = -1;
+    /** Ticks since the shield last took a hit (large if never). */
+    private int sinceHit = Integer.MAX_VALUE;
 
     /** Once per client tick; {@code hits} is the hit counter of the staff with the active shield. */
     public void tick(boolean shieldOn, int hits, boolean cloakOn) {
@@ -24,8 +26,12 @@ public final class BubbleAnimation {
         cloakOld = cloak;
         cloak = approach(cloak, cloakOn ? 1f : 0f, CLOAK_FADE_SPEED);
         if (flash > 0) flash--;
+        if (sinceHit < Integer.MAX_VALUE) sinceHit++;
         if (shieldOn) {
-            if (lastHits >= 0 && hits > lastHits) flash = FLASH_TICKS;
+            if (lastHits >= 0 && hits > lastHits) {
+                flash = FLASH_TICKS;
+                sinceHit = 0;
+            }
             lastHits = hits;
         } else {
             lastHits = -1;
@@ -42,6 +48,11 @@ public final class BubbleAnimation {
 
     public float cloak(float partialTick) {
         return cloakOld + (cloak - cloakOld) * partialTick;
+    }
+
+    /** Ticks since the shield last took a hit, as far as this side has seen it (Integer.MAX_VALUE if never). */
+    public int ticksSinceHit() {
+        return sinceHit;
     }
 
     public float flash(float partialTick) {

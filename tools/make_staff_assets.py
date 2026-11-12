@@ -12,7 +12,8 @@ shines on its own and changes with the charge, so the mod draws it at runtime (C
 Run from anywhere: python3 tools/make_staff_assets.py
 
 Model units: 16 = one block at scale 1. The player model is 32 units tall (the renderer scales the whole player, and
-with it the held item, to 1.8 blocks), so the 32-unit staff is exactly as tall as the player.
+with it the held item, to 1.8 blocks); the staff stands on the ground and reaches a fifth higher than the player's head
+(HEAD_RAISE above the 32 units), its crystal on top (drawn by the mod).
 """
 import json
 import math
@@ -39,7 +40,10 @@ GLINT = ASSETS / "textures/entity/glint.png"
 # Staff axis and vertical extent. Minecraft allows element coordinates from -16 to 32.
 AXIS = 8.0
 BOTTOM = -8.0
-TOP = 24.0
+# the shaft above the grip is longer than the player model by this much: head and crystal sit higher
+# (CrystalShape.FOOT in the mod follows it)
+HEAD_RAISE = 6.4
+HEAD = 14.5 + HEAD_RAISE
 
 TEXTURE_SIZE = 32
 UV_PER_PIXEL = 16 / TEXTURE_SIZE
@@ -120,7 +124,7 @@ def glow_ring(width, y):
 
 def fins():
     """Four slanted fins around the crystal, opening upwards."""
-    base = 15.4
+    base = HEAD + 0.9
     length = 6.0
     spread = 1.5
     parts = []
@@ -139,19 +143,19 @@ def elements():
     parts += octagon(1.5, BOTTOM + 0.8, BOTTOM + 2.6, STEEL)
     parts += glow_ring(1.8, BOTTOM + 2.6)
     # slim shaft
-    parts += octagon(1.5, BOTTOM + 2.95, 14.5, SHAFT)
+    parts += octagon(1.5, BOTTOM + 2.95, HEAD, SHAFT)
     # energy lines along the shaft, on two opposite sides
     for sign in (1, -1):
-        parts += [box(0.25, GRIP_CENTER + 4.5, 14.5, GLOW, depth=0.5, x=AXIS + sign * 0.8, shade=False)]
+        parts += [box(0.25, GRIP_CENTER + 4.5, HEAD, GLOW, depth=0.5, x=AXIS + sign * 0.8, shade=False)]
         parts += [box(0.25, BOTTOM + 3.5, GRIP_CENTER - 4.5, GLOW, depth=0.5, x=AXIS + sign * 0.8, shade=False)]
     # ribbed grip between two steel sleeves
     parts += octagon(2.0, GRIP_CENTER - 3.2, GRIP_CENTER + 3.2, GRIP)
     parts += octagon(2.2, GRIP_CENTER - 4.2, GRIP_CENTER - 3.2, STEEL)
     parts += octagon(2.2, GRIP_CENTER + 3.2, GRIP_CENTER + 4.2, STEEL)
     # emitter head
-    parts += octagon(2.2, 14.5, 15.4, STEEL)
-    parts += octagon(3.2, 15.4, 16.1, SHAFT)
-    parts += glow_ring(2.2, 16.1)
+    parts += octagon(2.2, HEAD, HEAD + 0.9, STEEL)
+    parts += octagon(3.2, HEAD + 0.9, HEAD + 1.6, SHAFT)
+    parts += glow_ring(2.2, HEAD + 1.6)
     parts += fins()
     # the crystal floating above the emitter is drawn by the mod (CrystalGlow.CRYSTAL_LAYERS)
     return parts
@@ -174,11 +178,13 @@ def third_person():
 def display():
     return {
         "thirdperson_righthand": third_person(),
-        "firstperson_righthand": {"rotation": [0, 0, 4], "translation": [1.3, 3.4, -1.5], "scale": [0.42, 0.42, 0.42]},
-        # 32 units * 0.62 at 45 degrees still fits into the 16 pixels of an inventory slot
-        "gui": {"rotation": [0, 0, -45], "translation": [0, 0, 0], "scale": [0.62, 0.62, 0.62]},
-        "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.45, 0.45, 0.45]},
-        "fixed": {"rotation": [0, 0, -45], "translation": [0, 0, 0], "scale": [0.6, 0.6, 0.6]},
+        # lowered by the raised head, so the crystal stays where it was in the picture
+        "firstperson_righthand": {"rotation": [0, 0, 4], "translation": [1.3, round(3.4 - HEAD_RAISE * 0.42, 2), -1.5],
+                                  "scale": [0.42, 0.42, 0.42]},
+        # the staff with its crystal * 0.5 at 45 degrees still fits into the 16 pixels of an inventory slot
+        "gui": {"rotation": [0, 0, -45], "translation": [0, -1, 0], "scale": [0.5, 0.5, 0.5]},
+        "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.4, 0.4, 0.4]},
+        "fixed": {"rotation": [0, 0, -45], "translation": [0, -1, 0], "scale": [0.5, 0.5, 0.5]},
     }
 
 

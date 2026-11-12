@@ -150,9 +150,12 @@ public final class StaffBeam {
             float damage = BeamMath.hitDamage(config.damagePerSecond(), interval, charge, i, config.chainFalloff(), wet ? config.wetDamageFactor() : 1.0);
             // several hits per second: neither stopped by the damage cooldown nor pushing the target away
             Vec3 motion = target.getDeltaMovement();
-            StaffCompat.hurt(target, source, damage);
+            boolean hurt = StaffCompat.hurt(target, source, damage);
             StaffCompat.restoreMotion(target, motion);
-            if (target instanceof LivingEntity living) {
+            if (!hurt) {
+                // a shield (or creative mode) stopped the hit: no slowness, no fire, but the shield shows it
+                StaffSystems.deflected(target);
+            } else if (target instanceof LivingEntity living) {
                 if (config.slowTicks() > 0) StaffCompat.slow(living, config.slowTicks(), config.slowLevel() - 1);
                 if (config.fireSeconds() > 0 && !wet) StaffCompat.ignite(living, (float) config.fireSeconds());
             }

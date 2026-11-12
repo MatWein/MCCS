@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 public final class BeamAim {
     private static final double CRYSTAL_RIGHT = 0.43;
     private static final double CRYSTAL_FORWARD = 0.2;
-    private static final double CRYSTAL_UP = 1.67;
+    private static final double CRYSTAL_UP = 2.05;
     private static final double CROUCH_DROP = 0.3;
 
     private BeamAim() {}

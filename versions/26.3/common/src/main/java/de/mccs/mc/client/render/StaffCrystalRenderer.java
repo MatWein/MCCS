@@ -38,8 +38,8 @@ public final class StaffCrystalRenderer implements SpecialModelRenderer<StaffEff
     private static final RenderType BEAM = ModRenderTypes.beam(Mccs.id("textures/entity/beam.png"));
     // the crystal, for the item's bounds
     private static final float CRYSTAL_RADIUS = 3.2f / 16;
-    private static final float CRYSTAL_BOTTOM = 16.9f / 16;
-    private static final float CRYSTAL_TOP = 23.2f / 16;
+    private static final float CRYSTAL_BOTTOM = 22.8f / 16;
+    private static final float CRYSTAL_TOP = 30.5f / 16;
 
     private final boolean effects;
     private final boolean firstPerson;

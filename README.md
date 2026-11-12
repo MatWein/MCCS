@@ -33,8 +33,8 @@ Korean and Simplified Chinese.
     E               B G B
   ```
 
-The staff is carried upright like a shepherd's staff, held near its middle and reaching from the ground to the top of
-the head. Its crystal, a cluster of glowing quartz shards, shines on its own: almost white at its foot, with glowing
+The staff is carried upright like a shepherd's staff, held near its middle and reaching from the ground to a little
+above the head. Its crystal, a cluster of glowing quartz shards, shines on its own: almost white at its foot, with glowing
 edges, glints and a soft halo. It is brighter the fuller the staff is, crackles with small arcs from 60 % and turns red
 and flickers below 10 %; the item has an energy bar.
 
@@ -100,7 +100,11 @@ attack key to throw it away; living targets are hurt by hitting something at spe
 5,000 FE. Other players can only be lifted if the server allows it (`liftPlayers`).
 
 **Natural lightning** charges a staff you hold by 20 % of its capacity. During thunderstorms, lightning within 32
-blocks strikes a player with an active shield under open sky, so you can charge without any other mod.
+blocks strikes a player with an active shield under open sky.
+
+**Self-charging.** A staff anywhere in your inventory slowly gathers energy on its own (250 FE/t by default: an empty
+normal staff is full after about 17 minutes, a high-energy staff after nearly 3 hours), so it can be used without any
+other mod. `selfCharge = 0` turns it off.
 
 ## Energy
 
@@ -112,9 +116,10 @@ is installed.
 |---|---|
 | Capacity | 5,000,000 FE (Normal), 50,000,000 FE (High-Energy) |
 | Charging from other mods | up to 10,000 FE/t |
-| Shield | 50 FE/t (about 83 minutes on a full staff), × 2 under water, × 3 touching lava, plus 2,000 FE per absorbed damage point |
+| Shield | 50 FE/t (about 83 minutes on a full staff), × 2 under water, × 3 touching lava, plus 4,000 FE per absorbed damage point |
 | Cloak | 40 FE/t, × 1.5 under water, × 2 touching lava |
-| Under fire (2 s after a hit) | shield and cloak × 2 |
+| Under fire (2 s after a hit) | shield × 6, cloak × 2 |
+| Self-charging | +250 FE/t for every staff in the inventory |
 | Lightning | 500 FE/t (about 8 minutes of firing) |
 | Energy ball | 30,000 FE, fully charged 90,000 FE |
 | Teleport | 20,000 FE |
@@ -131,7 +136,7 @@ Fabric; a server sends them to joining players.
 
 | Section | Contents |
 |---|---|
-| `[staff]` | `consumeEnergy` (`false`: everything runs for free), `capacity` (of the normal staff; the high-energy staff stores ten times as much), `startCharge`, `maxReceive`, shield and cloak drain with their water/lava factors, `shieldHitCost`, `underFireFactor` / `underFireSeconds`, `lightDrain`, `lightLevel`, `lightningCharge`, `lightningAttractRange` |
+| `[staff]` | `consumeEnergy` (`false`: everything runs for free), `capacity` (of the normal staff; the high-energy staff stores ten times as much), `startCharge`, `maxReceive`, shield and cloak drain with their water/lava factors, `shieldHitCost`, `shieldUnderFireFactor` (shield) / `underFireFactor` (cloak) / `underFireSeconds`, `selfCharge`, `lightDrain`, `lightLevel`, `lightningCharge`, `lightningAttractRange` |
 | `[beam]` | the lightning: `damagePerSecond`, `hitsPerSecond`, `range`, `aimTolerance`, `drain`, `chainTargets`, `chainRange`, `chainFalloff`, `chargeSeconds`, `chargeStart`, `chargeMax`, `wetDamageFactor`, `wetChainRangeFactor`, `slowTicks`, `slowLevel`, `fireSeconds` |
 | `[energyBall]` | `damage`, `radius`, `edgeDamage`, `knockback`, `speed`, `range`, `energy`, `cooldownTicks`, `chargeTicks`, `chargedDamageFactor` / `chargedRadiusFactor` / `chargedSizeFactor` / `chargedEnergyFactor`, `blockDropChance`, `maxBlockResistance` |
 | `[teleport]` | `range`, `energy`, `cooldownTicks` |
@@ -193,7 +198,9 @@ image (several views, night and day, both staffs), to judge changes without star
 java -cp core/build/classes/java/main tools/CrystalPreview.java preview.png
 ```
 
-The staff is 32 model units long, the height of the player model. Its upright pose in third person depends on two
+The staff stands on the ground and reaches a fifth higher than the player model (32 model units): its shaft above the
+grip is longer by `HEAD_RAISE` in the script, and `CrystalShape.FOOT` puts the crystal on the raised head. Its upright
+pose in third person depends on two
 things that must match: the arm angles in `StaffArmPose` and the `thirdperson_righthand` display transform in the
 model, which the script calculates from the same angles. `StaffArmPose` also stops the arm from swinging while walking.
 

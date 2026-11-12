@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 class CrystalRenderTest {
     private static final float[] IDENTITY = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
     /** The item in front of the camera (render space has the camera at its origin, looking along -z). */
-    private static final float[] IN_FRONT = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -0.5f, -1.3f, -2f, 1};
+    private static final float[] IN_FRONT = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -0.5f, -1.7f, -2f, 1};
 
     /** Collects vertices per layer: body and each light. */
     private static final class Recorder implements CrystalRender.Output {
@@ -50,7 +50,7 @@ class CrystalRenderTest {
         assertEquals("body", recorder.order.get(0));
         assertEquals(0, recorder.body.size() % 4);
         for (float[] v : recorder.body) {
-            assertTrue(v[1] > 16f / 16 && v[1] < 25.5f / 16, "y=" + v[1]);
+            assertTrue(v[1] > 22f / 16 && v[1] < 31.5f / 16, "y=" + v[1]);
             assertTrue(Math.abs(v[0] - 0.5f) < 0.25f && Math.abs(v[2] - 0.5f) < 0.25f);
         }
     }
@@ -69,8 +69,8 @@ class CrystalRenderTest {
         float foot = 0, tip = 0;
         for (float[] v : recorder.body) {
             float value = v[3] + v[4] + v[5];
-            if (v[1] < 17.5f / 16) foot = Math.max(foot, value);
-            if (v[1] > 23.5f / 16) tip = Math.max(tip, value);
+            if (v[1] < 23.9f / 16) foot = Math.max(foot, value);
+            if (v[1] > 28.5f / 16) tip = Math.max(tip, value);
         }
         assertTrue(foot > tip, "foot " + foot + " tip " + tip);
     }

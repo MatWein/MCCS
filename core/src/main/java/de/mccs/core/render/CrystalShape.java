@@ -11,6 +11,8 @@ import java.util.function.Consumer;
  */
 final class CrystalShape {
     static final int SIDES = 8;
+    /** Where the crystal sits: just above the staff's head (HEAD_RAISE in tools/make_staff_assets.py moves both). */
+    static final float FOOT = 22.8f;
     /** How far the sections' middles and corners stray (relative to the radius), so the sides break into facets. */
     private static final float KINK = 0.12f;
     private static final float JITTER = 0.1f;
@@ -26,11 +28,11 @@ final class CrystalShape {
      * staff's fins (at 0, 90, 180, 270 degrees).
      */
     static final Shard[] SHARDS = {
-            shard(0, 0f, 16.4f, 0, 1.2f, 0.6f, 3.8f, 1.9f, 0f, 11),
-            shard(130, 0.45f, 16.7f, 19, 0.68f, 0.45f, 2.2f, 1.3f, 0.2f, 23),
-            shard(250, 0.45f, 16.6f, 24, 0.6f, 0.4f, 1.8f, 1.15f, 0.15f, 37),
-            shard(48, 0.55f, 16.8f, 33, 0.44f, 0.3f, 1.0f, 0.8f, 0.1f, 41),
-            shard(318, 0.55f, 16.9f, 37, 0.38f, 0.28f, 0.8f, 0.7f, 0.1f, 53)};
+            shard(0, 0f, FOOT, 0, 1.2f, 0.6f, 3.8f, 1.9f, 0f, 11),
+            shard(130, 0.45f, FOOT + 0.3f, 19, 0.68f, 0.45f, 2.2f, 1.3f, 0.2f, 23),
+            shard(250, 0.45f, FOOT + 0.2f, 24, 0.6f, 0.4f, 1.8f, 1.15f, 0.15f, 37),
+            shard(48, 0.55f, FOOT + 0.4f, 33, 0.44f, 0.3f, 1.0f, 0.8f, 0.1f, 41),
+            shard(318, 0.55f, FOOT + 0.5f, 37, 0.38f, 0.28f, 0.8f, 0.7f, 0.1f, 53)};
 
     private CrystalShape() {}
 

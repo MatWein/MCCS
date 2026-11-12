@@ -80,7 +80,7 @@ public final class CrystalPreview {
         m = mul(m, translation(0, 0, -distance));
         m = mul(m, rotationX((float) Math.toRadians(-pitch)));
         m = mul(m, rotationY((float) Math.toRadians(yaw)));
-        m = mul(m, translation(-0.5f, -20.4f / 16, -0.5f));
+        m = mul(m, translation(-0.5f, -26.8f / 16, -0.5f));
         return m;
     }
 
@@ -124,10 +124,10 @@ public final class CrystalPreview {
         void drawStaff(float[] pose) {
             float[] metal = {0.16f, 0.17f, 0.2f};
             float[] rim = {0.35f, 0.75f, 0.9f};
-            column(pose, 0.75f, -8, 14.5f, metal);
-            column(pose, 1.1f, 14.5f, 15.4f, new float[]{0.55f, 0.57f, 0.6f});
-            column(pose, 1.6f, 15.4f, 16.1f, metal);
-            column(pose, 1.15f, 16.1f, 16.45f, rim);
+            column(pose, 0.75f, -8, 20.9f, metal);
+            column(pose, 1.1f, 20.9f, 21.8f, new float[]{0.55f, 0.57f, 0.6f});
+            column(pose, 1.6f, 21.8f, 22.5f, metal);
+            column(pose, 1.15f, 22.5f, 22.85f, rim);
         }
 
         private void column(float[] pose, float radius, float bottom, float top, float[] base) {

@@ -20,7 +20,9 @@ public final class StaffConfig {
     private final DoubleSetting cloakWaterFactor;
     private final DoubleSetting cloakLavaFactor;
     private final DoubleSetting underFireFactor;
+    private final DoubleSetting shieldUnderFireFactor;
     private final DoubleSetting underFireSeconds;
+    private final IntSetting selfCharge;
 
     StaffConfig(ConfigBuilder builder) {
         builder.comment("Crystal staff").push("staff");
@@ -39,7 +41,7 @@ public final class StaffConfig {
         shieldLavaFactor = builder.comment("Shield drain multiplier when touching lava")
                 .defineInRange("shieldLavaFactor", 3.0, 1.0, 100.0);
         shieldHitCost = builder.comment("Extra energy per point of absorbed damage (FE)")
-                .defineInRange("shieldHitCost", 2_000, 0, MAX_FE);
+                .defineInRange("shieldHitCost", 4_000, 0, MAX_FE);
         lightningCharge = builder.comment("Charge from being struck by lightning while holding the staff (share of the capacity)")
                 .defineInRange("lightningCharge", 0.2, 0.0, 1.0);
         lightningAttractRange = builder.comment("Natural lightning within this range strikes a player with an active shield under open sky (blocks, 0 = never)")
@@ -54,10 +56,14 @@ public final class StaffConfig {
                 .defineInRange("cloakWaterFactor", 1.5, 1.0, 100.0);
         cloakLavaFactor = builder.comment("Cloak drain multiplier when touching lava")
                 .defineInRange("cloakLavaFactor", 2.0, 1.0, 100.0);
-        underFireFactor = builder.comment("Shield and cloak drain multiplier while under fire")
+        underFireFactor = builder.comment("Cloak drain multiplier while under fire")
                 .defineInRange("underFireFactor", 2.0, 1.0, 100.0);
+        shieldUnderFireFactor = builder.comment("Shield drain multiplier while under fire: holding off attacks costs much more than standing by")
+                .defineInRange("shieldUnderFireFactor", 6.0, 1.0, 100.0);
         underFireSeconds = builder.comment("How long the player counts as under fire after a hit (seconds)")
                 .defineInRange("underFireSeconds", 2.0, 0.0, 60.0);
+        selfCharge = builder.comment("Energy a staff in a player's inventory gathers on its own (FE/tick, 0 = off), so it can be used without other mods")
+                .defineInRange("selfCharge", 250, 0, MAX_FE);
         builder.pop();
     }
 
@@ -79,7 +85,7 @@ public final class StaffConfig {
 
     /** The shield's drain in FE/tick where the player is. */
     public int shieldDrain(boolean underWater, boolean inLava, boolean underFire) {
-        return drain(shieldDrain.get(), inLava ? shieldLavaFactor.get() : underWater ? shieldWaterFactor.get() : 1.0, underFire);
+        return drain(shieldDrain.get(), inLava ? shieldLavaFactor.get() : underWater ? shieldWaterFactor.get() : 1.0, underFire ? shieldUnderFireFactor.get() : 1.0);
     }
 
     public int lightDrain() {
@@ -104,11 +110,16 @@ public final class StaffConfig {
 
     /** The cloak's drain in FE/tick where the player is. */
     public int cloakDrain(boolean underWater, boolean inLava, boolean underFire) {
-        return drain(cloakDrain.get(), inLava ? cloakLavaFactor.get() : underWater ? cloakWaterFactor.get() : 1.0, underFire);
+        return drain(cloakDrain.get(), inLava ? cloakLavaFactor.get() : underWater ? cloakWaterFactor.get() : 1.0, underFire ? underFireFactor.get() : 1.0);
     }
 
-    private int drain(int base, double factor, boolean underFire) {
-        return (int) Math.min(Integer.MAX_VALUE, Math.round(base * factor * (underFire ? underFireFactor.get() : 1.0)));
+    private int drain(int base, double factor, double underFireFactor) {
+        return (int) Math.min(Integer.MAX_VALUE, Math.round(base * factor * underFireFactor));
+    }
+
+    /** What a staff in a player's inventory gathers on its own, in FE/tick. */
+    public int selfCharge() {
+        return selfCharge.get();
     }
 
     public int underFireTicks() {

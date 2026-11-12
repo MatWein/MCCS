@@ -37,6 +37,8 @@ public final class StaffSystems {
     /** Player tick of the last damage. */
     private static final Map<ServerPlayer, Integer> LAST_HIT = new WeakHashMap<>();
     private static final Map<ServerPlayer, Integer> LAST_HIT_SOUND = new WeakHashMap<>();
+    /** The tick of the last hit counted on a player's shield: a hit counts once, however it arrives. */
+    private static final Map<ServerPlayer, Integer> LAST_SHIELD_HIT = new WeakHashMap<>();
     /** Ticks of the cloak's fade, as on the clients: from then on the body is invisible. */
     private static final Map<ServerPlayer, Integer> CLOAK_FADE = new WeakHashMap<>();
 
@@ -203,6 +205,7 @@ public final class StaffSystems {
             normalize(player.getMainHandItem());
             normalize(player.getOffhandItem());
             updateInvisibility(player);
+            if (drainNow) selfCharge(player);
             if (!ServerConfig.STAFF.consumeEnergy()) continue;
             ItemStack staff = activeShield(player);
             if (staff.isEmpty()) staff = activeCloak(player);
@@ -210,6 +213,20 @@ public final class StaffSystems {
             if (staff.isEmpty()) continue;
             if (drainNow) consume(staff, drain(player, isUnderFire(player)) * (long) DRAIN_INTERVAL);
             if (stored(staff) <= 0) powerFailure(player);
+        }
+    }
+
+    /** Staffs anywhere in a player's inventory slowly charge on their own ({@code selfCharge}, 0 turns it off). */
+    private static void selfCharge(ServerPlayer player) {
+        int rate = ServerConfig.STAFF.selfCharge();
+        if (rate <= 0) return;
+        var inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (!isStaff(stack)) continue;
+            int stored = stored(stack);
+            int capacity = capacity(stack);
+            if (stored < capacity) StaffData.setSavedEnergy(stack, (int) Math.min(capacity, stored + (long) rate * DRAIN_INTERVAL));
         }
     }
 
@@ -259,13 +276,33 @@ public final class StaffSystems {
             powerFailure(player);
             return false;
         }
+        countShieldHit(player, shield);
+        return true;
+    }
+
+    /**
+     * One of the staff's own attacks (lightning, energy ball, a thrown target) did not hurt its target: if the target is a
+     * player with an active shield, the shield shows the hit. This covers what never reaches {@link #absorb}, such as
+     * players in creative mode, whom Minecraft does not let take damage at all.
+     */
+    public static void deflected(Entity target) {
+        if (!(target instanceof ServerPlayer player)) return;
+        ItemStack shield = activeShield(player);
+        if (shield.isEmpty()) return;
+        LAST_HIT.put(player, player.tickCount);
+        countShieldHit(player, shield);
+    }
+
+    /** The shield flashes for everyone (the hit counter on the staff) and sounds, at most once per tick. */
+    private static void countShieldHit(ServerPlayer player, ItemStack shield) {
+        Integer last = LAST_SHIELD_HIT.put(player, player.tickCount);
+        if (last != null && last == player.tickCount) return;
         StaffData.setShieldHits(shield, StaffData.shieldHits(shield) + 1);
         Integer lastSound = LAST_HIT_SOUND.get(player);
         if (lastSound == null || player.tickCount - lastSound >= HIT_SOUND_INTERVAL || player.tickCount < lastSound) {
             LAST_HIT_SOUND.put(player, player.tickCount);
             StaffSounds.shieldHit(player);
         }
-        return true;
     }
 
     /**
