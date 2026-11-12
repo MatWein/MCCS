@@ -5,21 +5,28 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import de.mccs.core.staff.StaffKind;
 import org.junit.jupiter.api.Test;
 
 class CrystalGlowTest {
     @Test
     void moreChargeShinesBrighterAndWider() {
-        CrystalGlow.Halo full = CrystalGlow.halo(100, 100, 0f);
-        CrystalGlow.Halo half = CrystalGlow.halo(50, 100, 0f);
+        CrystalGlow.Halo full = CrystalGlow.halo(StaffKind.NORMAL, 100, 100, 0f);
+        CrystalGlow.Halo half = CrystalGlow.halo(StaffKind.NORMAL, 50, 100, 0f);
         assertTrue(full.blue() > half.blue());
         assertTrue(full.radius() > half.radius());
     }
 
     @Test
     void nearlyEmptyIsRed() {
-        CrystalGlow.Halo low = CrystalGlow.halo(5, 100, 0f);
+        CrystalGlow.Halo low = CrystalGlow.halo(StaffKind.NORMAL, 5, 100, 0f);
         assertTrue(low.red() > low.blue());
+    }
+
+    @Test
+    void highEnergyCrystalShinesYellowish() {
+        CrystalGlow.Halo glow = CrystalGlow.halo(StaffKind.HIGH_ENERGY, 100, 100, 0f);
+        assertTrue(glow.red() > glow.green() && glow.green() > glow.blue());
     }
 
     @Test
@@ -48,7 +55,7 @@ class CrystalGlowTest {
     @Test
     void haloIsOneQuad() {
         int[] vertices = {0};
-        CrystalGlow.emitHalo(CrystalGlow.halo(100, 100, 0f), new float[3], new float[]{1, 0, 0}, new float[]{0, 1, 0}, 1f,
+        CrystalGlow.emitHalo(CrystalGlow.halo(StaffKind.NORMAL, 100, 100, 0f), new float[3], new float[]{1, 0, 0}, new float[]{0, 1, 0}, 1f,
                 (x, y, z, r, g, b, a, u, v, nx, ny, nz) -> vertices[0]++);
         assertEquals(4, vertices[0]);
     }

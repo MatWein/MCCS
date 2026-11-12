@@ -1,5 +1,6 @@
 {
-  "item.mccs.crystal_staff": "Crystal Staff",
+  "item.mccs.crystal_staff": "Normal Crystal Staff",
+  "item.mccs.high_energy_crystal_staff": "High-Energy Crystal Staff",
   "key.categories.mccs": "MCCS - Crystal Staff",
   "key.category.mccs.staff": "MCCS - Crystal Staff",
   "key.mccs.shield": "Toggle staff shield",

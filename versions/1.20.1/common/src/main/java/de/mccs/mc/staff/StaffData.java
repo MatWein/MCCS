@@ -1,6 +1,5 @@
 package de.mccs.mc.staff;
 
-import de.mccs.core.config.ServerConfig;
 import de.mccs.core.staff.StaffEnergy;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +27,7 @@ public final class StaffData {
         CompoundTag tag = stack.getOrCreateTag();
         tag.putInt(ENERGY, energy);
         // Integer.MAX_VALUE: "as full as the capacity", from before the settings are known (creative tab)
-        int look = energy == Integer.MAX_VALUE ? 0 : StaffEnergy.crystalLook(energy, ServerConfig.STAFF.capacity());
+        int look = energy == Integer.MAX_VALUE ? 0 : StaffEnergy.crystalLook(energy, StaffSystems.capacity(stack));
         if (look == 0) tag.remove(CRYSTAL_LOOK);
         else tag.putInt(CRYSTAL_LOOK, look);
     }

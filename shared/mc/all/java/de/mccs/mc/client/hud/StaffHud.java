@@ -43,7 +43,7 @@ public final class StaffHud {
         boolean shieldOn = !shield.isEmpty();
         boolean cloakOn = !StaffSystems.activeCloak(player).isEmpty();
         int drain = config.consumeEnergy() ? StaffSystems.drain(player, false) + BeamClient.drain(player) : 0;
-        List<HudLine> lines = StaffHudModel.lines(new StaffHudModel.State(StaffSystems.stored(staff), config.capacity(), shieldOn, cloakOn,
+        List<HudLine> lines = StaffHudModel.lines(new StaffHudModel.State(StaffSystems.stored(staff), StaffSystems.capacity(staff), shieldOn, cloakOn,
                 !StaffSystems.activeLights(player).isEmpty(), StaffData.blockDamage(staff), drain, config.consumeEnergy()), player.tickCount);
 
         Font font = minecraft.font;

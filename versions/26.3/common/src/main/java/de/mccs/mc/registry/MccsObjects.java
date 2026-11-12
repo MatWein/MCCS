@@ -2,6 +2,7 @@ package de.mccs.mc.registry;
 
 import com.mojang.serialization.Codec;
 import de.mccs.core.MccsIds;
+import de.mccs.core.staff.StaffKind;
 import de.mccs.mc.Mccs;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -41,9 +42,9 @@ public final class MccsObjects {
                 .build(ResourceKey.create(Registries.ENTITY_TYPE, Mccs.id(MccsIds.ENERGY_BALL)));
     }
 
-    public static Item.Properties crystalStaffProperties() {
+    public static Item.Properties crystalStaffProperties(StaffKind kind) {
         return new Item.Properties()
-                .setId(ResourceKey.create(Registries.ITEM, Mccs.id(MccsIds.CRYSTAL_STAFF)))
+                .setId(ResourceKey.create(Registries.ITEM, Mccs.id(kind.id())))
                 .stacksTo(1)
                 .rarity(Rarity.RARE);
     }

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Generates the crystal staff's item model, its texture and the mod icon.
+"""Generates the crystal staffs' item models, their textures and the mod icon.
+
+There is one staff per kind (StaffKind): all share the geometry of models/item/crystal_staff.json and differ only in
+the colors of their texture.
 
 Run from anywhere: python3 tools/make_staff_assets.py
 
@@ -14,9 +17,13 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
-MODEL = ROOT / "shared/mc/all/resources/assets/mccs/models/item/crystal_staff.json"
+MODELS = ROOT / "shared/mc/all/resources/assets/mccs/models/item"
+# Minecraft 26.x picks an item's model through items/<item>.json
+ITEM_DEFINITIONS = ROOT / "versions/26.3/common/src/main/resources/assets/mccs/items"
 ASSETS = ROOT / "core/src/main/resources/assets/mccs"
-TEXTURE = ASSETS / "textures/item/crystal_staff.png"
+TEXTURES = ASSETS / "textures/item"
+# the staff whose model holds the geometry; the other kinds take it as parent
+BASE_KIND = "crystal_staff"
 ICON = ASSETS / "icon.png"
 BEAM = ASSETS / "textures/entity/beam.png"
 CRYSTAL_GLOW = ASSETS / "textures/entity/crystal_glow.png"
@@ -170,17 +177,38 @@ def display():
     }
 
 
-def write_model():
-    model = {
-        "textures": {"staff": "mccs:item/crystal_staff", "particle": "mccs:item/crystal_staff"},
-        "elements": elements(),
-        "display": display(),
-        # Minecraft 1.20.1 selects the crystal's look here; 26.3 does it in items/crystal_staff.json and ignores this
-        "overrides": [{"predicate": {"custom_model_data": threshold}, "model": f"mccs:item/crystal_staff_{name}"}
-                      for name, threshold in LOOK_THRESHOLDS.items()],
-    }
-    MODEL.parent.mkdir(parents=True, exist_ok=True)
-    MODEL.write_text(json.dumps(model, indent=1) + "\n")
+def write_model(kind):
+    """The kind's model: the geometry itself for the base kind, otherwise the base model with this kind's texture."""
+    texture = f"mccs:item/{kind}"
+    model = {"textures": {"staff": texture, "particle": texture}}
+    if kind == BASE_KIND:
+        model["elements"] = elements()
+        model["display"] = display()
+    else:
+        model = {"parent": f"mccs:item/{BASE_KIND}", **model}
+    # Minecraft 1.20.1 selects the crystal's look here (overrides are not inherited from the parent);
+    # 26.3 does it in items/<kind>.json and ignores this
+    model["overrides"] = [{"predicate": {"custom_model_data": threshold}, "model": f"mccs:item/{kind}_{name}"}
+                          for name, threshold in LOOK_THRESHOLDS.items()]
+    MODELS.mkdir(parents=True, exist_ok=True)
+    (MODELS / f"{kind}.json").write_text(json.dumps(model, indent=1) + "\n")
+
+
+def write_item_definition(kind):
+    """Minecraft 26.x: the crystal's look by the custom model data that StaffData sets."""
+    def model(name):
+        return {"type": "minecraft:model", "model": name}
+
+    definition = {"model": {
+        "type": "minecraft:range_dispatch",
+        "property": "minecraft:custom_model_data",
+        "index": 0,
+        "fallback": model(f"mccs:item/{kind}"),
+        "entries": [{"threshold": threshold, "model": model(f"mccs:item/{kind}_{name}")}
+                    for name, threshold in LOOK_THRESHOLDS.items()],
+    }}
+    ITEM_DEFINITIONS.mkdir(parents=True, exist_ok=True)
+    (ITEM_DEFINITIONS / f"{kind}.json").write_text(json.dumps(definition, indent=2) + "\n")
 
 
 def fill(pixels, region, color_at):
@@ -194,12 +222,13 @@ def fill(pixels, region, color_at):
 CRYSTAL_LOOKS = {
     "medium": lambda r, g, b: (int(r * 0.7), int(g * 0.7), int(b * 0.75)),
     "dim": lambda r, g, b: (int(r * 0.4), int(g * 0.42), int(b * 0.5)),
-    "low": lambda r, g, b: (min(255, int(b * 0.95)), int(g * 0.28), int(r * 0.35)),
+    # red, whatever color the crystal has
+    "low": lambda r, g, b: (min(255, int(max(r, g, b) * 0.95)), int(g * 0.28), int(min(r, g, b) * 0.35)),
 }
 LOOK_THRESHOLDS = {"medium": 1, "dim": 2, "low": 3}
 
 
-def write_looks(image):
+def write_looks(kind, image):
     """A texture and a model per look; the model only swaps the texture of the base model."""
     x0, y0, x1, y1 = CRYSTAL
     for name, recolor in CRYSTAL_LOOKS.items():
@@ -209,13 +238,38 @@ def write_looks(image):
             for x in range(x0, x1):
                 r, g, b, a = pixels[x, y]
                 pixels[x, y] = (*recolor(r, g, b), a)
-        look.save(TEXTURE.parent / f"crystal_staff_{name}.png")
-        texture = f"mccs:item/crystal_staff_{name}"
-        model = {"parent": "mccs:item/crystal_staff", "textures": {"staff": texture, "particle": texture}}
-        (MODEL.parent / f"crystal_staff_{name}.json").write_text(json.dumps(model, indent=1) + "\n")
+        look.save(TEXTURES / f"{kind}_{name}.png")
+        texture = f"mccs:item/{kind}_{name}"
+        model = {"parent": f"mccs:item/{BASE_KIND}", "textures": {"staff": texture, "particle": texture}}
+        (MODELS / f"{kind}_{name}.json").write_text(json.dumps(model, indent=1) + "\n")
 
 
-def write_texture():
+def blue_crystal(x, y):
+    """Bright at the top, deep blue at the bottom, with a soft highlight down the middle of each face."""
+    height = 1 - y / 15
+    highlight = max(0.0, 1 - abs(x - 7.5) / 3.5) * 40
+    return (min(255, int(30 + 80 * height + highlight)),
+            min(255, int(130 + 90 * height + highlight)),
+            min(255, int(225 + 30 * height + highlight / 2)))
+
+
+def orange_crystal(x, y):
+    """Golden yellow at the top, deep orange at the bottom, with the same highlight as the blue one."""
+    height = 1 - y / 15
+    highlight = max(0.0, 1 - abs(x - 7.5) / 3.5) * 40
+    return (min(255, int(225 + 30 * height + highlight / 2)),
+            min(255, int(95 + 100 * height + highlight)),
+            min(255, int(15 + 55 * height + highlight / 2)))
+
+
+# The kinds of staff (StaffKind): item name -> crystal color and the color of the glowing rings and energy lines.
+KINDS = {
+    "crystal_staff": {"crystal": blue_crystal, "glow": (120, 235, 255)},
+    "high_energy_crystal_staff": {"crystal": orange_crystal, "glow": (255, 225, 120)},
+}
+
+
+def write_texture(kind, colors):
     rng = random.Random(7)
     image = Image.new("RGBA", (TEXTURE_SIZE, TEXTURE_SIZE), (0, 0, 0, 0))
     pixels = image.load()
@@ -233,7 +287,7 @@ def write_texture():
         return (shade, shade, shade + 3)
 
     def glow(x, y):
-        return (120, 235, 255)
+        return colors["glow"]
 
     def steel(x, y):
         # bright brushed metal, slightly blue, with a dark seam
@@ -243,22 +297,14 @@ def write_texture():
             value -= 70
         return (value - 6, value, value + 8)
 
-    def crystal(x, y):
-        # bright at the top, deep blue at the bottom, with a soft highlight down the middle of each face
-        height = 1 - y / 15
-        highlight = max(0.0, 1 - abs(x - 7.5) / 3.5) * 40
-        return (min(255, int(30 + 80 * height + highlight)),
-                min(255, int(130 + 90 * height + highlight)),
-                min(255, int(225 + 30 * height + highlight / 2)))
-
     fill(pixels, SHAFT, shaft)
     fill(pixels, GRIP, grip)
     fill(pixels, GLOW, glow)
     fill(pixels, STEEL, steel)
-    fill(pixels, CRYSTAL, crystal)
-    TEXTURE.parent.mkdir(parents=True, exist_ok=True)
-    image.save(TEXTURE)
-    write_looks(image)
+    fill(pixels, CRYSTAL, colors["crystal"])
+    TEXTURES.mkdir(parents=True, exist_ok=True)
+    image.save(TEXTURES / f"{kind}.png")
+    write_looks(kind, image)
 
 
 def write_beam():
@@ -304,8 +350,10 @@ def write_icon():
 
 
 if __name__ == "__main__":
-    write_model()
-    write_texture()
+    for kind, colors in KINDS.items():
+        write_model(kind)
+        write_item_definition(kind)
+        write_texture(kind, colors)
     write_icon()
     write_beam()
     write_crystal_glow()

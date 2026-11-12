@@ -1,6 +1,5 @@
 package de.mccs.mc.item;
 
-import de.mccs.core.config.ServerConfig;
 import de.mccs.core.hud.HudColors;
 import de.mccs.core.staff.StaffEnergy;
 import de.mccs.mc.staff.StaffSystems;
@@ -13,11 +12,11 @@ public final class StaffBar {
     private StaffBar() {}
 
     public static int width(ItemStack stack) {
-        return StaffEnergy.barWidth(StaffSystems.stored(stack), ServerConfig.STAFF.capacity());
+        return StaffEnergy.barWidth(StaffSystems.stored(stack), StaffSystems.capacity(stack));
     }
 
     public static int color(ItemStack stack) {
-        boolean low = StaffEnergy.crystalLook(StaffSystems.stored(stack), ServerConfig.STAFF.capacity()) == LOW_LOOK;
+        boolean low = StaffEnergy.crystalLook(StaffSystems.stored(stack), StaffSystems.capacity(stack)) == LOW_LOOK;
         return low ? HudColors.RED : HudColors.TEAL;
     }
 }

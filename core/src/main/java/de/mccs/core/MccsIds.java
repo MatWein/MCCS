@@ -4,6 +4,7 @@ package de.mccs.core;
 public final class MccsIds {
     public static final String MOD_ID = "mccs";
     public static final String CRYSTAL_STAFF = "crystal_staff";
+    public static final String HIGH_ENERGY_CRYSTAL_STAFF = "high_energy_crystal_staff";
     public static final String ENERGY_BALL = "energy_ball";
 
     private MccsIds() {}

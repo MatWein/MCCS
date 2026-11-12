@@ -1,6 +1,5 @@
 package de.mccs.mc.staff;
 
-import de.mccs.core.config.ServerConfig;
 import de.mccs.core.staff.StaffEnergy;
 import de.mccs.mc.registry.MccsObjects;
 import net.minecraft.core.component.DataComponents;
@@ -20,13 +19,13 @@ public final class StaffData {
 
     public static void setSavedEnergy(ItemStack stack, int energy) {
         stack.set(MccsObjects.ENERGY, energy);
-        stack.set(DataComponents.CUSTOM_MODEL_DATA, crystalLook(energy));
+        stack.set(DataComponents.CUSTOM_MODEL_DATA, crystalLook(energy, StaffSystems.capacity(stack)));
     }
 
-    /** Selects the crystal's model at this charge (items/crystal_staff.json). */
-    public static CustomModelData crystalLook(int energy) {
+    /** Selects the crystal's model at this charge (items/<kind>.json). */
+    public static CustomModelData crystalLook(int energy, int capacity) {
         // Integer.MAX_VALUE: "as full as the capacity", from before the settings are known (creative tab)
-        int look = energy == Integer.MAX_VALUE ? 0 : StaffEnergy.crystalLook(energy, ServerConfig.STAFF.capacity());
+        int look = energy == Integer.MAX_VALUE ? 0 : StaffEnergy.crystalLook(energy, capacity);
         return new CustomModelData(List.of((float) look), List.of(), List.of(), List.of());
     }
 

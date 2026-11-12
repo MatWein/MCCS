@@ -1,6 +1,7 @@
 package de.mccs.fabric;
 
 import de.mccs.core.MccsIds;
+import de.mccs.core.staff.StaffKind;
 import de.mccs.fabric.compat.TeamRebornEnergy;
 import de.mccs.fabric.config.FabricConfigs;
 import de.mccs.fabric.item.FabricCrystalStaffItem;
@@ -29,20 +30,29 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** MCCS for Minecraft 1.20.1 on Fabric. */
 public final class MccsFabric implements ModInitializer {
     private static final String TEAM_REBORN_ENERGY = "team_reborn_energy";
-    private static final Item CRYSTAL_STAFF = new FabricCrystalStaffItem(MccsObjects.crystalStaffProperties());
 
     @Override
     public void onInitialize() {
         FabricConfigs.define();
-        Registry.register(BuiltInRegistries.ITEM, Mccs.id(MccsIds.CRYSTAL_STAFF), CRYSTAL_STAFF);
+        List<Item> staffs = new ArrayList<>();
+        for (StaffKind kind : StaffKind.values()) {
+            Item staff = new FabricCrystalStaffItem(MccsObjects.crystalStaffProperties(), kind);
+            Registry.register(BuiltInRegistries.ITEM, Mccs.id(kind.id()), staff);
+            staffs.add(staff);
+        }
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT).register(entries -> {
-            entries.accept(CRYSTAL_STAFF);
-            ItemStack charged = new ItemStack(CRYSTAL_STAFF);
-            StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-            entries.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+            for (Item staff : staffs) {
+                entries.accept(staff);
+                ItemStack charged = new ItemStack(staff);
+                StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
+                entries.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+            }
         });
         EnergyBallEntity.TYPE = MccsObjects.energyBallType();
         Registry.register(BuiltInRegistries.ENTITY_TYPE, Mccs.id(MccsIds.ENERGY_BALL), EnergyBallEntity.TYPE);
@@ -57,6 +67,6 @@ public final class MccsFabric implements ModInitializer {
             if (entity instanceof LightningBolt bolt) StaffLightning.attract(bolt);
         });
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !StaffSystems.absorb(entity, source, amount));
-        if (FabricLoader.getInstance().isModLoaded(TEAM_REBORN_ENERGY)) TeamRebornEnergy.register(CRYSTAL_STAFF);
+        if (FabricLoader.getInstance().isModLoaded(TEAM_REBORN_ENERGY)) TeamRebornEnergy.register(staffs);
     }
 }

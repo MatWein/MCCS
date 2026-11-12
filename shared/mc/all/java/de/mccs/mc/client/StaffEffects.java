@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * What a staff in a player's hand shows at its crystal: its light, electric arcs when charged well, and the energy ball while
+ * What a staff in a player's hand shows at its crystal: its light in the color of its kind, electric arcs when charged well, and the energy ball while
  * it is being charged. The picture is made here, each Minecraft version only draws it.
  */
 public final class StaffEffects {
@@ -42,7 +42,7 @@ public final class StaffEffects {
         for (Player player : minecraft.level.players()) {
             ItemStack staff = StaffSystems.heldStaff(player);
             if (staff.isEmpty() || StaffClient.isHidden(player) || BeamClient.isFirstPerson(minecraft, player)) continue;
-            if (!CrystalGlow.crackles(StaffSystems.stored(staff), ServerConfig.STAFF.capacity())) continue;
+            if (!CrystalGlow.crackles(StaffSystems.stored(staff), StaffSystems.capacity(staff))) continue;
             var random = minecraft.level.getRandom();
             if (random.nextFloat() >= SPARK_CHANCE) continue;
             Vec3 crystal = BeamAim.crystal(player, arm(player, staff), 1f);
@@ -70,8 +70,8 @@ public final class StaffEffects {
             float[] center = {(float) (crystal.x - cameraPosition.x), (float) (crystal.y - cameraPosition.y), (float) (crystal.z - cameraPosition.z)};
             float time = player.tickCount + partialTick;
             int stored = StaffSystems.stored(staff);
-            int capacity = ServerConfig.STAFF.capacity();
-            output.halo(CrystalGlow.halo(stored, capacity, time), center, right, up, scale);
+            int capacity = StaffSystems.capacity(staff);
+            output.halo(CrystalGlow.halo(StaffSystems.kind(staff), stored, capacity, time), center, right, up, scale);
             if (CrystalGlow.crackles(stored, capacity)) {
                 for (int i = 0; i < ARCS; i++) {
                     float[][] arc = CrystalGlow.arc(center, scale, player.getId(), time, i);

@@ -6,24 +6,31 @@ MCCS adds a **Crystal Staff** to Minecraft: a staff as tall as the player, toppe
 It protects you with a shield, hides you with a cloak, fires lightning and energy balls, teleports you, lights up the
 dark and lifts things by telekinesis, all powered by the energy stored in its crystal.
 
+There are two staffs that work exactly the same way: the **Normal Crystal Staff** with its blue crystal, and the
+**High-Energy Crystal Staff** with an orange crystal and a yellowish glow, which stores ten times as much energy.
+
 | Minecraft | Loaders |
 |---|---|
 | 1.20.1 | Forge (47.4.16+), Fabric (with Fabric API) |
 | 26.3 | NeoForge, Fabric (with Fabric API) |
 
 It works on its own; energy mods such as Mekanism are optional. Install it on the server and on every client.
+Translated into English, German, Spanish, French, Italian, Portuguese (Brazil), Polish, Russian, Ukrainian, Japanese,
+Korean and Simplified Chinese.
 
 ## Getting started
 
-- **Creative:** tab **Combat** holds a new staff (20 % charge) and a fully charged one; the search only shows the new
-  one.
-- **Survival:** craft it from 2 emeralds in the middle column with a diamond on top and redstone dust left and right
-  of the diamond:
+- **Creative:** tab **Combat** holds each staff new (20 % charge) and fully charged; the search only shows the new
+  ones.
+- **Survival:** craft the **Normal Crystal Staff** from 2 emeralds in the middle column with a diamond on top and
+  redstone dust left and right of the diamond. Upgrade it to the **High-Energy Crystal Staff** by surrounding it with
+  4 gold blocks and 4 blaze rods (the new staff starts with 20 % charge):
 
   ```
-  R D R
-    E
-    E
+  Normal            High-Energy
+  R D R             B G B
+    E               G S G
+    E               B G B
   ```
 
 The staff is carried upright like a shepherd's staff, held near its middle and reaching from the ground to the top of
@@ -102,7 +109,7 @@ is installed.
 
 | Consumer | Default |
 |---|---|
-| Capacity | 5,000,000 FE |
+| Capacity | 5,000,000 FE (Normal), 50,000,000 FE (High-Energy) |
 | Charging from other mods | up to 10,000 FE/t |
 | Shield | 50 FE/t (about 83 minutes on a full staff), × 2 under water, × 3 touching lava, plus 2,000 FE per absorbed damage point |
 | Cloak | 40 FE/t, × 1.5 under water, × 2 touching lava |
@@ -123,7 +130,7 @@ Fabric; a server sends them to joining players.
 
 | Section | Contents |
 |---|---|
-| `[staff]` | `consumeEnergy` (`false`: everything runs for free), `capacity`, `startCharge`, `maxReceive`, shield and cloak drain with their water/lava factors, `shieldHitCost`, `underFireFactor` / `underFireSeconds`, `lightDrain`, `lightLevel`, `lightningCharge`, `lightningAttractRange` |
+| `[staff]` | `consumeEnergy` (`false`: everything runs for free), `capacity` (of the normal staff; the high-energy staff stores ten times as much), `startCharge`, `maxReceive`, shield and cloak drain with their water/lava factors, `shieldHitCost`, `underFireFactor` / `underFireSeconds`, `lightDrain`, `lightLevel`, `lightningCharge`, `lightningAttractRange` |
 | `[beam]` | the lightning: `damagePerSecond`, `hitsPerSecond`, `range`, `aimTolerance`, `drain`, `chainTargets`, `chainRange`, `chainFalloff`, `chargeSeconds`, `chargeStart`, `chargeMax`, `wetDamageFactor`, `wetChainRangeFactor`, `slowTicks`, `slowLevel`, `fireSeconds` |
 | `[energyBall]` | `damage`, `radius`, `edgeDamage`, `knockback`, `speed`, `range`, `energy`, `cooldownTicks`, `chargeTicks`, `chargedDamageFactor` / `chargedRadiusFactor` / `chargedSizeFactor` / `chargedEnergyFactor`, `blockDropChance`, `maxBlockResistance` |
 | `[teleport]` | `range`, `energy`, `cooldownTicks` |
@@ -136,7 +143,7 @@ loader. Code is written once and placed as widely as it compiles:
 
 | Folder | Contents |
 |---|---|
-| `core/` | the game logic in plain Java 17, without any Minecraft or mod loader API; version-independent assets (textures, translations, icon) |
+| `core/` | the game logic in plain Java 17, without any Minecraft or mod loader API (`StaffKind` defines the two staffs); version-independent assets (textures, translations in 12 languages, icon) |
 | `shared/mc/all/` | Minecraft code that compiles unchanged against every supported version: staff systems (shield, cloak, lightning, ball, teleport, light, telekinesis), client effects, HUD, arm pose; also the item models |
 | `shared/fabric/all/` | Fabric code shared by every version: TOML config with server sync, Team Reborn Energy |
 | `versions/<version>/` | one folder per Minecraft version; its `gradle.properties` holds everything that differs between versions (Minecraft, Java, loader and API versions, which `shared/` folders are compiled in) |
@@ -170,8 +177,8 @@ testing integrations such as Mekanism. Its development server runs in `run-dev-s
 
 ### Model
 
-`tools/make_staff_assets.py` generates the item model, its texture and the mod icon; the results are checked in. Edit
-the script and run it again instead of editing them by hand.
+`tools/make_staff_assets.py` generates the item models, their textures (one set per staff kind, differing only in
+color) and the mod icon; the results are checked in. Edit the script and run it again instead of editing them by hand.
 
 The staff is 32 model units long, the height of the player model. Its upright pose in third person depends on two
 things that must match: the arm angles in `StaffArmPose` and the `thirdperson_righthand` display transform in the

@@ -1,5 +1,6 @@
 {
-  "item.mccs.crystal_staff": "Kristallstab",
+  "item.mccs.crystal_staff": "Kristallstab Normal",
+  "item.mccs.high_energy_crystal_staff": "Hochenergiekristallstab",
   "key.categories.mccs": "MCCS - Crystal Staff",
   "key.category.mccs.staff": "MCCS - Crystal Staff",
   "key.mccs.shield": "Stab-Schutzschild umschalten",

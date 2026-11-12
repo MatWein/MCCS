@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "BGB",
+    "GSG",
+    "BGB"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "G": {
+      "item": "minecraft:gold_block"
+    },
+    "S": {
+      "item": "mccs:crystal_staff"
+    }
+  },
+  "result": {
+    "item": "mccs:high_energy_crystal_staff",
+    "count": 1
+  }
+}

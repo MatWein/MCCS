@@ -1,6 +1,7 @@
 package de.mccs.neoforge;
 
 import de.mccs.core.MccsIds;
+import de.mccs.core.staff.StaffKind;
 import de.mccs.mc.Mccs;
 import de.mccs.mc.entity.EnergyBallEntity;
 import de.mccs.mc.network.BeamStatePacket;
@@ -41,6 +42,9 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** MCCS for Minecraft 26.3 on NeoForge. */
 @Mod(Mccs.MOD_ID)
 public final class MccsNeoForge {
@@ -49,8 +53,10 @@ public final class MccsNeoForge {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, Mccs.MOD_ID);
     private static final DeferredRegister<DataComponentType<?>> COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, Mccs.MOD_ID);
 
-    private static final DeferredHolder<Item, Item> CRYSTAL_STAFF = ITEMS.register(MccsIds.CRYSTAL_STAFF,
-            () -> new NeoForgeCrystalStaffItem(MccsObjects.crystalStaffProperties()));
+    /** One staff per kind, in the order of {@link StaffKind}. */
+    private static final List<DeferredHolder<Item, Item>> STAFFS = Arrays.stream(StaffKind.values())
+            .map(kind -> ITEMS.<Item>register(kind.id(), () -> new NeoForgeCrystalStaffItem(MccsObjects.crystalStaffProperties(kind), kind)))
+            .toList();
 
     private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Mccs.MOD_ID);
 
@@ -71,7 +77,8 @@ public final class MccsNeoForge {
         container.registerConfig(ModConfig.Type.SYNCED, NeoForgeConfigs.SERVER, "mccs-server.toml");
         modBus.addListener(MccsNeoForge::onBuildContents);
         modBus.addListener(RegisterCapabilitiesEvent.class, event -> event.registerItem(Capabilities.Energy.ITEM,
-                (stack, access) -> new StaffEnergyHandler(access), CRYSTAL_STAFF.get()));
+                (stack, access) -> new StaffEnergyHandler(access, StaffSystems.capacity(stack)),
+                STAFFS.stream().map(DeferredHolder::get).toArray(Item[]::new)));
         modBus.addListener(RegisterPayloadHandlersEvent.class, event -> {
             var registrar = event.registrar(NETWORK_PROTOCOL);
             registrar.playToServer(StaffActionPacket.TYPE, StaffActionPacket.STREAM_CODEC, (packet, context) -> packet.handle((ServerPlayer) context.player()));
@@ -92,10 +99,12 @@ public final class MccsNeoForge {
 
     private static void onBuildContents(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
-            event.accept(CRYSTAL_STAFF.get());
-            ItemStack charged = new ItemStack(CRYSTAL_STAFF.get());
-            StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-            event.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+            for (DeferredHolder<Item, Item> staff : STAFFS) {
+                event.accept(staff.get());
+                ItemStack charged = new ItemStack(staff.get());
+                StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
+                event.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+            }
         }
     }
 }

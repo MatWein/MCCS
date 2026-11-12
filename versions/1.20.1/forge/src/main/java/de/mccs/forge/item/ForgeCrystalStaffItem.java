@@ -4,6 +4,7 @@ import de.mccs.core.config.ServerConfig;
 import de.mccs.core.config.StaffConfig;
 import de.mccs.core.staff.StaffEnergy;
 import de.mccs.mc.client.StaffArmPose;
+import de.mccs.core.staff.StaffKind;
 import de.mccs.mc.item.CrystalStaffItem;
 import de.mccs.mc.staff.StaffData;
 import de.mccs.mc.staff.StaffSystems;
@@ -33,8 +34,8 @@ public final class ForgeCrystalStaffItem extends CrystalStaffItem {
     private static final float ITEM_Y = -0.52f;
     private static final float ITEM_Z = -0.72f;
 
-    public ForgeCrystalStaffItem(Properties properties) {
-        super(properties);
+    public ForgeCrystalStaffItem(Properties properties, StaffKind kind) {
+        super(properties, kind);
     }
 
     /** Takes energy from other mods (Mekanism, Thermal, ...); it cannot be drained. */
@@ -43,7 +44,7 @@ public final class ForgeCrystalStaffItem extends CrystalStaffItem {
         public int receiveEnergy(int amount, boolean simulate) {
             StaffConfig config = ServerConfig.STAFF;
             int stored = StaffSystems.stored(stack);
-            int accepted = StaffEnergy.accepted(stored, config.capacity(), config.maxReceive(), amount);
+            int accepted = StaffEnergy.accepted(stored, StaffSystems.capacity(stack), config.maxReceive(), amount);
             if (!simulate && accepted > 0) StaffData.setSavedEnergy(stack, stored + accepted);
             return accepted;
         }
@@ -60,7 +61,7 @@ public final class ForgeCrystalStaffItem extends CrystalStaffItem {
 
         @Override
         public int getMaxEnergyStored() {
-            return ServerConfig.STAFF.capacity();
+            return StaffSystems.capacity(stack);
         }
 
         @Override

@@ -1,5 +1,6 @@
 package de.mccs.mc.item;
 
+import de.mccs.core.staff.StaffKind;
 import de.mccs.mc.staff.StaffBall;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -10,12 +11,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-/** The crystal staff. Its abilities are in the staff package; holding the use key in the main hand charges the energy ball. */
+/** A crystal staff of one of the kinds (normal, high-energy), which all work alike. Its abilities are in the staff package; holding the use key in the main hand charges the energy ball. */
 public class CrystalStaffItem extends Item {
     private static final int USE_DURATION = 72000;
 
-    public CrystalStaffItem(Properties properties) {
+    private final StaffKind kind;
+
+    public CrystalStaffItem(Properties properties, StaffKind kind) {
         super(properties);
+        this.kind = kind;
+    }
+
+    public StaffKind kind() {
+        return kind;
     }
 
     @Override

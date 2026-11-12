@@ -27,8 +27,9 @@ public final class StaffLightning {
         ItemStack staff = StaffSystems.heldStaff(player);
         if (staff.isEmpty()) return;
         StaffConfig config = ServerConfig.STAFF;
-        long charged = StaffSystems.stored(staff) + Math.round(config.capacity() * config.lightningCharge());
-        StaffData.setSavedEnergy(staff, (int) Math.min(charged, config.capacity()));
+        int capacity = StaffSystems.capacity(staff);
+        long charged = StaffSystems.stored(staff) + Math.round(capacity * config.lightningCharge());
+        StaffData.setSavedEnergy(staff, (int) Math.min(charged, capacity));
     }
 
     /** A bolt enters the world: natural lightning in a thunderstorm moves to the nearest player with an active shield. */

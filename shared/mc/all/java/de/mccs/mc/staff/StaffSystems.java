@@ -5,6 +5,7 @@ import de.mccs.core.config.StaffConfig;
 import de.mccs.core.staff.BubbleAnimation;
 import de.mccs.core.staff.StaffAction;
 import de.mccs.core.staff.StaffEnergy;
+import de.mccs.core.staff.StaffKind;
 import de.mccs.mc.item.CrystalStaffItem;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -85,8 +86,17 @@ public final class StaffSystems {
     }
 
     public static int stored(ItemStack stack) {
-        StaffConfig config = ServerConfig.STAFF;
-        return StaffEnergy.stored(StaffData.savedEnergy(stack), config.capacity(), config.startCharge());
+        return StaffEnergy.stored(StaffData.savedEnergy(stack), capacity(stack), ServerConfig.STAFF.startCharge());
+    }
+
+    /** The kind of a staff stack (normal for anything else). */
+    public static StaffKind kind(ItemStack stack) {
+        return stack.getItem() instanceof CrystalStaffItem staff ? staff.kind() : StaffKind.NORMAL;
+    }
+
+    /** How much energy a staff stack holds at most: the configured capacity times its kind's factor. */
+    public static int capacity(ItemStack stack) {
+        return kind(stack).capacity(ServerConfig.STAFF.capacity());
     }
 
     /** What shield and cloak use in FE/tick where the player is. */

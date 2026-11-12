@@ -1,6 +1,7 @@
 package de.mccs.forge;
 
 import de.mccs.core.MccsIds;
+import de.mccs.core.staff.StaffKind;
 import de.mccs.forge.config.ForgeConfigs;
 import de.mccs.forge.item.ForgeCrystalStaffItem;
 import de.mccs.forge.network.ModNetwork;
@@ -37,13 +38,18 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** MCCS for Minecraft 1.20.1 on Forge 47. */
 @Mod(Mccs.MOD_ID)
 public final class MccsMod {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Mccs.MOD_ID);
 
-    private static final RegistryObject<Item> CRYSTAL_STAFF = ITEMS.register(MccsIds.CRYSTAL_STAFF,
-            () -> new ForgeCrystalStaffItem(MccsObjects.crystalStaffProperties()));
+    /** One staff per kind, in the order of {@link StaffKind}. */
+    private static final List<RegistryObject<Item>> STAFFS = Arrays.stream(StaffKind.values())
+            .map(kind -> ITEMS.<Item>register(kind.id(), () -> new ForgeCrystalStaffItem(MccsObjects.crystalStaffProperties(), kind)))
+            .toList();
 
     private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Mccs.MOD_ID);
 
@@ -83,10 +89,12 @@ public final class MccsMod {
 
     private static void onBuildContents(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
-            event.accept(CRYSTAL_STAFF);
-            ItemStack charged = new ItemStack(CRYSTAL_STAFF.get());
-            StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-            event.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+            for (RegistryObject<Item> staff : STAFFS) {
+                event.accept(staff);
+                ItemStack charged = new ItemStack(staff.get());
+                StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
+                event.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+            }
         }
     }
 }

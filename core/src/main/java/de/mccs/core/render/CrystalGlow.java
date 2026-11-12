@@ -1,14 +1,14 @@
 package de.mccs.core.render;
 
 import de.mccs.core.staff.StaffEnergy;
+import de.mccs.core.staff.StaffKind;
 
 /**
- * The light of the crystal: a halo facing the camera that follows the charge, red when nearly empty, and small electric arcs
+ * The light of the crystal: a halo facing the camera in the color of the staff's kind that follows the charge, red when nearly empty, and small electric arcs
  * around the crystal when charged well. All coordinates are relative to the camera.
  */
 public final class CrystalGlow {
     private static final int LOW_LOOK = 3;
-    private static final float[] BLUE = {0.3f, 0.6f, 1.0f};
     private static final float[] RED = {1.0f, 0.12f, 0.08f};
     private static final float MIN_BRIGHTNESS = 0.3f;
     private static final float MIN_RADIUS = 0.22f;
@@ -28,7 +28,7 @@ public final class CrystalGlow {
 
     private CrystalGlow() {}
 
-    public static Halo halo(int stored, int capacity, float time) {
+    public static Halo halo(StaffKind kind, int stored, int capacity, float time) {
         float share = Math.min(1f, stored / (float) Math.max(1, capacity));
         if (StaffEnergy.crystalLook(stored, capacity) == LOW_LOOK) {
             float flicker = 0.55f + 0.45f * (float) Math.sin(time * LOW_FLICKER_SPEED);
@@ -36,7 +36,7 @@ public final class CrystalGlow {
         }
         float brightness = MIN_BRIGHTNESS + (1 - MIN_BRIGHTNESS) * share;
         float pulse = (float) Math.sin(time * PULSE_SPEED) * PULSE_RADIUS;
-        return new Halo(BLUE[0] * brightness, BLUE[1] * brightness, BLUE[2] * brightness, MIN_RADIUS + RADIUS_RANGE * share + pulse);
+        return new Halo(kind.glowRed() * brightness, kind.glowGreen() * brightness, kind.glowBlue() * brightness, MIN_RADIUS + RADIUS_RANGE * share + pulse);
     }
 
     public static boolean crackles(int stored, int capacity) {
