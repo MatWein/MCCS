@@ -1,0 +1,7 @@
+{
+ "parent": "mccs:item/crystal_staff",
+ "textures": {
+  "staff": "mccs:item/crystal_staff_medium",
+  "particle": "mccs:item/crystal_staff_medium"
+ }
+}

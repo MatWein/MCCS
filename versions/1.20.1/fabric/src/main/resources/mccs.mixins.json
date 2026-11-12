@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "de.mccs.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "EntityMixin",
+    "LivingEntityMixin",
+    "MobMixin"
+  ],
+  "client": [
+    "HumanoidModelMixin",
+    "ItemInHandRendererMixin",
+    "KeyMappingMixin",
+    "LivingEntityRendererMixin",
+    "MinecraftMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,60 @@
+// A Forge module (Forge up to Minecraft 1.20.1: obfuscated Minecraft, Mojang's names in dev, the jar is
+// reobfuscated): versions/<version>/forge (see mccs.loader for the parts shared by all loaders)
+plugins {
+    id 'net.neoforged.moddev.legacyforge'
+    id 'mccs.loader'
+}
+
+def modId = project.property('mod_id')
+
+legacyForge {
+    version = "${project.property('minecraft_version')}-${project.property('forge_version')}"
+    def accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (accessTransformer.isFile()) accessTransformers = files(accessTransformer)
+
+    runs {
+        configureEach {
+            logLevel = org.slf4j.event.Level.INFO
+        }
+        client {
+            client()
+            gameDirectory = file('run')
+            // ./gradlew runClient -PjoinServer=localhost connects straight to a server
+            if (project.hasProperty('joinServer')) {
+                programArguments.addAll '--quickPlayMultiplayer', project.property('joinServer')
+            }
+            // ./gradlew runClient -PplayerName=Dev2 starts a further player (own name and game directory run-Dev2)
+            if (project.hasProperty('playerName')) {
+                gameDirectory = file("run-${project.property('playerName')}")
+                programArguments.addAll '--username', project.property('playerName')
+            }
+        }
+        server {
+            server()
+            // not run-server: the jars in run-server/mods are loaded through the dependencies, under the dev names
+            gameDirectory = file('run-dev-server')
+            programArgument '--nogui'
+        }
+    }
+
+    mods {
+        create(modId) {
+            sourceSet sourceSets.main
+            // the core is part of the mod (same module layer), not a separate library
+            sourceSet project(':core').sourceSets.main
+        }
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'   : modId,
+                'Specification-Vendor'  : project.property('mod_authors'),
+                'Specification-Version' : '1',
+                'Implementation-Title'  : project.name,
+                'Implementation-Version': project.version,
+                'Implementation-Vendor' : project.property('mod_authors'),
+        ])
+    }
+}

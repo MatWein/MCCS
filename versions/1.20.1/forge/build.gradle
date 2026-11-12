@@ -1,0 +1,25 @@
+// Minecraft 1.20.1 for Forge 47 (see build-logic/mccs.forge.gradle). Besides that: the mods in run-server/mods
+// (e.g. Mekanism, for testing the energy integration) are loaded into the development runs.
+plugins {
+    id 'mccs.forge'
+}
+
+repositories {
+    // mods for testing integrations (e.g. Mekanism), deobfuscated for the dev runs
+    flatDir {
+        dir 'run-server/mods'
+    }
+}
+
+dependencies {
+    // The mod must work on its own: -Pstandalone runs without any other mod
+    if (!project.hasProperty('standalone')) {
+        // load every mod jar of the test server in the dev environment as well
+        fileTree(dir: 'run-server/mods', include: '*.jar')
+                .filter { !it.name.startsWith(mod_id) }
+                .each {
+                    def m = (it.name - '.jar') =~ /^(.+?)-(\d.*)$/
+                    if (m.matches()) modRuntimeOnly "blank:${m.group(1)}:${m.group(2)}"
+                }
+    }
+}

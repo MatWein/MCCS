@@ -1,0 +1,4 @@
+// Minecraft 26.3 for Fabric (see build-logic/mccs.fabric.gradle)
+plugins {
+    id 'mccs.fabric'
+}

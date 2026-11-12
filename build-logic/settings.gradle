@@ -1,0 +1,15 @@
+// The convention plugins of the MCCS build (src/main/groovy/mccs.*.gradle); included by the main settings.gradle.
+dependencyResolutionManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            name = 'NeoForged'
+            url = 'https://maven.neoforged.net/releases'
+        }
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+    }
+}
+rootProject.name = 'build-logic'

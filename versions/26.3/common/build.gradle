@@ -1,0 +1,4 @@
+// Vanilla Minecraft 26.3 code shared by the NeoForge and Fabric modules (see build-logic/mccs.vanilla.gradle)
+plugins {
+    id 'mccs.vanilla'
+}

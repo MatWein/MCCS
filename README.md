@@ -1,137 +1,174 @@
-# MCQW
+# MCCS - Crystal Staff
 
-MCQW adds a **Crystal Staff** to Minecraft: a staff as tall as the player, topped with a blue crystal that will later
-store energy from Mekanism and other mods. It runs on its own; other mods are optional.
+> **Developed entirely by AI.** All code of this mod, its tools and this documentation were written by an AI. It's all about having fun while playing ;)
 
-The staff is carried upright like a shepherd's staff, held near its middle and reaching from the ground to the top
-of the head.
+MCCS adds a **Crystal Staff** to Minecraft: a staff as tall as the player, topped with a glowing blue energy crystal.
+It protects you with a shield, hides you with a cloak, fires lightning and energy balls, teleports you, lights up the
+dark and lifts things by telekinesis, all powered by the energy stored in its crystal.
 
-Craft it from 2 emeralds in the middle column with a diamond on top and redstone dust left and right of the diamond:
+| Minecraft | Loaders |
+|---|---|
+| 1.20.1 | Forge (47.4.16+), Fabric (with Fabric API) |
+| 26.3 | NeoForge, Fabric (with Fabric API) |
 
-```
-R D R
-  E
-  E
-```
+It works on its own; energy mods such as Mekanism are optional. Install it on the server and on every client.
 
-In the creative inventory, tab **Combat**, there are a new staff (20 % charge) and a fully charged one; the search only shows
-the new one. The crystal in your hand glows according to the charge, crackles with small arcs from 60 % and turns red below 10 %; the
+## Getting started
+
+- **Creative:** tab **Combat** holds a new staff (20 % charge) and a fully charged one; the search only shows the new
+  one.
+- **Survival:** craft it from 2 emeralds in the middle column with a diamond on top and redstone dust left and right
+  of the diamond:
+
+  ```
+  R D R
+    E
+    E
+  ```
+
+The staff is carried upright like a shepherd's staff, held near its middle and reaching from the ground to the top of
+the head. The crystal glows according to the charge, crackles with small arcs from 60 % and turns red below 10 %; the
 item has an energy bar.
 
-## Shield, cloak, lightning and energy ball
+## Controls
 
-Shield and cloak work while the staff is in a hand; none of this works while you ride anything (horse, boat, jumper, ...) or
-when the staff is put away: shield and cloak pause and resume afterwards, the panel hides. The keys can be rebound under
-*Options → Controls → MCQW*. The sounds are those of MCPJ's jumper.
+| Action | Key | Staff in |
+|---|---|---|
+| Toggle shield | `V` | either hand |
+| Toggle cloak | `C` | either hand |
+| Teleport | `R` | either hand |
+| Toggle light | `L` (replaces advancements while holding the staff) | either hand |
+| Toggle block damage | `K` | either hand |
+| Lightning | hold the attack key (no mining or melee with the staff) | main hand |
+| Energy ball | right click, hold to charge | main hand |
+| Telekinesis: lift / release | middle mouse button (replaces pick block while holding the staff) | main hand |
+| Telekinesis: throw | attack key while lifting | main hand |
 
-**Shield (`V`).** A bubble around the player absorbs all damage except `/kill` and the void, without damage sounds.
-Hits make it flash and sound. In first person your own bubble only shows when it is hit.
+All keys can be rebound under *Options → Controls → MCCS - Crystal Staff*.
 
-**Cloak (`C`).** After half a second you are invisible to others including armor and items, apart from a very faint energy
-bubble. You do not see yourself either, not even your hand and the staff in first person, and the crystal does not glow. Mobs lose
-track of you and cannot target you. You remain solid, and sounds you make can still be heard. Attacking with the staff in your main hand ends the cloak.
+None of the abilities work while you ride anything (horse, boat, minecart, ...) or when the staff is put away: shield
+and cloak pause and resume afterwards. A small panel at the bottom left shows the charge and all systems while you
+hold the staff, and also the consumption and remaining time while they use energy.
 
-**Lightning (hold the attack key, staff in the main hand).** A flickering lightning runs from the crystal to what you aim
-at, up to 24 blocks away, and keeps running as long as you hold the key; it ends at the first block or in the air without
-doing damage. With the staff in the main hand the attack key belongs to the lightning: no mining and no melee. Firing ends the
-cloak.
+## Features
 
-- It deals 16 damage per second, split into 4 hits. Staying on the same target charges it from 50 % to 150 % within 3 seconds.
-- It jumps on to up to 3 further hostile mobs, up to 6 blocks per jump, with half the damage each time. Pets, villagers and
-  players are only hit when aimed at directly.
+**Shield.** A bubble around the player absorbs all damage except `/kill` and the void, without damage sounds. Hits
+make it flash and sound. In first person your own bubble only shows when it is hit.
+
+**Cloak.** After half a second you are invisible to others including armor and items, apart from a very faint energy
+bubble. You do not see yourself either, not even your hand and the staff in first person, and the crystal does not
+glow. Mobs lose track of you and cannot target you. You remain solid, and sounds you make can still be heard.
+Attacking with the staff ends the cloak.
+
+**Lightning.** A flickering lightning runs from the crystal to what you aim at, up to 24 blocks away, and keeps
+running as long as you hold the attack key; it ends at the first block or in the air without doing damage.
+
+- It deals 16 damage per second, split into 4 hits. Staying on the same target charges it from 50 % to 150 % within
+  3 seconds.
+- It jumps on to up to 3 further hostile mobs, up to 6 blocks per jump, with half the damage each time. Pets,
+  villagers and players are only hit when aimed at directly.
 - Targets in water or rain take 1.5 times the damage and the lightning jumps 1.5 times as far from them.
-- Hits slow mobs down strongly while the lightning is on them and set targets on fire unless they are wet. Blocks never burn.
+- Hits slow mobs down strongly while the lightning is on them and set targets on fire unless they are wet.
 
-**Energy ball (right click, staff in the main hand).** A slow ball of energy flies up to 128 blocks in a straight line and
-explodes on the first block or entity. The explosion deals up to 40 damage within 4 blocks and throws things away from it, but never
-breaks blocks or destroys items, and it does not hurt you. A shot costs 30,000 FE and ends the cloak; the staff then needs 2 seconds
-until the next one. Holding the key charges it for up to 2 seconds: the ball grows at the crystal, and a fully charged one turns yellow,
-is twice as large and deals 3 times the damage over 1.5 times the radius, for 3 times the energy. You walk slowly while charging.
+**Energy ball.** A slow ball of energy flies up to 128 blocks in a straight line and explodes on the first block or
+entity. The explosion deals up to 40 damage within 4 blocks and throws things away from it, but does not hurt you. A
+shot costs 30,000 FE and takes 2 seconds until the next one. Holding the key charges it for up to 2 seconds: the ball
+grows at the crystal, and a fully charged one turns yellow, is twice as large and deals 3 times the damage over 1.5
+times the radius, for 3 times the energy. You walk slowly while charging.
 
-**Teleport (`R`, staff in a hand).** You jump to where you look, up to 30 blocks away, stopping before the first block. It costs
-20,000 FE and takes 3 seconds until the next one; without room to stand there it fails.
+**Teleport.** You jump to where you look, up to 30 blocks away, stopping before the first block. It costs 20,000 FE
+and takes 3 seconds until the next one; without room to stand there it fails.
 
-**Light (`L`, staff in a hand).** Lights up your surroundings, using 2 FE/t, like the headlights of MCPJ's jumper: invisible light blocks follow
-you. It stays dark while you are cloaked. While you hold the staff, L does not open the advancements.
+**Light.** Lights up your surroundings for 2 FE/t: invisible vanilla light blocks follow you. It stays dark while you
+are cloaked.
 
-**Block damage (`K`, staff in a hand, off by default).** With it on, energy ball explosions break blocks, up to a blast resistance of 100 (obsidian
-survives), and the lightning sets the block it aims at on fire, if it can burn there. The setting is saved on the staff; you see it in the panel.
+**Block damage** (off by default). With it on, energy ball explosions break blocks up to a blast resistance of 100
+(obsidian survives), and the lightning sets the block it aims at on fire, if it can burn there. Otherwise the staff
+never breaks blocks, burns them or destroys items. The setting is saved on the staff and shown in the panel.
 
-**Telekinesis (middle mouse button, staff in the main hand).** A press lifts the mob, animal, item or other object you aim at, up to 24 blocks away, up to
-4 blocks large. It floats in front of you, connected to the crystal by a calm line. Another press lets it go; the attack key throws it away instead of firing the lightning, and
-living targets are hurt by hitting something at speed. Holding uses 100 FE/t, a throw 5,000 FE. Other players can only be lifted if `liftPlayers` is set. While you hold the staff,
-the button does not pick blocks. The settings are in `[telekinesis]`.
+**Telekinesis.** Lifts the mob, animal, item or other object you aim at, up to 24 blocks away and up to 4 blocks
+large. It floats in front of you, connected to the crystal by a calm line. Press again to let it go, or press the
+attack key to throw it away; living targets are hurt by hitting something at speed. Holding uses 100 FE/t, a throw
+5,000 FE. Other players can only be lifted if the server allows it (`liftPlayers`).
 
-**Lightning strikes** charge a staff you hold by 20 % of its capacity. During thunderstorms, natural lightning within 32 blocks strikes
-a player with an active shield under open sky, who can use that to charge without any other mods.
-
-A small panel at the bottom left shows the charge and both systems while you hold the staff, and also the consumption and
-remaining time while they use energy. The time ignores the extra drain under fire.
+**Natural lightning** charges a staff you hold by 20 % of its capacity. During thunderstorms, lightning within 32
+blocks strikes a player with an active shield under open sky, so you can charge without any other mod.
 
 ## Energy
 
-The staff stores energy and accepts it from other mods; it cannot be drained. On Forge and NeoForge it takes Forge Energy /
-NeoForge energy (Mekanism's joules are converted by Mekanism), on Fabric Team Reborn Energy if that API is installed.
+The staff stores energy and accepts it from other mods; it cannot be drained by them. On Forge and NeoForge it takes
+Forge Energy / NeoForge energy (Mekanism's joules are converted by Mekanism), on Fabric Team Reborn Energy if that API
+is installed.
 
-If the energy for a hit is missing, the shield collapses and the hit goes through. An empty staff switches everything off
-and cannot start anything.
+| Consumer | Default |
+|---|---|
+| Capacity | 5,000,000 FE |
+| Charging from other mods | up to 10,000 FE/t |
+| Shield | 50 FE/t (about 83 minutes on a full staff), × 2 under water, × 3 touching lava, plus 2,000 FE per absorbed damage point |
+| Cloak | 40 FE/t, × 1.5 under water, × 2 touching lava |
+| Under fire (2 s after a hit) | shield and cloak × 2 |
+| Lightning | 500 FE/t (about 8 minutes of firing) |
+| Energy ball | 30,000 FE, fully charged 90,000 FE |
+| Teleport | 20,000 FE |
+| Light | 2 FE/t |
+| Telekinesis | 100 FE/t holding, 5,000 FE per throw |
 
-Settings live in `world/serverconfig/mcqw-server.toml` on Forge, in `config/mcqw-server.toml` on NeoForge and Fabric
-(a server sends them to joining players):
+If the energy for a hit is missing, the shield collapses and the hit goes through. An empty staff switches everything
+off and cannot start anything.
 
-| Setting (`[staff]`) | Default | |
-|---|---|---|
-| `consumeEnergy` | `true` | `false`: shield and cloak run for free, even when the staff is empty |
-| `capacity` | 5,000,000 FE | |
-| `startCharge` | 0.2 | charge of a new staff |
-| `maxReceive` | 10,000 FE/t | fastest charging from other mods |
-| `shieldDrain` | 50 FE/t | about 83 minutes on a full staff |
-| `shieldWaterFactor` / `shieldLavaFactor` | 2 / 3 | shield drain under water / touching lava |
-| `shieldHitCost` | 2,000 FE | per point of absorbed damage |
-| `cloakDrain` | 40 FE/t | |
-| `cloakWaterFactor` / `cloakLavaFactor` | 1.5 / 2 | cloak drain under water / touching lava |
-| `underFireFactor` / `underFireSeconds` | 2 / 2 s | shield and cloak drain after being hit |
+## Configuration
 
-The lightning has its own section `[beam]`, with `damagePerSecond`, `hitsPerSecond`, `range`, `aimTolerance`, `drain` (500 FE/t,
-about 8 minutes of firing on a full staff), `chainTargets`, `chainRange`, `chainFalloff`, `chargeSeconds`, `chargeStart`, `chargeMax`,
-`wetDamageFactor`, `wetChainRangeFactor`, `slowTicks`, `slowLevel` and `fireSeconds`. The energy ball is in `[energyBall]`: `damage`,
-`radius`, `edgeDamage`, `knockback`, `speed`, `range`, `energy`, `cooldownTicks`, `chargeTicks` and `chargedDamageFactor` / `chargedRadiusFactor` /
-`chargedSizeFactor` / `chargedEnergyFactor`. The teleport is in `[teleport]`: `range`, `energy` and `cooldownTicks`. `[staff]` also has `lightDrain`, `lightLevel`, `lightningCharge` and
-`lightningAttractRange`, `[energyBall]` also `blockDropChance` and `maxBlockResistance`.
+The settings live in `world/serverconfig/mccs-server.toml` on Forge and in `config/mccs-server.toml` on NeoForge and
+Fabric; a server sends them to joining players.
+
+| Section | Contents |
+|---|---|
+| `[staff]` | `consumeEnergy` (`false`: everything runs for free), `capacity`, `startCharge`, `maxReceive`, shield and cloak drain with their water/lava factors, `shieldHitCost`, `underFireFactor` / `underFireSeconds`, `lightDrain`, `lightLevel`, `lightningCharge`, `lightningAttractRange` |
+| `[beam]` | the lightning: `damagePerSecond`, `hitsPerSecond`, `range`, `aimTolerance`, `drain`, `chainTargets`, `chainRange`, `chainFalloff`, `chargeSeconds`, `chargeStart`, `chargeMax`, `wetDamageFactor`, `wetChainRangeFactor`, `slowTicks`, `slowLevel`, `fireSeconds` |
+| `[energyBall]` | `damage`, `radius`, `edgeDamage`, `knockback`, `speed`, `range`, `energy`, `cooldownTicks`, `chargeTicks`, `chargedDamageFactor` / `chargedRadiusFactor` / `chargedSizeFactor` / `chargedEnergyFactor`, `blockDropChance`, `maxBlockResistance` |
+| `[teleport]` | `range`, `energy`, `cooldownTicks` |
+| `[telekinesis]` | `range`, `aimTolerance`, `holdDistance`, `maxSize`, `liftPlayers`, `drain`, `throwEnergy`, `throwSpeed`, `impactDamage`, `maxImpactDamage` |
 
 ## Building
 
-| Module | Contents |
-|---|---|
-| `core/` | game logic in plain Java 17, without any Minecraft or mod loader API; version-independent assets |
-| `mc_core_common/` | Minecraft code and resources that compile unchanged against every supported version; no build of its own |
-| `mc_1.20.1_common/` | vanilla Minecraft 1.20.1 code shared by both loaders; compiled into each loader module |
-| `mc_1.20.1_forge_47/` | Forge 47: registration, Forge Energy, arm pose, network, config, events |
-| `mc_1.20.1_fabric/` | Fabric: registration, Team Reborn Energy (optional), arm pose mixin, network, TOML config with server sync, events |
-| `mc_26.3_common/` | vanilla Minecraft 26.3 code shared by both loaders, including the arm pose and shield bubble mixins |
-| `mc_26.3_neoforge/` | NeoForge: registration, energy capability, payloads, config, events |
-| `mc_26.3_fabric/` | Fabric: registration, Team Reborn Energy (optional), payloads, TOML config with server sync, events |
+The project is split into modules so the game logic does not have to be rewritten for every Minecraft version or mod
+loader. Code is written once and placed as widely as it compiles:
 
-Each loader module builds its own jar: `mcqw-<version>+mc<minecraft version>-<loader>.jar` in `<module>/build/libs/`.
-Gradle 9 runs on Java 25 (Gradle finds or downloads it, as well as Java 17 for the 1.20.1 modules).
+| Folder | Contents |
+|---|---|
+| `core/` | the game logic in plain Java 17, without any Minecraft or mod loader API; version-independent assets (textures, translations, icon) |
+| `shared/mc/all/` | Minecraft code that compiles unchanged against every supported version: staff systems (shield, cloak, lightning, ball, teleport, light, telekinesis), client effects, HUD, arm pose; also the item models |
+| `shared/fabric/all/` | Fabric code shared by every version: TOML config with server sync, Team Reborn Energy |
+| `versions/<version>/` | one folder per Minecraft version; its `gradle.properties` holds everything that differs between versions (Minecraft, Java, loader and API versions, which `shared/` folders are compiled in) |
+| `versions/<version>/common/` | what only that Minecraft version has: compat classes, renderers, item, entity, network messages, mixins, recipe; compiled into each loader module of that version, never shipped on its own |
+| `versions/<version>/<loader>/` | the loader's side (`forge`, `neoforge`, `fabric`): registration, energy API, network transport, config, events, mod metadata |
+| `build-logic/` | the Gradle convention plugins all these modules apply: `mccs.vanilla` (common), `mccs.forge`, `mccs.neoforge`, `mccs.fabric` (all via `mccs.loader`); module `build.gradle` files only hold what is special about them |
+
+Gradle names the modules after their folder: `versions/26.3/neoforge` is `:mc_26.3_neoforge`. A new Minecraft version
+is a copy of a `versions/<version>/` folder with adjusted `gradle.properties`, added to the list in `settings.gradle`.
+
+Each loader module builds its own jar: `mccs-<version>+mc<minecraft version>-<loader>.jar` in
+`versions/<version>/<loader>/build/libs/`. Gradle 9 runs on Java 25 (Gradle finds or downloads it, as well as Java 17
+for the 1.20.1 modules). Build plugins: ModDevGradle (Forge 1.20.1 via `legacyforge`, NeoForge) and Fabric Loom.
 
 ```bash
-./gradlew build                                  # all modules and jars
-./gradlew :core:test                             # fast unit tests of the game logic (no Minecraft)
+./gradlew build                                       # all modules and jars
+./gradlew :core:test                                  # fast unit tests of the game logic (no Minecraft)
 
-./gradlew :mc_1.20.1_forge_47:runClient          # development clients
+./gradlew :mc_1.20.1_forge:runClient                  # development clients
 ./gradlew :mc_1.20.1_fabric:runClient
 ./gradlew :mc_26.3_neoforge:runClient
 ./gradlew :mc_26.3_fabric:runClient
 
-./gradlew :mc_1.20.1_forge_47:runServer          # development servers (same for the other modules)
-./gradlew :mc_1.20.1_forge_47:runClient -Pstandalone   # without the mods in run-server/mods
+./gradlew :mc_1.20.1_forge:runServer                  # development servers (same for the other modules)
+./gradlew :mc_1.20.1_forge:runClient -Pstandalone     # without the mods in run-server/mods
+./gradlew :mc_26.3_fabric:runClient -PjoinServer=localhost   # joining a server directly
 ```
 
-The Forge module also loads every mod jar in `mc_1.20.1_forge_47/run-server/mods/` into its development runs, for
+The Forge module also loads every mod jar in `versions/1.20.1/forge/run-server/mods/` into its development runs, for
 testing integrations such as Mekanism. Its development server runs in `run-dev-server/`.
 
-## Model
+### Model
 
 `tools/make_staff_assets.py` generates the item model, its texture and the mod icon; the results are checked in. Edit
 the script and run it again instead of editing them by hand.
@@ -139,3 +176,7 @@ the script and run it again instead of editing them by hand.
 The staff is 32 model units long, the height of the player model. Its upright pose in third person depends on two
 things that must match: the arm angles in `StaffArmPose` and the `thirdperson_righthand` display transform in the
 model, which the script calculates from the same angles. `StaffArmPose` also stops the arm from swinging while walking.
+
+## License
+
+MIT, see [LICENSE](LICENSE).

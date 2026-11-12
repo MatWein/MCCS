@@ -14,8 +14,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
-MODEL = ROOT / "mc_core_common/src/main/resources/assets/mcqw/models/item/crystal_staff.json"
-ASSETS = ROOT / "core/src/main/resources/assets/mcqw"
+MODEL = ROOT / "shared/mc/all/resources/assets/mccs/models/item/crystal_staff.json"
+ASSETS = ROOT / "core/src/main/resources/assets/mccs"
 TEXTURE = ASSETS / "textures/item/crystal_staff.png"
 ICON = ASSETS / "icon.png"
 BEAM = ASSETS / "textures/entity/beam.png"
@@ -172,11 +172,11 @@ def display():
 
 def write_model():
     model = {
-        "textures": {"staff": "mcqw:item/crystal_staff", "particle": "mcqw:item/crystal_staff"},
+        "textures": {"staff": "mccs:item/crystal_staff", "particle": "mccs:item/crystal_staff"},
         "elements": elements(),
         "display": display(),
         # Minecraft 1.20.1 selects the crystal's look here; 26.3 does it in items/crystal_staff.json and ignores this
-        "overrides": [{"predicate": {"custom_model_data": threshold}, "model": f"mcqw:item/crystal_staff_{name}"}
+        "overrides": [{"predicate": {"custom_model_data": threshold}, "model": f"mccs:item/crystal_staff_{name}"}
                       for name, threshold in LOOK_THRESHOLDS.items()],
     }
     MODEL.parent.mkdir(parents=True, exist_ok=True)
@@ -210,8 +210,8 @@ def write_looks(image):
                 r, g, b, a = pixels[x, y]
                 pixels[x, y] = (*recolor(r, g, b), a)
         look.save(TEXTURE.parent / f"crystal_staff_{name}.png")
-        texture = f"mcqw:item/crystal_staff_{name}"
-        model = {"parent": "mcqw:item/crystal_staff", "textures": {"staff": texture, "particle": texture}}
+        texture = f"mccs:item/crystal_staff_{name}"
+        model = {"parent": "mccs:item/crystal_staff", "textures": {"staff": texture, "particle": texture}}
         (MODEL.parent / f"crystal_staff_{name}.json").write_text(json.dumps(model, indent=1) + "\n")
 
 

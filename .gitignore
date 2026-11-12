@@ -26,7 +26,10 @@ forge*changelog.txt
 run-data
 run-gametest
 run-server
+# the Forge module's dev server (its run-server/ holds the test mods)
 run-dev-server
 
 # python
 __pycache__
+# further dev players (runClient -PplayerName=...)
+run-Dev*
