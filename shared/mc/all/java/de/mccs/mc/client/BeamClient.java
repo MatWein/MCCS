@@ -3,6 +3,7 @@ package de.mccs.mc.client;
 import de.mccs.core.config.ServerConfig;
 import de.mccs.core.render.LightningBolt;
 import de.mccs.core.staff.StaffAction;
+import de.mccs.mc.network.BeamStatePacket;
 import de.mccs.mc.staff.BeamAim;
 import de.mccs.mc.staff.StaffSystems;
 import net.minecraft.client.Camera;
@@ -60,15 +61,14 @@ public final class BeamClient {
         return player != null && !player.isSpectator() && !StaffSystems.mainStaff(player).isEmpty();
     }
 
-    /** News from the server. */
-    public static void update(int shooter, boolean active, boolean tether, int[] targets) {
-        if (!active) {
-            BEAMS.remove(shooter);
+    public static void update(BeamStatePacket packet) {
+        if (!packet.firing()) {
+            BEAMS.remove(packet.shooter());
             return;
         }
-        Beam beam = BEAMS.computeIfAbsent(shooter, id -> new Beam());
-        beam.targets = targets;
-        beam.tether = tether;
+        Beam beam = BEAMS.computeIfAbsent(packet.shooter(), id -> new Beam());
+        beam.targets = packet.targets();
+        beam.tether = packet.tether();
         beam.age = 0;
     }
 

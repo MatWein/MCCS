@@ -59,7 +59,6 @@ public final class StaffTelekinesis {
         return HOLDS.containsKey(player);
     }
 
-    /** The key was pressed. */
     static void toggle(ServerPlayer player) {
         if (HOLDS.containsKey(player)) {
             release(player);
@@ -89,7 +88,6 @@ public final class StaffTelekinesis {
         return BeamAim.canTarget(entity);
     }
 
-    /** The attack key was pressed while holding a target. */
     static void throwHeld(ServerPlayer player) {
         Hold hold = HOLDS.get(player);
         if (hold == null) return;

@@ -89,8 +89,6 @@ public final class TomlConfig implements ConfigBuilder {
         this.file = file;
     }
 
-    // ------------------------------------------------------------------ ConfigBuilder
-
     @Override
     public ConfigBuilder comment(String... lines) {
         pendingComment = List.of(lines);
@@ -139,8 +137,6 @@ public final class TomlConfig implements ConfigBuilder {
     private String currentSection() {
         return String.join(".", sections);
     }
-
-    // ------------------------------------------------------------------ file
 
     /** Reads the file (if present), then writes it back complete with comments. */
     public void load() {
@@ -203,8 +199,6 @@ public final class TomlConfig implements ConfigBuilder {
             case BOOLEAN -> Boolean.toString(value != 0);
         };
     }
-
-    // ------------------------------------------------------------------ sync
 
     /** All values as text (the server sends them to joining clients). */
     public Map<String, String> values() {

@@ -161,8 +161,6 @@ public final class CrystalRender {
         return stored / (float) Math.max(1, capacity) >= ARCS_FROM_SHARE;
     }
 
-    // ---- colors
-
     /** The crystal's colors at this charge (before brightness), its brightness, the time for moving things (NaN: still, nearly empty). */
     private record Palette(float[] hot, float[] glow, float[] tip, float brightness, float time, float width, float height) {}
 
@@ -200,8 +198,6 @@ public final class CrystalRender {
         return t * t * (3 - 2 * t);
     }
 
-    // ---- body
-
     private static void emitBody(Palette palette, VertexSink sink) {
         for (int s = 0; s < CrystalShape.SHARDS.length; s++) {
             int offset = s * 2;
@@ -221,8 +217,6 @@ public final class CrystalRender {
             });
         }
     }
-
-    // ---- lights
 
     /** Camera-facing quads in render space. */
     private record Billboards(float[] pose, float[] right, float[] up, float scale) {
@@ -338,8 +332,6 @@ public final class CrystalRender {
         float reach = ARC_REACH * scale;
         return new float[]{center[0] + (float) (Math.cos(angle) * flat) * reach, center[1] + (float) height * reach, center[2] + (float) (Math.sin(angle) * flat) * reach};
     }
-
-    // ---- small helpers
 
     /** From the shape's model units (around the staff's axis) to item model space, in the proportions of the view. */
     private static float[] modelSpace(Palette palette, float[] units) {

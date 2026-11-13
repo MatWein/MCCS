@@ -1,6 +1,6 @@
 package de.mccs.core.staff;
 
-/** The shield and cloak fades and the hit flash for one player, with the same speeds as MCPJ's jumper. */
+/** The shield and cloak fades and the hit flash for one player. */
 public final class BubbleAnimation {
     private static final float SHIELD_FADE_SPEED = 0.06f;
     private static final float CLOAK_FADE_SPEED = 0.05f;

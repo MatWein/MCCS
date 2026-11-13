@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,7 +24,7 @@ abstract class KeyMappingMixin {
 
     @Inject(method = "click", at = @At("HEAD"))
     private static void mccs$clickStaffKeys(InputConstants.Key pressed, CallbackInfo callback) {
-        for (KeyMapping staffKey : List.of(KeyBindings.SHIELD, KeyBindings.CLOAK, KeyBindings.TELEPORT, KeyBindings.LIGHTS, KeyBindings.BLOCK_DAMAGE, KeyBindings.TELEKINESIS)) {
+        for (KeyMapping staffKey : KeyBindings.ALL) {
             KeyMappingMixin mapping = (KeyMappingMixin) (Object) staffKey;
             if (mapping.key.equals(pressed) && MAP.get(pressed) != staffKey) mapping.clickCount++;
         }

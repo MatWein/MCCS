@@ -8,8 +8,8 @@ import de.mccs.fabric.item.FabricCrystalStaffItem;
 import de.mccs.fabric.network.FabricNetwork;
 import de.mccs.mc.Mccs;
 import de.mccs.mc.entity.EnergyBallEntity;
+import de.mccs.mc.item.StaffStacks;
 import de.mccs.mc.registry.MccsObjects;
-import de.mccs.mc.staff.StaffData;
 import de.mccs.mc.staff.StaffLights;
 import de.mccs.mc.staff.StaffSystems;
 import net.fabricmc.api.ModInitializer;
@@ -25,12 +25,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** MCCS for Minecraft 1.20.1 on Fabric. */
 public final class MccsFabric implements ModInitializer {
     private static final String TEAM_REBORN_ENERGY = "team_reborn_energy";
 
@@ -46,9 +44,7 @@ public final class MccsFabric implements ModInitializer {
         ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.COMBAT).register(entries -> {
             for (Item staff : staffs) {
                 entries.accept(staff);
-                ItemStack charged = new ItemStack(staff);
-                StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-                entries.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+                entries.accept(StaffStacks.fullyCharged(staff), CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
             }
         });
         EnergyBallEntity.TYPE = MccsObjects.energyBallType();

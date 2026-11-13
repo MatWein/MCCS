@@ -1,6 +1,5 @@
 package de.mccs.core.staff;
 
-/** The arithmetic of the energy ball. */
 public final class BallMath {
     private BallMath() {}
 

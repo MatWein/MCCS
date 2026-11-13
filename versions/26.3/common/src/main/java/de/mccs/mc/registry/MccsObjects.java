@@ -4,15 +4,17 @@ import com.mojang.serialization.Codec;
 import de.mccs.core.MccsIds;
 import de.mccs.core.staff.StaffKind;
 import de.mccs.mc.Mccs;
+import de.mccs.mc.entity.EnergyBallEntity;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceKey;
-import de.mccs.mc.entity.EnergyBallEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+
+import java.util.Map;
 
 /** Construction of MCCS's objects. The loaders only register them, each in its own way. */
 public final class MccsObjects {
@@ -28,6 +30,15 @@ public final class MccsObjects {
             .persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL).build();
     public static final DataComponentType<Integer> SHIELD_HITS = DataComponentType.<Integer>builder()
             .persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).build();
+
+    /** The staff's data components by registry name; each loader registers them. */
+    public static final Map<String, DataComponentType<?>> COMPONENTS = Map.of(
+            "energy", ENERGY,
+            "shield_on", SHIELD_ON,
+            "cloak_on", CLOAK_ON,
+            "lights_on", LIGHTS_ON,
+            "block_damage", BLOCK_DAMAGE,
+            "shield_hits", SHIELD_HITS);
 
     private static final int TRACKING_RANGE = 12;
 

@@ -157,8 +157,6 @@ final class CrystalShape {
         output.accept(shard.topTip());
     }
 
-    // ---- vectors
-
     private static float[] lerp(float[] a, float[] b, float t) {
         return new float[]{a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t};
     }

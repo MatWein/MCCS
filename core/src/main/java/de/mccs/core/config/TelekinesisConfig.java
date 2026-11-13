@@ -1,6 +1,5 @@
 package de.mccs.core.config;
 
-/** The staff's telekinesis. */
 public final class TelekinesisConfig {
     private final IntSetting range;
     private final DoubleSetting aimTolerance;

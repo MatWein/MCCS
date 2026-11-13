@@ -7,8 +7,8 @@ import de.mccs.forge.item.ForgeCrystalStaffItem;
 import de.mccs.forge.network.ModNetwork;
 import de.mccs.mc.Mccs;
 import de.mccs.mc.entity.EnergyBallEntity;
+import de.mccs.mc.item.StaffStacks;
 import de.mccs.mc.registry.MccsObjects;
-import de.mccs.mc.staff.StaffData;
 import de.mccs.mc.staff.StaffLightning;
 import de.mccs.mc.staff.StaffLights;
 import de.mccs.mc.staff.StaffSystems;
@@ -17,7 +17,6 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -41,7 +40,6 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.Arrays;
 import java.util.List;
 
-/** MCCS for Minecraft 1.20.1 on Forge 47. */
 @Mod(Mccs.MOD_ID)
 public final class MccsMod {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Mccs.MOD_ID);
@@ -91,9 +89,7 @@ public final class MccsMod {
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             for (RegistryObject<Item> staff : STAFFS) {
                 event.accept(staff);
-                ItemStack charged = new ItemStack(staff.get());
-                StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-                event.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+                event.accept(StaffStacks.fullyCharged(staff.get()), CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
             }
         }
     }

@@ -1,6 +1,5 @@
 package de.mccs.core.config;
 
-/** The staff's energy ball. */
 public final class BallConfig {
     private final DoubleSetting damage;
     private final DoubleSetting radius;

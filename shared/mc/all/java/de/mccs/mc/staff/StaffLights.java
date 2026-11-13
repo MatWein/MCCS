@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The staff's light. Minecraft has no moving light sources, so, like MCPJ's jumper, the server places an invisible light block
+ * The staff's light. Minecraft has no moving light sources, so the server places an invisible light block
  * at the player and removes it behind them. It stays dark while the player is cloaked, riding or not holding the staff.
  */
 public final class StaffLights {

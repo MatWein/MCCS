@@ -30,19 +30,13 @@ public final class MccsFabricClient implements ClientModInitializer {
         SpecialModelRenderers.ID_MAPPER.put(StaffCrystalRenderer.ID, StaffCrystalRenderer.Unbaked.MAP_CODEC);
         StaffClient.actionSender = action -> ClientPlayNetworking.send(new StaffActionPacket(action));
         EntityRendererRegistry.register(EnergyBallEntity.TYPE, EnergyBallRenderer::new);
-        KeyMappingHelper.registerKeyMapping(KeyBindings.SHIELD);
-        KeyMappingHelper.registerKeyMapping(KeyBindings.CLOAK);
-        KeyMappingHelper.registerKeyMapping(KeyBindings.TELEPORT);
-        KeyMappingHelper.registerKeyMapping(KeyBindings.LIGHTS);
-        KeyMappingHelper.registerKeyMapping(KeyBindings.BLOCK_DAMAGE);
-        KeyMappingHelper.registerKeyMapping(KeyBindings.TELEKINESIS);
+        KeyBindings.ALL.forEach(KeyMappingHelper::registerKeyMapping);
         ClientTickEvents.START_CLIENT_TICK.register(client -> StaffClient.onClientTickStart());
         ClientTickEvents.END_CLIENT_TICK.register(client -> StaffClient.onClientTickEnd());
         HudElementRegistry.addLast(Mccs.id("staff_hud"), (graphics, deltaTracker) ->
                 StaffHud.render(ClientCompat.hudCanvas(graphics), graphics.guiWidth(), graphics.guiHeight()));
         // handlers run on the client thread
-        ClientPlayNetworking.registerGlobalReceiver(BeamStatePacket.TYPE,
-                (packet, context) -> BeamClient.update(packet.shooter(), packet.firing(), packet.tether(), packet.targets()));
+        ClientPlayNetworking.registerGlobalReceiver(BeamStatePacket.TYPE, (packet, context) -> BeamClient.update(packet));
         ClientPlayNetworking.registerGlobalReceiver(FabricNetwork.ServerConfigPacket.TYPE,
                 (packet, context) -> FabricConfigs.SERVER.apply(packet.values()));
         // back to the own settings after leaving a server

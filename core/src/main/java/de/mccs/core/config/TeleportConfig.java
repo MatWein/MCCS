@@ -1,6 +1,5 @@
 package de.mccs.core.config;
 
-/** The staff's teleport. */
 public final class TeleportConfig {
     private final IntSetting range;
     private final IntSetting energy;

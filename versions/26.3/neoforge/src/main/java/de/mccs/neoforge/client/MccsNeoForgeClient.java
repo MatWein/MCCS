@@ -27,18 +27,13 @@ import net.neoforged.neoforge.common.NeoForge;
 @Mod(value = Mccs.MOD_ID, dist = Dist.CLIENT)
 public final class MccsNeoForgeClient {
     public MccsNeoForgeClient(IEventBus modBus) {
-        BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.tether(), packet.targets());
+        BeamStatePacket.handler = BeamClient::update;
         StaffClient.actionSender = action -> ClientPacketDistributor.sendToServer(new StaffActionPacket(action));
         modBus.addListener(RegisterSpecialModelRendererEvent.class, event -> event.register(StaffCrystalRenderer.ID, StaffCrystalRenderer.Unbaked.MAP_CODEC));
         modBus.addListener(EntityRenderersEvent.RegisterRenderers.class, event -> event.registerEntityRenderer(EnergyBallEntity.TYPE, EnergyBallRenderer::new));
         modBus.addListener(RegisterKeyMappingsEvent.class, event -> {
             event.registerCategory(KeyBindings.CATEGORY);
-            event.register(KeyBindings.SHIELD);
-            event.register(KeyBindings.CLOAK);
-            event.register(KeyBindings.TELEPORT);
-            event.register(KeyBindings.LIGHTS);
-            event.register(KeyBindings.BLOCK_DAMAGE);
-            event.register(KeyBindings.TELEKINESIS);
+            KeyBindings.ALL.forEach(event::register);
         });
         modBus.addListener(RegisterGuiLayersEvent.class, event -> event.registerAbove(VanillaGuiLayers.HOTBAR, Mccs.id("staff_hud"),
                 (graphics, deltaTracker) -> StaffHud.render(ClientCompat.hudCanvas(graphics), graphics.guiWidth(), graphics.guiHeight())));

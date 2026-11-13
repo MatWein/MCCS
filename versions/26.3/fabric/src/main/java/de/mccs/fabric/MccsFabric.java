@@ -8,8 +8,8 @@ import de.mccs.fabric.item.FabricCrystalStaffItem;
 import de.mccs.fabric.network.FabricNetwork;
 import de.mccs.mc.Mccs;
 import de.mccs.mc.entity.EnergyBallEntity;
+import de.mccs.mc.item.StaffStacks;
 import de.mccs.mc.registry.MccsObjects;
-import de.mccs.mc.staff.StaffData;
 import de.mccs.mc.staff.StaffLights;
 import de.mccs.mc.staff.StaffSystems;
 import net.fabricmc.api.ModInitializer;
@@ -25,24 +25,17 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** MCCS for Minecraft 26.3 on Fabric. */
 public final class MccsFabric implements ModInitializer {
     private static final String TEAM_REBORN_ENERGY = "team_reborn_energy";
 
     @Override
     public void onInitialize() {
         FabricConfigs.define();
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mccs.id("energy"), MccsObjects.ENERGY);
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mccs.id("shield_on"), MccsObjects.SHIELD_ON);
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mccs.id("cloak_on"), MccsObjects.CLOAK_ON);
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mccs.id("lights_on"), MccsObjects.LIGHTS_ON);
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mccs.id("block_damage"), MccsObjects.BLOCK_DAMAGE);
-        Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mccs.id("shield_hits"), MccsObjects.SHIELD_HITS);
+        MccsObjects.COMPONENTS.forEach((name, type) -> Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, Mccs.id(name), type));
         List<Item> staffs = new ArrayList<>();
         for (StaffKind kind : StaffKind.values()) {
             Item staff = new FabricCrystalStaffItem(MccsObjects.crystalStaffProperties(kind), kind);
@@ -52,9 +45,7 @@ public final class MccsFabric implements ModInitializer {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> {
             for (Item staff : staffs) {
                 output.accept(staff);
-                ItemStack charged = new ItemStack(staff);
-                StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-                output.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+                output.accept(StaffStacks.fullyCharged(staff), CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
             }
         });
         EnergyBallEntity.TYPE = MccsObjects.energyBallType();

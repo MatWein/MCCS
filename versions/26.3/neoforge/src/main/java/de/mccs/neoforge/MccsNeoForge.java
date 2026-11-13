@@ -6,9 +6,9 @@ import de.mccs.mc.Mccs;
 import de.mccs.mc.entity.EnergyBallEntity;
 import de.mccs.mc.network.BeamStatePacket;
 import de.mccs.mc.network.StaffActionPacket;
+import de.mccs.mc.item.StaffStacks;
 import de.mccs.mc.registry.MccsObjects;
 import de.mccs.mc.staff.StaffBeam;
-import de.mccs.mc.staff.StaffData;
 import de.mccs.mc.staff.StaffLights;
 import de.mccs.mc.staff.StaffSystems;
 import de.mccs.neoforge.config.NeoForgeConfigs;
@@ -21,7 +21,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -42,7 +41,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.Arrays;
 import java.util.List;
 
-/** MCCS for Minecraft 26.3 on NeoForge. */
 @Mod(Mccs.MOD_ID)
 public final class MccsNeoForge {
     private static final String NETWORK_PROTOCOL = "2";
@@ -59,12 +57,7 @@ public final class MccsNeoForge {
 
     static {
         ENTITY_TYPES.register(MccsIds.ENERGY_BALL, () -> EnergyBallEntity.TYPE = MccsObjects.energyBallType());
-        COMPONENTS.register("energy", () -> MccsObjects.ENERGY);
-        COMPONENTS.register("shield_on", () -> MccsObjects.SHIELD_ON);
-        COMPONENTS.register("cloak_on", () -> MccsObjects.CLOAK_ON);
-        COMPONENTS.register("lights_on", () -> MccsObjects.LIGHTS_ON);
-        COMPONENTS.register("block_damage", () -> MccsObjects.BLOCK_DAMAGE);
-        COMPONENTS.register("shield_hits", () -> MccsObjects.SHIELD_HITS);
+        MccsObjects.COMPONENTS.forEach((name, type) -> COMPONENTS.register(name, () -> type));
     }
 
     public MccsNeoForge(IEventBus modBus, ModContainer container) {
@@ -95,9 +88,7 @@ public final class MccsNeoForge {
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             for (DeferredHolder<Item, Item> staff : STAFFS) {
                 event.accept(staff.get());
-                ItemStack charged = new ItemStack(staff.get());
-                StaffData.setSavedEnergy(charged, Integer.MAX_VALUE);
-                event.accept(charged, CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
+                event.accept(StaffStacks.fullyCharged(staff.get()), CreativeModeTab.TabVisibility.PARENT_TAB_ONLY); // the search would show the staff twice
             }
         }
     }

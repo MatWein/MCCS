@@ -3,7 +3,6 @@ package de.mccs.mc;
 import de.mccs.core.MccsIds;
 import net.minecraft.resources.Identifier;
 
-/** Mod id and resource locations. */
 public final class Mccs {
     public static final String MOD_ID = MccsIds.MOD_ID;
 

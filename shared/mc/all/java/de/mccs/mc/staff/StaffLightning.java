@@ -15,7 +15,7 @@ import java.util.Optional;
 
 /**
  * Lightning charges the staff in a player's hands. During thunderstorms it strikes players with an active shield under open
- * sky, like MCPJ's jumper: holding up the shield is the way to charge without any other mods.
+ * sky: holding up the shield is the way to charge without any other mods.
  */
 public final class StaffLightning {
     private static final double ATTRACT_HEIGHT = 512;

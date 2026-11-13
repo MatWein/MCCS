@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** Draws the core's HUD lines ({@link StaffHudModel}) bottom left, in the look of MCPJ's cockpit HUD. */
+/** Draws the core's HUD lines ({@link StaffHudModel}) bottom left. */
 public final class StaffHud {
     private static final int MARGIN_LEFT = 8;
     private static final int MARGIN_BOTTOM = 12;

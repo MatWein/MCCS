@@ -1,6 +1,7 @@
 package de.mccs.mc.client;
 
 import de.mccs.core.config.ServerConfig;
+import de.mccs.core.render.EnergyBubble;
 import de.mccs.core.staff.BubbleAnimation;
 import de.mccs.core.staff.StaffAction;
 import de.mccs.mc.staff.StaffData;
@@ -82,9 +83,22 @@ public final class StaffClient {
         }
     }
 
-    /** The players whose bubble is visible, with its animation. */
-    public static Map<Player, BubbleAnimation> bubbles() {
-        return BUBBLES;
+    /** One visible bubble in this frame; {@code inside}: the camera sits inside it (the own bubble in first person). */
+    public record Bubble(Player player, float intensity, float wobble, float time, boolean inside) {}
+
+    /** Hands over the bubbles visible in this frame; each Minecraft version only draws them. */
+    public static void forEachBubble(float partialTick, Consumer<Bubble> bubbles) {
+        Minecraft minecraft = Minecraft.getInstance();
+        BUBBLES.forEach((player, animation) -> {
+            float shield = animation.shield(partialTick);
+            float flash = animation.flash(partialTick);
+            boolean inside = BeamClient.isFirstPerson(minecraft, player);
+            float intensity = inside ? EnergyBubble.insideIntensity(shield, flash)
+                    : EnergyBubble.intensity(shield, animation.cloak(partialTick), flash, player == minecraft.player);
+            if (EnergyBubble.isVisible(intensity)) {
+                bubbles.accept(new Bubble(player, intensity, EnergyBubble.wobble(shield), player.tickCount + partialTick, inside));
+            }
+        });
     }
 
     /** Whether the cloak hides this player's body and everything they carry. */

@@ -1,6 +1,5 @@
 package de.mccs.core.staff;
 
-/** The arithmetic of the telekinesis. */
 public final class TelekinesisMath {
     /** The share of the way to its place a held target covers per tick. */
     private static final double PULL = 0.35;

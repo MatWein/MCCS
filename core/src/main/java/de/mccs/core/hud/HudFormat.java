@@ -1,6 +1,5 @@
 package de.mccs.core.hud;
 
-/** Number and duration formatting for the HUD. */
 final class HudFormat {
     private static final int THOUSAND = 1_000;
     private static final int MILLION = 1_000_000;

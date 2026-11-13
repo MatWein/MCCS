@@ -22,7 +22,7 @@ import java.util.WeakHashMap;
 
 /**
  * The staff's shield and cloak. Their state lives on the item stack, which Minecraft syncs to everyone seeing the
- * player. They only work while the staff is held and the player is not riding anything (horse, boat, jumper, ...);
+ * player. They only work while the staff is held and the player is not riding anything (horse, boat, minecart, ...);
  * otherwise the staff has no effect at all: they pause and resume afterwards.
  */
 public final class StaffSystems {
@@ -112,7 +112,6 @@ public final class StaffSystems {
         return (int) Math.min(Integer.MAX_VALUE, drain);
     }
 
-    /** The key for a system was pressed. */
     public static void perform(ServerPlayer player, StaffAction system) {
         if (system == StaffAction.BEAM_START) {
             // the attack key throws what the telekinesis holds, and fires the lightning otherwise

@@ -30,7 +30,7 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        BeamStatePacket.handler = packet -> BeamClient.update(packet.shooter(), packet.firing(), packet.tether(), packet.targets());
+        BeamStatePacket.handler = BeamClient::update;
         StaffClient.actionSender = action -> ModNetwork.sendToServer(new StaffActionPacket(action));
         StaffItemRenderer.models = id -> Minecraft.getInstance().getModelManager().getModel(id);
     }
@@ -48,12 +48,7 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void onRegisterKeys(RegisterKeyMappingsEvent event) {
-        event.register(KeyBindings.SHIELD);
-        event.register(KeyBindings.CLOAK);
-        event.register(KeyBindings.TELEPORT);
-        event.register(KeyBindings.LIGHTS);
-        event.register(KeyBindings.BLOCK_DAMAGE);
-        event.register(KeyBindings.TELEKINESIS);
+        KeyBindings.ALL.forEach(event::register);
     }
 
     @SubscribeEvent

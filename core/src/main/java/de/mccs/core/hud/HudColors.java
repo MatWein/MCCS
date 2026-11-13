@@ -1,6 +1,6 @@
 package de.mccs.core.hud;
 
-/** Colors of the staff's HUD (RGB, ARGB where noted), the same as MCPJ's cockpit HUD. */
+/** Colors of the staff's HUD (RGB, ARGB where noted). */
 public final class HudColors {
     public static final int TEAL = 0x7FE6F2;
     public static final int GOLD = 0xFFC94A;
