@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generates the crystal staffs' item models, their textures and the mod icon.
+"""Generates the crystal staffs' item models and their textures (the mod icon comes from tools/CrystalPreview.java --logo).
 
 There is one staff per kind (StaffKind): all share the geometry of models/item/crystal_staff_shape.json and differ only
 in the colors of their texture (models/item/<kind>_body.json). The models hold the staff without its crystal: the crystal
@@ -20,7 +20,7 @@ import math
 import random
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
 MODELS = ROOT / "shared/mc/all/resources/assets/mccs/models/item"
@@ -31,7 +31,6 @@ ITEM_DEFINITIONS = ROOT / "versions/26.3/common/src/main/resources/assets/mccs/i
 ASSETS = ROOT / "core/src/main/resources/assets/mccs"
 TEXTURES = ASSETS / "textures/item"
 SHAPE = "crystal_staff_shape"
-ICON = ASSETS / "icon.png"
 BEAM = ASSETS / "textures/entity/beam.png"
 CRYSTAL_GLOW = ASSETS / "textures/entity/crystal_glow.png"
 CRYSTAL_FACETS = ASSETS / "textures/entity/crystal.png"
@@ -360,20 +359,6 @@ def save_smooth(image, path):
     path.with_name(path.name + ".mcmeta").write_text(json.dumps({"texture": {"blur": True}}, indent=2) + "\n")
 
 
-def write_icon():
-    size = 128
-    image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(image)
-    draw.line([(18, 110), (84, 44)], fill=(46, 51, 58, 255), width=8)
-    draw.line([(18, 110), (84, 44)], fill=(120, 235, 255, 255), width=2)
-    draw.line([(38, 90), (56, 72)], fill=(24, 24, 27, 255), width=11)
-    draw.line([(76, 52), (84, 44)], fill=(205, 212, 220, 255), width=14)
-    draw.polygon([(114, 14), (106, 54), (90, 46), (74, 22)], fill=(70, 170, 245, 255))
-    draw.polygon([(114, 14), (92, 36), (74, 22)], fill=(150, 225, 255, 255))
-    ICON.parent.mkdir(parents=True, exist_ok=True)
-    image.save(ICON)
-
-
 if __name__ == "__main__":
     write_shape()
     write_crystal_facets()
@@ -382,6 +367,5 @@ if __name__ == "__main__":
         write_item_model_1_20(kind)
         write_item_definition(kind)
         write_texture(kind, colors)
-    write_icon()
     write_beam()
     write_crystal_glow()

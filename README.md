@@ -191,7 +191,7 @@ testing integrations such as Mekanism. Its development server runs in `run-dev-s
 ### Model
 
 `tools/make_staff_assets.py` generates the staff's models (without the crystal), their textures (one per staff kind,
-differing only in color), the textures of the crystal and its light, and the mod icon; the results are checked in. Edit
+differing only in color) and the textures of the crystal and its light; the results are checked in. Edit
 the script and run it again instead of editing them by hand.
 
 The crystal is not part of the item model: it shines on its own and changes with the charge, so the mod draws it while it
@@ -203,6 +203,7 @@ image (several views, night and day, both staffs), to judge changes without star
 ```bash
 ./gradlew :core:classes
 java -cp core/build/classes/java/main tools/CrystalPreview.java preview.png
+java -cp core/build/classes/java/main tools/CrystalPreview.java --logo logo.png   # mod icon (256 px) and logo.png (512 px)
 ```
 
 The staff stands on the ground and reaches a fifth higher than the player model (32 model units): its shaft above the
