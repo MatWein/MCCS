@@ -9,7 +9,7 @@ dark and lifts things by telekinesis, all powered by the energy stored in its cr
 There are two staffs that work exactly the same way: the **Normal Crystal Staff** with its blue crystal, and the
 **High-Energy Crystal Staff** with an orange crystal and a yellowish glow, which stores ten times as much energy.
 
-**Download:** [CurseForge](URL)
+**Download:** [CurseForge](https://www.curseforge.com/minecraft/mc-mods/mccs-crystal-staff/preview)
 
 | Minecraft | Loaders |
 |---|---|
