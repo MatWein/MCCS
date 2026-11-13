@@ -9,6 +9,8 @@ dark and lifts things by telekinesis, all powered by the energy stored in its cr
 There are two staffs that work exactly the same way: the **Normal Crystal Staff** with its blue crystal, and the
 **High-Energy Crystal Staff** with an orange crystal and a yellowish glow, which stores ten times as much energy.
 
+**Download:** [CurseForge](URL)
+
 | Minecraft | Loaders |
 |---|---|
 | 1.20.1 | Forge (47.4.16+), Fabric (with Fabric API) |
@@ -18,6 +20,15 @@ There are two staffs that work exactly the same way: the **Normal Crystal Staff*
 It works on its own; energy mods such as Mekanism are optional. Install it on the server and on every client.
 Translated into English, German, Spanish, French, Italian, Portuguese (Brazil), Polish, Russian, Ukrainian, Japanese,
 Korean and Simplified Chinese.
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Normal Crystal Staff with its blue crystal at night](docs/screenshots/2026-11-13_19.42.27.png) | ![High-Energy Crystal Staff with its orange crystal at night](docs/screenshots/2026-11-13_19.42.17.png) |
+| ![Player with an active shield](docs/screenshots/2026-11-13_19.44.00.png) | ![Cloaked player, only the faint energy bubble remains](docs/screenshots/2026-11-13_19.44.08.png) |
+| ![Lightning over the lake in first person](docs/screenshots/2026-11-13_19.43.01.png) | ![Iron golem lifted by telekinesis](docs/screenshots/2026-11-13_19.45.07.png) |
+| ![Energy ball flying over the lake](docs/screenshots/2026-11-13_19.43.16.png) | ![Energy ball reaching the houses across the lake](docs/screenshots/2026-11-13_19.43.31.png) |
 
 ## Getting started
 
