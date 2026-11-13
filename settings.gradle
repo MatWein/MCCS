@@ -26,7 +26,7 @@ include 'core'
 // One folder per Minecraft version below versions/: its gradle.properties holds everything that differs between
 // versions, each subfolder with a build.gradle is a module. "common" is the vanilla code shared by the loaders of
 // that version, the others build one mod jar each. Module names: mc_<version>_<folder>, e.g. :mc_26.3_neoforge.
-def minecraftVersions = ['1.20.1', '26.3']
+def minecraftVersions = ['1.20.1', '1.21.1', '26.3']
 
 def versionProperties = [:]
 minecraftVersions.each { minecraftVersion ->

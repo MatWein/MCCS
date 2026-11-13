@@ -31,3 +31,10 @@ ext.addSharedFolders = { String propertyName ->
         if (new File(base, 'resources').isDirectory()) sourceSets.main.resources.srcDir(new File(base, 'resources'))
     }
 }
+
+/** A resource of this module's main source set: from its own folder or from one of the shared/ folders added to it. */
+ext.mainResource = { String name ->
+    def found = sourceSets.main.resources.srcDirs.collect { new File(it, name) }.find { it.isFile() }
+    if (found == null) throw new GradleException("${name} is not among the resources of ${project.path}")
+    found
+}

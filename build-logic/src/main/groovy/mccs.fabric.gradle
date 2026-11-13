@@ -21,7 +21,7 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath = common.file("src/main/resources/${project.property('access_widener')}")
+    accessWidenerPath = common.mainResource(project.property('access_widener') as String)
     runs {
         client {
             // fixed name, so a test server can make it an operator;

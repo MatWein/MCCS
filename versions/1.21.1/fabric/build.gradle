@@ -1,0 +1,4 @@
+// Minecraft 1.21.1 for Fabric (see build-logic/mccs.fabric.gradle)
+plugins {
+    id 'mccs.fabric'
+}

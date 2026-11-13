@@ -1,0 +1,4 @@
+// Vanilla Minecraft 1.21.1 code shared by the NeoForge and Fabric modules (see build-logic/mccs.vanilla.gradle)
+plugins {
+    id 'mccs.vanilla'
+}

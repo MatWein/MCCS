@@ -18,7 +18,7 @@
     "main": ["de.mccs.fabric.MccsFabric"],
     "client": ["de.mccs.fabric.client.MccsFabricClient"]
   },
-  "mixins": ["mccs.mixins.json"],
+  "mixins": ["mccs.mixins.json", "mccs.fabric.mixins.json"],
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
     "minecraft": "~${minecraft_version}",

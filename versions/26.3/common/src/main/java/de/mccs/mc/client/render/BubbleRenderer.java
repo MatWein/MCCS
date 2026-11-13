@@ -3,6 +3,7 @@ package de.mccs.mc.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.mccs.core.render.EnergyBubble;
 import de.mccs.mc.Mccs;
+import de.mccs.mc.client.ClientCompat;
 import de.mccs.mc.client.StaffClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -19,7 +20,7 @@ public final class BubbleRenderer {
     private BubbleRenderer() {}
 
     public static void submit(PoseStack poseStack, SubmitNodeCollector collector, Vec3 cameraPosition) {
-        float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+        float partialTick = ClientCompat.partialTick(Minecraft.getInstance());
         StaffClient.forEachBubble(partialTick, bubble -> {
             Vec3 position = bubble.player().getPosition(partialTick).subtract(cameraPosition);
             poseStack.pushPose();

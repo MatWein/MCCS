@@ -1,0 +1,14 @@
+package de.mccs.mc;
+
+import de.mccs.core.MccsIds;
+import net.minecraft.resources.ResourceLocation;
+
+public final class Mccs {
+    public static final String MOD_ID = MccsIds.MOD_ID;
+
+    private Mccs() {}
+
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    }
+}

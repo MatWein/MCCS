@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.mccs.core.render.VertexSink;
 import de.mccs.core.render.ViewTransform;
+import de.mccs.mc.client.ClientCompat;
+import net.minecraft.client.Minecraft;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -20,6 +22,15 @@ final class RenderSinks {
                 .setOverlay(overlay)
                 .setLight(light)
                 .setNormal(pose, normalX, normalY, normalZ);
+    }
+
+    /**
+     * The camera's right and up directions in render space. The camera rotation is kept out of the pose stack, in the world
+     * as in the first person hand: render space has the world's axes.
+     */
+    static float[][] cameraAxes() {
+        float[][] basis = ClientCompat.cameraBasis(Minecraft.getInstance().gameRenderer.mainCamera());
+        return new float[][]{{-basis[2][0], -basis[2][1], -basis[2][2]}, basis[1]};
     }
 
     static ViewTransform view(PoseStack.Pose pose) {

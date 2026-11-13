@@ -17,6 +17,11 @@ public final class ClientCompat {
         return minecraft.gui.screen() != null;
     }
 
+    /** How far the current frame is between two game ticks. */
+    public static float partialTick(Minecraft minecraft) {
+        return minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+    }
+
     public static boolean hudHidden(Minecraft minecraft) {
         return minecraft.gui.hud.isHidden();
     }

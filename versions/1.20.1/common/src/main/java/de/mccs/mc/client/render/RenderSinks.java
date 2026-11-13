@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.mccs.core.render.VertexSink;
 import de.mccs.core.render.ViewTransform;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -23,6 +24,19 @@ final class RenderSinks {
                 .uv2(light)
                 .normal(normalMatrix, normalX, normalY, normalZ)
                 .endVertex();
+    }
+
+    /** A baked model quad in its own colors. */
+    static void quad(VertexConsumer consumer, PoseStack.Pose pose, BakedQuad quad, int light, int overlay) {
+        consumer.putBulkData(pose, quad, 1f, 1f, 1f, light, overlay);
+    }
+
+    /**
+     * The camera's right and up directions in render space. In 1.20.1 the pose stack holds the camera rotation in the world
+     * and in the first person hand: render space is view space, in which they are fixed.
+     */
+    static float[][] cameraAxes() {
+        return new float[][]{{1f, 0f, 0f}, {0f, 1f, 0f}};
     }
 
     static ViewTransform view(PoseStack.Pose pose) {

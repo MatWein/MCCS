@@ -1,0 +1,4 @@
+// Minecraft 1.21.1 for NeoForge (see build-logic/mccs.neoforge.gradle)
+plugins {
+    id 'mccs.neoforge'
+}

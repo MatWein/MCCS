@@ -54,18 +54,14 @@ public final class StaffCrystalRenderer implements SpecialModelRenderer<StaffEff
                        boolean hasFoil, int outlineColor) {
         if (look == null) return;
         Minecraft minecraft = Minecraft.getInstance();
-        float time = minecraft.level == null ? 0f : minecraft.level.getGameTime() + minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+        float time = minecraft.level == null ? 0f : minecraft.level.getGameTime() + ClientCompat.partialTick(minecraft);
         Drawing drawing = new Drawing(poseStack, collector);
         if (!effects) {
             StaffEffects.drawCrystal(look, time, drawing);
             return;
         }
-        Matrix4f itemPose = new Matrix4f(poseStack.last().pose());
-        // Minecraft 26.x keeps the camera rotation out of the pose stack, in the world as in the first person hand: render
-        // space has the world's axes, and the camera's right and up come from the camera
-        float[][] basis = ClientCompat.cameraBasis(minecraft.gameRenderer.mainCamera());
-        float[] right = {-basis[2][0], -basis[2][1], -basis[2][2]};
-        StaffEffects.draw(look, itemPose, right, basis[1], time, firstPerson, drawing);
+        float[][] axes = RenderSinks.cameraAxes();
+        StaffEffects.draw(look, new Matrix4f(poseStack.last().pose()), axes[0], axes[1], time, firstPerson, drawing);
     }
 
     /**

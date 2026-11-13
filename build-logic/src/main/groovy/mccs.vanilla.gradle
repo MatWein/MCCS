@@ -10,17 +10,18 @@ def remap = (project.property('fabric_loom_remap') as String).toBoolean()
 // obfuscated Minecraft (up to 1.21.x): Mojang's names via mappings; 26.x is unobfuscated
 pluginManager.apply(remap ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom')
 
+// Minecraft code shared with other versions (shared/mc/all for every version, plus range folders such as
+// shared/mc/1.20.1-1.21.1); added first, as the access widener may come from one of them
+addSharedFolders('shared_mc')
+
 loom {
-    accessWidenerPath = file("src/main/resources/${project.property('access_widener')}")
+    accessWidenerPath = mainResource(project.property('access_widener') as String)
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.property('minecraft_version')}"
     if (remap) mappings loom.officialMojangMappings()
-    // only for the annotation types Loom adds to Minecraft's classes (and the mixin annotations of the shared
-    // mixins); nothing of the loader is used here
-    compileOnly "net.fabricmc:fabric-loader:${project.property('fabric_loader_version')}"
+    // only for the annotation types Loom adds to Minecraft's classes and the mixin annotations of the shared mixins;
+    // nothing of the loader is used here (a mod dependency where Minecraft is remapped, so that Loom brings Mixin along)
+    add(remap ? 'modCompileOnly' : 'compileOnly', "net.fabricmc:fabric-loader:${project.property('fabric_loader_version')}")
 }
-
-// Minecraft code shared with other versions (shared/mc/all for every version, plus range folders)
-addSharedFolders('shared_mc')

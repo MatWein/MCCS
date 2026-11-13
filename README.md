@@ -12,6 +12,7 @@ There are two staffs that work exactly the same way: the **Normal Crystal Staff*
 | Minecraft | Loaders |
 |---|---|
 | 1.20.1 | Forge (47.4.16+), Fabric (with Fabric API) |
+| 1.21.1 | NeoForge (21.1+), Fabric (with Fabric API) |
 | 26.3 | NeoForge, Fabric (with Fabric API) |
 
 It works on its own; energy mods such as Mekanism are optional. Install it on the server and on every client.
@@ -131,8 +132,8 @@ off and cannot start anything.
 
 ## Configuration
 
-The settings live in `world/serverconfig/mccs-server.toml` on Forge and in `config/mccs-server.toml` on NeoForge and
-Fabric; a server sends them to joining players.
+The settings live in `world/serverconfig/mccs-server.toml` on Forge 1.20.1 and NeoForge 1.21.1, and in
+`config/mccs-server.toml` on NeoForge 26.3 and Fabric; a server sends them to joining players.
 
 | Section | Contents |
 |---|---|
@@ -151,18 +152,21 @@ loader. Code is written once and placed as widely as it compiles:
 |---|---|
 | `core/` | the game logic in plain Java 17, without any Minecraft or mod loader API (`StaffKind` defines the two staffs, `CrystalRender` makes the crystal and its light); version-independent assets (textures, translations in 12 languages, icon) |
 | `shared/mc/all/` | Minecraft code that compiles unchanged against every supported version: staff systems (shield, cloak, lightning, ball, teleport, light, telekinesis), client effects, HUD, arm pose; also the item models |
-| `shared/fabric/all/` | Fabric code shared by every version: TOML config with server sync, Team Reborn Energy |
-| `versions/<version>/` | one folder per Minecraft version; its `gradle.properties` holds everything that differs between versions (Minecraft, Java, loader and API versions, which `shared/` folders are compiled in) |
-| `versions/<version>/common/` | what only that Minecraft version has: compat classes, renderers, item, entity, network messages, mixins, recipe; compiled into each loader module of that version, never shipped on its own |
+| `shared/mc/<from>-<to>/` | Minecraft code shared by a range of versions, e.g. `1.20.1-1.21.1` (renderers and item models from the time before special item models) and `1.21.1-26.3` (data components, network payloads) |
+| `shared/mixin/all/`, `shared/mixin/<from>-<to>/` | vanilla mixins: compiled into the common module where both loaders use them (1.21.1, 26.3), and into the Fabric module only for 1.20.1, where Forge uses its events instead |
+| `shared/fabric/all/`, `shared/neoforge/all/`, `shared/<loader>/<from>-<to>/` | loader code shared by several versions: Fabric's TOML config with server sync and Team Reborn Energy, NeoForge's config and item additions |
+| `versions/<version>/` | one folder per Minecraft version; its `gradle.properties` holds everything that differs between versions (Minecraft, Java, loader and API versions, which `shared/` folders are compiled in: `shared_mc` into common, `shared_<loader>` into that loader) |
+| `versions/<version>/common/` | what only that Minecraft version has: compat classes (`StaffCompat`, `ClientCompat`, `RenderSinks`), item, registry objects, recipe, the remaining renderers and mixins; compiled into each loader module of that version, never shipped on its own |
 | `versions/<version>/<loader>/` | the loader's side (`forge`, `neoforge`, `fabric`): registration, energy API, network transport, config, events, mod metadata |
 | `build-logic/` | the Gradle convention plugins all these modules apply: `mccs.vanilla` (common), `mccs.forge`, `mccs.neoforge`, `mccs.fabric` (all via `mccs.loader`); module `build.gradle` files only hold what is special about them |
 
 Gradle names the modules after their folder: `versions/26.3/neoforge` is `:mc_26.3_neoforge`. A new Minecraft version
-is a copy of a `versions/<version>/` folder with adjusted `gradle.properties`, added to the list in `settings.gradle`.
+is a copy of a `versions/<version>/` folder with adjusted `gradle.properties`, added to the list in `settings.gradle`;
+whatever it shares with a neighbouring version goes into a `shared/` range folder instead of being copied.
 
 Each loader module builds its own jar: `mccs-<version>+mc<minecraft version>-<loader>.jar` in
 `versions/<version>/<loader>/build/libs/`. Gradle 9 runs on Java 25 (Gradle finds or downloads it, as well as Java 17
-for the 1.20.1 modules). Build plugins: ModDevGradle (Forge 1.20.1 via `legacyforge`, NeoForge) and Fabric Loom.
+and 21 for the 1.20.1 and 1.21.1 modules). Build plugins: ModDevGradle (Forge 1.20.1 via `legacyforge`, NeoForge) and Fabric Loom.
 
 ```bash
 ./gradlew build                                       # all modules and jars
@@ -170,12 +174,15 @@ for the 1.20.1 modules). Build plugins: ModDevGradle (Forge 1.20.1 via `legacyfo
 
 ./gradlew :mc_1.20.1_forge:runClient                  # development clients
 ./gradlew :mc_1.20.1_fabric:runClient
+./gradlew :mc_1.21.1_neoforge:runClient
+./gradlew :mc_1.21.1_fabric:runClient
 ./gradlew :mc_26.3_neoforge:runClient
 ./gradlew :mc_26.3_fabric:runClient
 
 ./gradlew :mc_1.20.1_forge:runServer                  # development servers (same for the other modules)
 ./gradlew :mc_1.20.1_forge:runClient -Pstandalone     # without the mods in run-server/mods
 ./gradlew :mc_26.3_fabric:runClient -PjoinServer=localhost   # joining a server directly
+./gradlew :mc_26.3_fabric:runClient -PplayerName=Dev2        # a further player (own name and game directory run-Dev2)
 ```
 
 The Forge module also loads every mod jar in `versions/1.20.1/forge/run-server/mods/` into its development runs, for
@@ -188,7 +195,7 @@ differing only in color), the textures of the crystal and its light, and the mod
 the script and run it again instead of editing them by hand.
 
 The crystal is not part of the item model: it shines on its own and changes with the charge, so the mod draws it while it
-renders the staff item, with the item's own pose (Minecraft 1.20.1: the item model is `builtin/entity` and
+renders the staff item, with the item's own pose (Minecraft 1.20.1 and 1.21.1: the item model is `builtin/entity` and
 `StaffItemRenderer` draws the staff; 26.x: the special item model `mccs:crystal` in `items/<staff>.json`). Shape, colors
 and light are made in `core` (`CrystalShape`, `CrystalRender`). `tools/CrystalPreview.java` renders that same code to an
 image (several views, night and day, both staffs), to judge changes without starting Minecraft:

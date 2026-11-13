@@ -3,8 +3,8 @@
 
 There is one staff per kind (StaffKind): all share the geometry of models/item/crystal_staff_shape.json and differ only
 in the colors of their texture (models/item/<kind>_body.json). The models hold the staff without its crystal: the crystal
-shines on its own and changes with the charge, so the mod draws it at runtime (CrystalGlow, with textures/entity/crystal.png):
-- Minecraft 1.20.1: the item model is "builtin/entity" with the staff's display transforms, and StaffItemRenderer draws
+shines on its own and changes with the charge, so the mod draws it at runtime (CrystalRender, with textures/entity/crystal.png):
+- Minecraft 1.20.1 and 1.21.1: the item model is "builtin/entity" with the staff's display transforms, and StaffItemRenderer draws
   the body model, the crystal and its light
 - Minecraft 26.x: items/<kind>.json combines the body model with the special model "mccs:crystal" (with the light in the
   hands)
@@ -24,8 +24,8 @@ from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
 MODELS = ROOT / "shared/mc/all/resources/assets/mccs/models/item"
-# Minecraft 1.20.1's item models ("builtin/entity", drawn by StaffItemRenderer)
-ITEM_MODELS_1_20 = ROOT / "versions/1.20.1/common/src/main/resources/assets/mccs/models/item"
+# the item models up to Minecraft 1.21.1 ("builtin/entity", drawn by StaffItemRenderer)
+ITEM_MODELS_1_20 = ROOT / "shared/mc/1.20.1-1.21.1/resources/assets/mccs/models/item"
 # Minecraft 26.x picks an item's model through items/<item>.json
 ITEM_DEFINITIONS = ROOT / "versions/26.3/common/src/main/resources/assets/mccs/items"
 ASSETS = ROOT / "core/src/main/resources/assets/mccs"
@@ -196,7 +196,7 @@ def write_shape():
 
 
 def write_item_model_1_20(kind):
-    """Minecraft 1.20.1: "builtin/entity" hands the drawing to StaffItemRenderer, with the staff's display transforms."""
+    """Minecraft 1.20.1 and 1.21.1: "builtin/entity" hands the drawing to StaffItemRenderer, with the staff's display transforms."""
     model = {"parent": "builtin/entity", "textures": {"particle": f"mccs:item/{kind}"}, "display": display()}
     ITEM_MODELS_1_20.mkdir(parents=True, exist_ok=True)
     (ITEM_MODELS_1_20 / f"{kind}.json").write_text(json.dumps(model, indent=1) + "\n")
